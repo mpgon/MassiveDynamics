@@ -1,0 +1,43 @@
+					Estruturas de Dados - Jogo Do Galo
+
+
+typedef struct{
+	int jogadas[3][3] // Registo de jogadas
+	int coordCaixas[9][2] // Posicao central de cada quadrado do jogo
+}Tabuleiro;
+
+#define float SimboloXAltura; // Altura do objecto
+#define float SimboloXBase; // Raio da base
+#define float SimboloXTop; // Raio do topo
+#define float SimboloXSlices; // Numero de subdivizoes a volta do Z
+#define float SimboloXStacks; // Numero de subdivizoes ao longo do Z
+
+#define float SimboloORadianoInterior; // Valor do radiano interior
+#define float SimboloORadianoExterior; // Valor do radiano exterior
+#define float SimboloONumLados; // Numero de lados para cada seccao
+#define float SimboloOAneis; // Numero de divisoes radianas
+
+int jogadorSimbolo // 0 = O ; 1 = X
+Tabuleiro tabuleiro;
+
+------------------------------------------------------------------------
+					Estruturas de Dados - Enforcado
+
+
+typedef struct{
+	array[26] letras; // Controlar letras usadas e por usar
+	int numTentativas; // Contador de numero de jogadas
+}Jogo;
+
+#define array[26] abc = {a,b,c,d,...,z} // Referencia do abecedario
+// Tamanhos dos eçementos do enforcado
+#define float tamBase;
+#define float tamVara;
+#define float tamTop;
+#define float tamCorpo;
+#define float tamBracos;
+#define float tamPernas;
+#define float raioCabeca;
+
+
+
