@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_DEPRECATE
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -5,12 +7,12 @@
 #include <time.h>
 #include <GL/glut.h>
 
-#ifndef M_PI
-#define M_PI 3.1415926535897932384626433832795
-#endif
+//#ifndef M_PI
+//#define M_PI 3.1415926535897932384626433832795
+//#endif
 
-#define rtd(x)   (180*(x)/M_PI)
-#define dtr(x)   (M_PI*(x)/180)
+//#define rtd(x)   (180*(x)/M_PI)
+//#define dtr(x)   (M_PI*(x)/180)
 
 #define DEBUG 1
 
@@ -18,52 +20,89 @@
 
 typedef struct {
 	GLboolean   doubleBuffer;
-	GLint       delay;
+	/*GLint       delay;*/
 }Estado;
 
 typedef struct {
-	GLint       hor, min, seg;
-}Horas;
+	int player;
+	int computador;
+	int start_game;
+	int win;
+}Jogo;
 
 typedef struct {
-	GLint       numLados;
-	GLfloat     raio;
-	GLfloat     tamLado;
-	Horas       hora;
-}Modelo;
+	// variaveis de rato: Win = windows size, mouse = posicao rato
+	int mouse_x, mouse_y, Win_x, Win_y, object_select;
+}Rato;
 
+// alinhamento das caixas, quando se ganha
+// 8 possibilidades, 3 na vertical, 3 na horizontal and 2 na diagonal
+//
+// 0 | 1 | 2
+// 3 | 4 | 5
+// 6 | 7 | 8
+//
 
+static int caixa[8][3] = { { 0, 1, 2 }, { 3, 4, 5 }, { 6, 7, 8 }, { 0, 3, 6 },
+{ 1, 4, 7 }, { 2, 5, 8 }, { 0, 4, 8 }, { 2, 4, 6 } };
+
+static int mapa_caixa[9];
+// centro x,y da localização para cada caixa
+static int mapa_objeto[9][2] = { { -6, 6 }, { 0, 6 }, { 6, 6 }, { -6, 0 }, { 0, 0 }, { 6, 0 }, { -6, -6 }, { 0, -6 }, { 6, -6 } };
+
+Jogo jogo;
+Rato rato;
 Estado estado;
-Modelo modelo;
+
+GLUquadricObj *cylinder;
+//Modelo modelo;
 
 
 /* Inicialização do ambiente OPENGL */
 void Init(void)
 {
 
-	struct tm *current_time;
-	time_t timer = time(0);
+	//struct tm *current_time;
+	//time_t timer = time(0);
 
 	//delay para o timer
-	estado.delay = 1000;
+	/*estado.delay = 1000;*/
 
-	modelo.tamLado = 1;
+	/*modelo.tamLado = 1;
 	modelo.numLados = 5;
-	modelo.raio = 0.75;
+	modelo.raio = 0.75;*/
 
 
 	// Lê hora do Sistema
 	//current_time = localtime(&timer);
-	//modelo.hora.hor = current_time->tm_hour;
-	//modelo.hora.min = current_time->tm_min;
-	//modelo.hora.seg = current_time->tm_sec;
+	/*modelo.hora.hor = current_time->tm_hour;
+	modelo.hora.min = current_time->tm_min;
+	modelo.hora.seg = current_time->tm_sec;*/
 
-	glClearColor(0.3, 0.3, 0.3, 0.0);
+	glClearColor(1, 1, 1, 0.0);
 
-	glEnable(GL_POINT_SMOOTH);
+	/*glEnable(GL_POINT_SMOOTH);
 	glEnable(GL_LINE_SMOOTH);
-	glEnable(GL_POLYGON_SMOOTH);
+	glEnable(GL_POLYGON_SMOOTH);*/
 
+	jogo.start_game = 0;
+	jogo.win = 0;
+
+	cylinder = gluNewQuadric();
+	gluQuadricDrawStyle(cylinder, GLU_FILL);
+	gluQuadricNormals(cylinder, GLU_SMOOTH);
+	gluQuadricOrientation(cylinder, GLU_OUTSIDE);
+
+}
+
+void init_game(){
+	for (int i = 0; i < 9; i++)
+	{
+		mapa_caixa[i] = 0;
+	}
+
+	jogo.win = 0;
+	jogo.start_game = 1;
 }
 
 /**************************************
@@ -74,6 +113,8 @@ void Init(void)
 
 void Reshape(int width, int height)
 {
+	rato.Win_x = width;
+	rato.Win_y = height;
 	GLint size;
 	GLfloat ratio = (GLfloat)width / height;
 	GLfloat ratio1 = (GLfloat)height / width;
@@ -98,9 +139,9 @@ void Reshape(int width, int height)
 	// gluOrtho2D(left,right,bottom,top); 
 	// projeccao ortogonal 2D, com profundidade (Z) entre -1 e 1
 	if (width < height)
-		gluOrtho2D(-1, 1, -1 * ratio1, 1 * ratio1);
+		gluOrtho2D(-9, 9, -9 * ratio1, 9 * ratio1);
 	else
-		gluOrtho2D(-1 * ratio, 1 * ratio, -1, 1);
+		gluOrtho2D(-9 * ratio, 9 * ratio, -9, 9);
 
 	// Matriz Modelview
 	// Matriz onde são realizadas as tranformações dos modelos desenhados
@@ -108,8 +149,96 @@ void Reshape(int width, int height)
 	glLoadIdentity();
 }
 
+// é usada para escrever no ecra
+void imprimir(int x, int y, char *st)
+{
+	int tam, i;
+
+	tam = strlen(st); // tamanho da string
+	glRasterPos2i(x, y); // coordenadas para começar a escrever
+	for (i = 0; i < tam; i++)  // loop para imprimir char
+	{
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, st[i]); // imprimir para o ecra
+	}
+
+}
+
+void mensagem_inicio(){
+	glPushMatrix();
+	glColor3f(1, 0.0, 0.0);
+	imprimir(-2, 0, "Jogo do Galo");
+	imprimir(-3, -1, "Para começar o jogo carrega: ");
+	imprimir(-3, -2, "botao direito do rato para X's");
+	imprimir(-3, -3, "botao esquerdo do rato para O's");
+	glPopMatrix();
+}
+
+void mensagem_final(int win){
+	glPushMatrix();
+	glColor3f(1.0, 0.0, 0.0);
+	if (win == 1) imprimir(-2, 1, "Ganhou!!!");
+	if (win == -1) imprimir(-2, 1, "Perdeu...");
+	if (win == 2) imprimir(-2, 1, "Empate...");
+	glPopMatrix();
+}
+
 
 // ... definição das rotinas auxiliares de desenho ...
+
+void desenhagrelha(void){
+	for (int ix = 0; ix < 4; ix++)
+	{
+		glPushMatrix();
+		glColor3f(0.0, 0.0, 0.0);
+		glBegin(GL_LINES);
+		glVertex2i(-9, -9 + ix * 6);
+		glVertex2i(9, -9 + ix * 6);
+		glEnd();
+		glPopMatrix();
+	}
+
+	for (int iy = 0; iy < 4; iy++)
+	{
+		glPushMatrix();
+		glColor3f(0.0, 0.0, 0.0);
+		glBegin(GL_LINES);
+		glVertex2i(-9 + iy * 6, 9);
+		glVertex2i(-9 + iy * 6, -9);
+		glEnd();
+		glPopMatrix();
+	}
+}
+
+void desenhaO(int x, int y, int z){
+	glPushMatrix();
+	glColor3f(0.0, 0.0, 1.0);
+	glTranslatef(x, y, z);
+	glutSolidTorus(0.5, 2.0, 8, 16);
+	glPopMatrix();
+}
+
+void desenhaX(int x, int y, int z){
+	glPushMatrix();
+	glTranslatef(x, y, z);
+
+	glPushMatrix();
+	glColor3f(0.0, 0.0, 1.0);
+	glRotatef(90, 0, 1, 0);
+	glRotatef(45, 1, 0, 0);
+	glTranslatef(0, 0, -3);
+	gluCylinder(cylinder, 0.5, 0.5, 6, 16, 16);
+	glPopMatrix();
+
+	glPushMatrix();
+	glColor3f(0.0, 0.0, 1.0);
+	glRotatef(90, 0, 1, 0);
+	glRotatef(315, 1, 0, 0);
+	glTranslatef(0, 0, -3);
+	gluCylinder(cylinder, 0.5, 0.5, 6, 16, 16);
+	glPopMatrix();
+
+	glPopMatrix();
+}
 
 // Callback de desenho
 
@@ -118,24 +247,20 @@ void Draw(void)
 	glClear(GL_COLOR_BUFFER_BIT);
 	// ... chamada das rotinas auxiliares de desenho ...
 
-	glBegin(GL_POLYGON);
-	glColor3f(1.0f, 0.0f, 0.0f);
-	glVertex2f(modelo.tamLado / 2, modelo.tamLado / 2);
-	glColor3f(0.0f, 0.0f, 1.0f);
-	glVertex2f(-modelo.tamLado / 2, modelo.tamLado / 2);
-	glColor3f(0.0f, 1.0f, 0.0f);
-	glVertex2f(-modelo.tamLado / 2, -modelo.tamLado / 2);
-	glColor3f(1.0f, 0.0f, 1.0f);
-	glVertex2f(modelo.tamLado / 2, -modelo.tamLado / 2);
-	glEnd();
+	desenhagrelha();
 
-	glBegin(GL_LINE_LOOP);
-	glColor3f(1.0, 1.0, 1.0);
-	glVertex2f(-1.0, -1.0);
-	glVertex2f(1.0, -1.0);
-	glVertex2f(1.0, 1.0);
-	glVertex2f(-1.0, 1.0);
-	glEnd();
+	if (jogo.start_game == 0)
+	{
+		mensagem_inicio();
+	}
+
+	if (jogo.win != 0)
+	{
+		mensagem_final(jogo.win);
+	}
+
+	desenhaX(-6, 6, 0);
+	desenhaO(-6, -6, 0);
 
 	glFlush();
 	if (estado.doubleBuffer)
@@ -161,12 +286,14 @@ void Idle(void)
 
 void Timer(int value)
 {
-	glutTimerFunc(estado.delay, Timer, 0);
+
 	// ... acções do temporizador ... 
 
 
 	// redesenhar o ecrã (invoca o callback de desenho)
 	glutPostRedisplay();
+
+	glutTimerFunc(10, Timer, 1);
 }
 
 
@@ -196,20 +323,20 @@ void Key(unsigned char key, int x, int y)
 	case 'H':
 		imprime_ajuda();
 		break;
-	case '+':
-		if (modelo.tamLado<1.8)
-		{
-			modelo.tamLado += 0.05;
-			glutPostRedisplay(); // redesenhar o ecrã
-		}
-		break;
-	case '-':
-		if (modelo.tamLado>0.2)
-		{
-			modelo.tamLado -= 0.05;
-			glutPostRedisplay(); // redesenhar o ecrã
-		}
-		break;
+		//case '+':
+		//	if (modelo.tamLado<1.8)
+		//	{
+		//		modelo.tamLado += 0.05;
+		//		glutPostRedisplay(); // redesenhar o ecrã
+		//	}
+		//	break;
+		//case '-':
+		//	if (modelo.tamLado>0.2)
+		//	{
+		//		modelo.tamLado -= 0.05;
+		//		glutPostRedisplay(); // redesenhar o ecrã
+		//	}
+		//	break;
 
 	}
 
@@ -264,7 +391,6 @@ void SpecialKeyUp(int key, int x, int y)
 
 }
 
-
 void main(int argc, char **argv)
 {
 	estado.doubleBuffer = GL_TRUE;  // colocar a GL_TRUE para ligar o Double Buffer
@@ -276,6 +402,8 @@ void main(int argc, char **argv)
 	if (glutCreateWindow("Exemplo") == GL_FALSE)
 		exit(1);
 
+	glutSetWindowTitle("Jogo do Galo");
+
 	Init();
 
 	imprime_ajuda();
@@ -283,8 +411,8 @@ void main(int argc, char **argv)
 	// Registar callbacks do GLUT
 
 	// callbacks de janelas/desenho
-	glutReshapeFunc(Reshape);
 	glutDisplayFunc(Draw);
+	glutReshapeFunc(Reshape);
 
 	// Callbacks de teclado
 	glutKeyboardFunc(Key);
@@ -293,7 +421,7 @@ void main(int argc, char **argv)
 	//glutSpecialUpFunc(SpecialKeyUp);
 
 	// callbacks timer/idle
-	//glutTimerFunc(estado.delay, Timer, 0);
+	glutTimerFunc(10, Timer, 1);
 	//glutIdleFunc(Idle);
 
 
