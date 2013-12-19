@@ -32,8 +32,8 @@ extern "C" int read_JPEG_file(const char *, char **, int *, int *, int *);
 
 #define	GAP					              25
 
-#define MAZE_HEIGHT			          18
-#define MAZE_WIDTH			          18
+#define MAZE_HEIGHT			          20
+#define MAZE_WIDTH			          20
 
 #define	OBJECTO_ALTURA		      0.4
 #define OBJECTO_VELOCIDADE	      0.05
@@ -115,24 +115,26 @@ ESTADO estado;
 MODELO modelo;
 
 char mazedata[MAZE_HEIGHT][MAZE_WIDTH + 1] = {
-	"                  ",
-	" ******* ******** ",
-	" *       *      * ",
-	" * * *** * *    * ",
-	" * **  * ** * * * ",
-	" *     *      * * ",
-	" *          *** * ",
-	" *           *  * ",
-	" *     * *** **** ",
-	" * *   *   *    * ",
-	" *   ****  *    * ",
-	" ********  **** * ",
-	" *            * * ",
-	" *     *      * * ",
-	" ** ** *    *** * ",
-	" *   *      *   * ",
-	" *******  **** ** ",
-	"                  "
+	"                    ",
+	" ****************** ",
+	" *                * ",
+	" ***+*******      * ",
+	" * ** **  * *** *** ",
+	" *     *          * ",
+	" *     *    ***   * ",
+	" *   ***     *    * ",
+	" *     * *** ****** ",
+	" * *   *   *      * ",
+	" *   ****  *      * ",
+	" ********  ****   * ",
+	" *            *   * ",
+	" *     *      *   * ",
+	" ** ** *    ***   * ",
+	" *   *      *     * ",
+	" *******  **** *  * ",
+	" * **  *    ****  * ",
+	" *                * ",
+	" ****************** ",
 };
 
 
@@ -148,6 +150,7 @@ void setLight()
 	GLfloat light_specular[] = { 0.5f, 0.5f, 0.5f, 1.0f };
 
 	// ligar iluminação
+
 	glEnable(GL_LIGHTING);
 
 	// ligar e definir fonte de luz 0
@@ -191,7 +194,7 @@ void redisplayTopSubwindow(int width, int height)
 	// Matriz Modelview
 	// Matriz onde são realizadas as tranformacoes dos modelos desenhados
 	glMatrixMode(GL_MODELVIEW);
-
+	
 }
 
 
@@ -254,6 +257,20 @@ GLboolean detectaColisao(GLfloat nx, GLfloat nz)
 	return GL_FALSE;
 }
 
+GLboolean detectaColisaoEstrela(GLfloat nx, GLfloat nz)
+{
+	int l = nz + MAZE_HEIGHT / 2.0 + 0.35;
+	int c = nx + MAZE_WIDTH / 2.0 + 0.35;
+
+	printf("l: %d", l);
+	printf("c: %d", c);
+
+	if (mazedata[l][c] == '+'){
+		return GL_TRUE;
+	}
+	return GL_FALSE;
+}
+
 void desenhaPoligono(GLfloat a[], GLfloat b[], GLfloat c[], GLfloat  d[], GLfloat normal[], float s, float t)
 {
 	glBegin(GL_POLYGON);
@@ -300,7 +317,7 @@ void desenhaCubo(GLuint texID)
 	desenhaPoligono(vertices[6], vertices[5], vertices[1], vertices[2], normais[3], s, t);
 	desenhaPoligono(vertices[4], vertices[5], vertices[6], vertices[7], normais[0], s, t);
 	desenhaPoligono(vertices[5], vertices[4], vertices[0], vertices[1], normais[5], s, t);
-
+	 
 	glBindTexture(GL_TEXTURE_2D, NULL);
 }
 
@@ -415,7 +432,7 @@ void desenhaModelo()
 
 void desenhaEstrela(){
 	glPushMatrix();
-		glTranslatef(-4,.3,-2);
+		glTranslatef(-6,.3,-7);
 		glColor3f(1,1,0);
 		glBegin(GL_LINE_LOOP);
 			glVertex3f(0.0, 0.2, 0.0);
@@ -580,6 +597,7 @@ void setTopSubwindowCamera(camera_t *cam, objecto_t obj)
 
 void displayTopSubwindow()
 {
+	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glLoadIdentity();
@@ -600,6 +618,7 @@ void displayTopSubwindow()
 	desenhaAngVisao(&estado.camera);
 	desenhaModeloDir(modelo.objecto, glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
 	glutSwapBuffers();
+	
 }
 
 
@@ -655,16 +674,23 @@ void Timer(int value)
 		nx = modelo.objecto.pos.x + modelo.objecto.vel * cos(modelo.objecto.dir);
 		nz = modelo.objecto.pos.z - modelo.objecto.vel * sin(modelo.objecto.dir);
 
-		if (!detectaColisao(nx, nz)){
-			modelo.objecto.pos.x = nx;
-			modelo.objecto.pos.z = nz;
-			if (modelo.homer[JANELA_NAVIGATE].GetSequence() != 3){
-				modelo.homer[JANELA_NAVIGATE].SetSequence(3);
+		if (!detectaColisaoEstrela(nx, nz)){
+			if (!detectaColisao(nx, nz)){
+				modelo.objecto.pos.x = nx;
+				modelo.objecto.pos.z = nz;
+				if (modelo.homer[JANELA_NAVIGATE].GetSequence() != 3){
+					modelo.homer[JANELA_NAVIGATE].SetSequence(3);
+				}
+			}
+			else
+			{
+				modelo.homer[JANELA_NAVIGATE].SetSequence(20);
 			}
 		}
 		else
 		{
-			modelo.homer[JANELA_NAVIGATE].SetSequence(20);
+			printf("%d", 2);
+			modelo.homer[JANELA_NAVIGATE].SetSequence(5);
 
 		}
 
@@ -676,6 +702,7 @@ void Timer(int value)
 		// calcula nova posição nx,nz
 		nx = modelo.objecto.pos.x - modelo.objecto.vel * cos(modelo.objecto.dir);
 		nz = modelo.objecto.pos.z + modelo.objecto.vel * sin(modelo.objecto.dir);
+
 		if (!detectaColisao(nx, nz)){
 			modelo.objecto.pos.x = nx;
 			modelo.objecto.pos.z = nz;
@@ -694,10 +721,12 @@ void Timer(int value)
 	if (estado.teclas.left){
 		// rodar camara e objecto
 		modelo.objecto.dir += .2;
+		estado.camera.dir_long += .2;
 	}
 	if (estado.teclas.right){
 		// rodar camara e objecto
 		modelo.objecto.dir -= .2;
+		estado.camera.dir_long -= .2;
 	}
 	/*/*
 	if (modelo.homer[JANELA_NAVIGATE].GetSequence() == 0){
@@ -820,10 +849,8 @@ void SpecialKeyUp(int key, int x, int y)
 {
 	switch (key) {
 	case GLUT_KEY_UP: estado.teclas.up = GL_FALSE;
-		//modelo.homer[JANELA_NAVIGATE].SetSequence(0);
 		break;
 	case GLUT_KEY_DOWN: estado.teclas.down = GL_FALSE;
-		//modelo.homer[JANELA_NAVIGATE].SetSequence(0);
 		break;
 	case GLUT_KEY_LEFT: estado.teclas.left = GL_FALSE;
 		break;
@@ -955,12 +982,12 @@ void init()
 	estado.camera.fov = 60;
 
 	estado.localViewer = 1;
-	estado.vista[JANELA_TOP] = 0;
+	//estado.vista[JANELA_TOP] = 0;
 	estado.vista[JANELA_NAVIGATE] = 0;
 
-	modelo.objecto.pos.x = 0;
+	modelo.objecto.pos.x = 7;
 	modelo.objecto.pos.y = OBJECTO_ALTURA*.5;
-	modelo.objecto.pos.z = 0;
+	modelo.objecto.pos.z = 6;
 	modelo.objecto.dir = 0;
 	modelo.objecto.vel = OBJECTO_VELOCIDADE;
 
@@ -988,7 +1015,7 @@ int main(int argc, char **argv)
 {
 	glutInit(&argc, argv);
 	glutInitWindowPosition(10, 10);
-	glutInitWindowSize(800 + GAP * 3, 400 + GAP * 2);
+	glutInitWindowSize(800 + GAP * 3, 600 + GAP * 2);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	if ((estado.mainWindow = glutCreateWindow("Labirinto")) == GL_FALSE)
 		exit(1);
@@ -1005,6 +1032,7 @@ int main(int argc, char **argv)
 	glutSpecialFunc(SpecialKey);
 	glutSpecialUpFunc(SpecialKeyUp);
 
+	
 	// criar a sub window topSubwindow
 	estado.topSubwindow = glutCreateSubWindow(estado.mainWindow, GAP, GAP, 400, 400);
 	init();
@@ -1013,7 +1041,7 @@ int main(int argc, char **argv)
 	createTextures(modelo.texID[JANELA_TOP]);
 	createDisplayLists(JANELA_TOP);
 
-	mdlviewer_init("homer.mdl", modelo.homer[JANELA_TOP]);
+    mdlviewer_init("homer.mdl", modelo.homer[JANELA_TOP]);
 
 	glutReshapeFunc(redisplayTopSubwindow);
 	glutDisplayFunc(displayTopSubwindow);
@@ -1023,9 +1051,8 @@ int main(int argc, char **argv)
 	glutSpecialFunc(SpecialKey);
 	glutSpecialUpFunc(SpecialKeyUp);
 
-
 	// criar a sub window navigateSubwindow
-	estado.navigateSubwindow = glutCreateSubWindow(estado.mainWindow, 400 + GAP, GAP, 400, 800);
+	estado.navigateSubwindow = glutCreateSubWindow(estado.mainWindow, 800 + GAP, GAP, 300, 300);
 	init();
 	setLight();
 	setMaterial();
@@ -1033,7 +1060,6 @@ int main(int argc, char **argv)
 	createTextures(modelo.texID[JANELA_NAVIGATE]);
 	createDisplayLists(JANELA_NAVIGATE);
 	mdlviewer_init("homer.mdl", modelo.homer[JANELA_NAVIGATE]);
-
 	glutReshapeFunc(reshapeNavigateSubwindow);
 	glutDisplayFunc(displayNavigateSubwindow);
 	glutMouseFunc(mouseNavigateSubwindow);
