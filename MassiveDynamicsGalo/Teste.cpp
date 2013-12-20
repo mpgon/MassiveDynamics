@@ -391,6 +391,63 @@ void SpecialKeyUp(int key, int x, int y)
 
 }
 
+void mouse(int button, int state, int x, int y){
+	rato.mouse_x = (18 * (float)((float)x / (float)rato.Win_x)) / 6;
+	rato.mouse_y = (18 * (float)((float)y / (float)rato.Win_y)) / 6;
+
+	rato.object_select = rato.mouse_x + rato.mouse_y * 3;
+
+	if (jogo.start_game == 0)
+	{
+		if ((button == GLUT_RIGHT_BUTTON) && (state == GLUT_DOWN))
+		{
+			jogo.player = 1;
+			jogo.computador = -1;
+			init_game();//da se inicio ao jogo
+			return;
+		}
+
+		if ((button == GLUT_LEFT_BUTTON) && (state == GLUT_DOWN))
+		{
+			jogo.player = -1;
+			jogo.computador = 1;
+			init_game();
+			//da se inicio ao jogo
+			return;
+		}
+
+	}
+
+	if (jogo.start_game == 1)
+	{
+		if ((button == GLUT_LEFT_BUTTON) && (state == GLUT_DOWN))
+		{
+			if (jogo.win == 0) //verifica se ainda nao ha vencedores
+			{
+				if (mapa_caixa[rato.object_select] == 0)//verifica se a caixa ainda nao foi jogada antes
+				{
+					mapa_caixa[rato.object_select] = jogo.player; //modificar o valor da caixa para o jogador
+					//verificar se alguem ganhou
+					if (jogo.win == 1)//se ganhou acabou
+					{
+						jogo.start_game = 0;
+						return;
+					}
+					//chamar o prolog para o pc jogar
+					//verificar se ganhou
+					if (jogo.win == 1)//se ganhou acabou o jogo
+					{
+						jogo.win = -1;
+						jogo.start_game = 0;
+					}
+				}
+			}
+		}
+	}
+
+	if (jogo.win == 2)jogo.start_game = 0; //acabou
+}
+
 void main(int argc, char **argv)
 {
 	estado.doubleBuffer = GL_TRUE;  // colocar a GL_TRUE para ligar o Double Buffer
@@ -416,6 +473,8 @@ void main(int argc, char **argv)
 
 	// Callbacks de teclado
 	glutKeyboardFunc(Key);
+	// Callbacks de rato
+	glutMouseFunc(mouse);
 	//glutKeyboardUpFunc(KeyUp);
 	//glutSpecialFunc(SpecialKey);
 	//glutSpecialUpFunc(SpecialKeyUp);
