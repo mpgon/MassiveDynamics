@@ -149,6 +149,133 @@ void Reshape(int width, int height)
 	glLoadIdentity();
 }
 
+// verifica se faz linha
+// return 1 se houver vencedor
+int movimentos(void)
+{
+
+	int i, t = 0;
+
+	//verifica se faz linha
+	for (i = 0; i < 8; i++)
+	{
+		t = mapa_caixa[caixa[i][0]] + mapa_caixa[caixa[i][1]] + mapa_caixa[caixa[i][2]];
+		if ((t == 3) || (t == -3))
+		{
+			return(1);
+		}
+	}
+	t = 0;
+	// verifica se ha empate
+	for (i = 0; i < 8; i++)
+	{
+		t = t + abs(mapa_caixa[caixa[i][0]]) + abs(mapa_caixa[caixa[i][1]]) + abs(mapa_caixa[caixa[i][2]]);
+	}
+
+	if (t == 24) return(2);
+
+	return(0);
+}
+
+// verifca se e preciso bloquear
+int bloquear(void)
+{
+	int i, t;
+	for (i = 0; i < 8; i++)
+	{
+		t = mapa_caixa[caixa[i][0]] + mapa_caixa[caixa[i][1]] + mapa_caixa[caixa[i][2]];
+		if ((t == 2) || (t == -2))
+		{
+			if (mapa_caixa[caixa[i][0]] == 0) mapa_caixa[caixa[i][0]] = jogo.computador;
+			if (mapa_caixa[caixa[i][1]] == 0) mapa_caixa[caixa[i][1]] = jogo.computador;
+			if (mapa_caixa[caixa[i][2]] == 0) mapa_caixa[caixa[i][2]] = jogo.computador;
+			return(1);
+		}
+	}
+	return(0);
+}
+
+// verifca se pode jogar no canto
+int check_cantos(void)
+{
+	int i;
+
+	if (mapa_caixa[0] == 0)
+	{
+		mapa_caixa[0] = jogo.computador;
+		i = 1;
+		return(1);
+	}
+
+	if (mapa_caixa[2] == 0)
+	{
+		mapa_caixa[2] = jogo.computador;
+		i = 1;
+		return(1);
+	}
+
+	if (mapa_caixa[6] == 0)
+	{
+		mapa_caixa[6] = jogo.computador;
+		i = 1;
+		return(1);
+	}
+
+	if (mapa_caixa[8] == 0)
+	{
+		mapa_caixa[8] = jogo.computador;
+		i = 1;
+		return(1);
+	}
+
+	return(0);
+}
+
+// verifca se ha espaco em linha
+int check_linha(void)
+{
+
+	if (mapa_caixa[4] == 0)
+	{
+		mapa_caixa[4] = jogo.computador;
+		return(1);
+	}
+
+	if (mapa_caixa[1] == 0)
+	{
+		mapa_caixa[1] = jogo.computador;
+		return(1);
+	}
+
+	if (mapa_caixa[3] == 0)
+	{
+		mapa_caixa[3] = jogo.computador;
+		return(1);
+	}
+	if (mapa_caixa[5] == 0)
+	{
+		mapa_caixa[5] = jogo.computador;
+		return(1);
+	}
+	if (mapa_caixa[7] == 0)
+	{
+		mapa_caixa[7] = jogo.computador;
+		return(1);
+	}
+
+	return(0);
+}
+
+// movimentos do pc
+int computer_move()
+{
+	if (bloquear() == 1) return(1);
+	if (check_cantos() == 1) return(1);
+	if (check_linha() == 1) return(1);
+
+	return(0);
+}
+
 // é usada para escrever no ecra
 void imprimir(int x, int y, char *st)
 {
@@ -259,8 +386,17 @@ void Draw(void)
 		mensagem_final(jogo.win);
 	}
 
-	desenhaX(-6, 6, 0);
-	desenhaO(-6, -6, 0);
+	for (int i = 0; i < 9; i++)
+	{
+		if (mapa_caixa[i] == 1)
+		{
+			desenhaX(mapa_objeto[i][0], mapa_objeto[i][1], -1);
+		}
+		if (mapa_caixa[i] == -1)
+		{
+			desenhaO(mapa_objeto[i][0], mapa_objeto[i][1], -1);
+		}
+	}
 
 	glFlush();
 	if (estado.doubleBuffer)
@@ -427,14 +563,14 @@ void mouse(int button, int state, int x, int y){
 				if (mapa_caixa[rato.object_select] == 0)//verifica se a caixa ainda nao foi jogada antes
 				{
 					mapa_caixa[rato.object_select] = jogo.player; //modificar o valor da caixa para o jogador
-					//verificar se alguem ganhou
+					jogo.win = movimentos();//verificar se alguem ganhou
 					if (jogo.win == 1)//se ganhou acabou
 					{
 						jogo.start_game = 0;
 						return;
 					}
-					//chamar o prolog para o pc jogar
-					//verificar se ganhou
+					computer_move();//chamar o prolog para o pc jogar
+					jogo.win = movimentos();//verificar se ganhou
 					if (jogo.win == 1)//se ganhou acabou o jogo
 					{
 						jogo.win = -1;
