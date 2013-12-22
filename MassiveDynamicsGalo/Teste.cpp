@@ -6,13 +6,7 @@
 #include <math.h>
 #include <time.h>
 #include <GL/glut.h>
-
-//#ifndef M_PI
-//#define M_PI 3.1415926535897932384626433832795
-//#endif
-
-//#define rtd(x)   (180*(x)/M_PI)
-//#define dtr(x)   (M_PI*(x)/180)
+#include <windows.h>
 
 #define DEBUG 1
 
@@ -61,29 +55,7 @@ GLUquadricObj *cylinder;
 /* Inicialização do ambiente OPENGL */
 void Init(void)
 {
-
-	//struct tm *current_time;
-	//time_t timer = time(0);
-
-	//delay para o timer
-	/*estado.delay = 1000;*/
-
-	/*modelo.tamLado = 1;
-	modelo.numLados = 5;
-	modelo.raio = 0.75;*/
-
-
-	// Lê hora do Sistema
-	//current_time = localtime(&timer);
-	/*modelo.hora.hor = current_time->tm_hour;
-	modelo.hora.min = current_time->tm_min;
-	modelo.hora.seg = current_time->tm_sec;*/
-
 	glClearColor(1, 1, 1, 0.0);
-
-	/*glEnable(GL_POINT_SMOOTH);
-	glEnable(GL_LINE_SMOOTH);
-	glEnable(GL_POLYGON_SMOOTH);*/
 
 	jogo.start_game = 0;
 	jogo.win = 0;
@@ -293,10 +265,10 @@ void imprimir(int x, int y, char *st)
 void mensagem_inicio(){
 	glPushMatrix();
 	glColor3f(1, 0.0, 0.0);
-	imprimir(-2, 0, "Jogo do Galo");
-	imprimir(-3, -1, "Para começar o jogo carrega: ");
-	imprimir(-3, -2, "botao direito do rato para X's");
-	imprimir(-3, -3, "botao esquerdo do rato para O's");
+	imprimir(-4, 4, "Jogo do Galo");
+	imprimir(-4, -1, "Para começar: ");
+	imprimir(-4, -2, "botao direito: X's");
+	imprimir(-4, -3, "botao esquerdo: O's");
 	glPopMatrix();
 }
 
@@ -316,7 +288,7 @@ void desenhagrelha(void){
 	for (int ix = 0; ix < 4; ix++)
 	{
 		glPushMatrix();
-		glColor3f(0.0, 0.0, 0.0);
+		glColor3f(0.0, 0.0, 1.0);
 		glBegin(GL_LINES);
 		glVertex2i(-9, -9 + ix * 6);
 		glVertex2i(9, -9 + ix * 6);
@@ -327,7 +299,7 @@ void desenhagrelha(void){
 	for (int iy = 0; iy < 4; iy++)
 	{
 		glPushMatrix();
-		glColor3f(0.0, 0.0, 0.0);
+		glColor3f(0.0, 0.0, 1.0);
 		glBegin(GL_LINES);
 		glVertex2i(-9 + iy * 6, 9);
 		glVertex2i(-9 + iy * 6, -9);
@@ -338,7 +310,7 @@ void desenhagrelha(void){
 
 void desenhaO(int x, int y, int z){
 	glPushMatrix();
-	glColor3f(0.0, 0.0, 1.0);
+	glColor3f(1.0, 1.0, 0.0);
 	glTranslatef(x, y, z);
 	glutSolidTorus(0.5, 2.0, 8, 16);
 	glPopMatrix();
@@ -349,7 +321,7 @@ void desenhaX(int x, int y, int z){
 	glTranslatef(x, y, z);
 
 	glPushMatrix();
-	glColor3f(0.0, 0.0, 1.0);
+	glColor3f(0.0, 1.0, 0.0);
 	glRotatef(90, 0, 1, 0);
 	glRotatef(45, 1, 0, 0);
 	glTranslatef(0, 0, -3);
@@ -357,7 +329,7 @@ void desenhaX(int x, int y, int z){
 	glPopMatrix();
 
 	glPushMatrix();
-	glColor3f(0.0, 0.0, 1.0);
+	glColor3f(0.0, 1.0, 0.0);
 	glRotatef(90, 0, 1, 0);
 	glRotatef(315, 1, 0, 0);
 	glTranslatef(0, 0, -3);
@@ -376,14 +348,9 @@ void Draw(void)
 
 	desenhagrelha();
 
-	if (jogo.start_game == 0)
+	if (jogo.start_game == 0 && jogo.win == 0)
 	{
 		mensagem_inicio();
-	}
-
-	if (jogo.win != 0)
-	{
-		mensagem_final(jogo.win);
 	}
 
 	for (int i = 0; i < 9; i++)
@@ -398,134 +365,39 @@ void Draw(void)
 		}
 	}
 
+	if (jogo.win != 0)
+	{
+		mensagem_final(jogo.win);
+	}
+
 	glFlush();
 	if (estado.doubleBuffer)
 		glutSwapBuffers();
+
+	if (jogo.win != 0)
+	{
+		Sleep(5000);
+		exit(1);
+	}
 }
 
 /*******************************
 ***   callbacks timer/idle   ***
 *******************************/
 
-// Callback Idle
-
-void Idle(void)
-{
-
-	// accoes a tomar quando o glut estÃ¡ idle 
-
-	// redesenhar o ecra 
-	// glutPostRedisplay();
-}
-
 // Callback de temporizador (não colocar instruções de desenho aqui...)
 
 void Timer(int value)
 {
-
-	// ... acções do temporizador ... 
-
-
 	// redesenhar o ecrã (invoca o callback de desenho)
 	glutPostRedisplay();
-
+	
 	glutTimerFunc(10, Timer, 1);
 }
 
-
-void imprime_ajuda(void)
-{
-	printf("\n\nDesenho de um quadrado\n");
-	printf("h,H - Ajuda \n");
-	printf("+   - Aumentar tamanho do Lado\n");
-	printf("-   - Diminuir tamanho do Lado\n");
-	printf("ESC - Sair\n");
-}
-
 /*******************************
-***  callbacks de teclado    ***
+*** callbacks de teclado/rato***
 *******************************/
-
-// Callback para interacção via teclado (carregar na tecla)
-
-void Key(unsigned char key, int x, int y)
-{
-	switch (key) {
-	case 27:  // Tecla Escape
-		exit(1);
-		// ... acções sobre outras teclas ... 
-
-	case 'h':
-	case 'H':
-		imprime_ajuda();
-		break;
-		//case '+':
-		//	if (modelo.tamLado<1.8)
-		//	{
-		//		modelo.tamLado += 0.05;
-		//		glutPostRedisplay(); // redesenhar o ecrã
-		//	}
-		//	break;
-		//case '-':
-		//	if (modelo.tamLado>0.2)
-		//	{
-		//		modelo.tamLado -= 0.05;
-		//		glutPostRedisplay(); // redesenhar o ecrã
-		//	}
-		//	break;
-
-	}
-
-	if (DEBUG)
-		printf("Carregou na tecla %c\n", key);
-
-}
-
-// Callback para interacção via teclado (largar a tecla)
-
-void KeyUp(unsigned char key, int x, int y)
-{
-
-	if (DEBUG)
-		printf("Largou a tecla %c\n", key);
-}
-
-// Callback para interacção via teclas especiais  (carregar na tecla)
-
-void SpecialKey(int key, int x, int y)
-{
-	// ... accoes sobre outras teclas especiais ... 
-	//    GLUT_KEY_F1 ... GLUT_KEY_F12
-	//    GLUT_KEY_UP
-	//    GLUT_KEY_DOWN
-	//    GLUT_KEY_LEFT
-	//    GLUT_KEY_RIGHT
-	//    GLUT_KEY_PAGE_UP
-	//    GLUT_KEY_PAGE_DOWN
-	//    GLUT_KEY_HOME
-	//    GLUT_KEY_END
-	//    GLUT_KEY_INSERT 
-
-	switch (key) {
-
-		// redesenhar o ecra 
-		//glutPostRedisplay();
-	}
-
-
-	if (DEBUG)
-		printf("Carregou na tecla especial %d\n", key);
-}
-
-// Callback para interacção via teclas especiais (largar a tecla)
-
-void SpecialKeyUp(int key, int x, int y)
-{
-
-	if (DEBUG)
-		printf("Largou a tecla especial %d\n", key);
-
-}
 
 void mouse(int button, int state, int x, int y){
 	rato.mouse_x = (18 * (float)((float)x / (float)rato.Win_x)) / 6;
@@ -598,27 +470,16 @@ void main(int argc, char **argv)
 	glutSetWindowTitle("Jogo do Galo");
 
 	Init();
-
-	imprime_ajuda();
-
 	// Registar callbacks do GLUT
 
 	// callbacks de janelas/desenho
 	glutDisplayFunc(Draw);
 	glutReshapeFunc(Reshape);
-
-	// Callbacks de teclado
-	glutKeyboardFunc(Key);
 	// Callbacks de rato
 	glutMouseFunc(mouse);
-	//glutKeyboardUpFunc(KeyUp);
-	//glutSpecialFunc(SpecialKey);
-	//glutSpecialUpFunc(SpecialKeyUp);
 
-	// callbacks timer/idle
+	// callbacks timer
 	glutTimerFunc(10, Timer, 1);
-	//glutIdleFunc(Idle);
-
 
 	// COMEÇAR...
 	glutMainLoop();
