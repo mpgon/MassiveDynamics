@@ -36,43 +36,39 @@ vitoriao([5,4,3]).
 vitoriao([8,7,6]).
 
 %inicio
-%sera que assim garanto que um é antes do outro?
-%inicio(P,J):-verPcWin(P),
-%	counter(J).
+inicio(P,J):-verPcWin(P);counter(J);write('vai jogar com prob').
 
-%verifica quais as hipoteses que tem mais prob de ganhar
 subset([],_,N,N).
-
 subset([H|T],List,N,Listax):-member(H,List),N1 is N + 1,subset(T,List, N1,Listax).
-
 subset([H|T],List,N,Listax):- \+member(H,List),!,subset(T,List,N,Listax).
 
-%prepara para chamar logica para o pc ganhar imediatamente
-pesquisa(L1,[],Listax):-!,
+pesquisa(L1,[],Listax):-
 	reverse(Listax, Lx),
-	print(Lx),
+	%print(Lx),
 	nl,
-	print(L1),
-	pcWin(L1,Lx,0).
-
-pesquisa(L1,[H|T],[]):-subset(L1,H,0,HListax),
-	%print(Listax),nl,
-	%pcWin(L1,Listax,0),
-	(pesquisa(L1,T,[HListax])).
+	%print(L1),
+	!,
+	testarvitoria(L1,Lx).
 
 pesquisa(L1,[H|T],Listax):-subset(L1,H,0,HListax),
 	%print(Listax),nl,
 	%pcWin(L1,Listax,0),
 	(pesquisa(L1,T,[HListax|Listax])).
 
-%inicia a a logica para verificar se o pc pode ganhar
+testarvitoria(L1,Lx):-member(2,Lx),
+	pcWin(L1,Lx,0).
+
+testarvitoria(_,_):-!,fail.
+
+%pesquisa(L1,[H|T],[]):-subset(L1,H,0,HListax),
+%	print(Listax),nl,
+%	pcWin(L1,Listax,0),
+%	(pesquisa(L1,T,[HListax])).
+
 verPcWin(L):-sort(L, L1),
 	findall(A,(vitoriax(A)),Lv),
 	pesquisa(L1,Lv,_).
 
-%counter(J).
-
-%logica que verifica qual a ultima jogado para o pc ganhar
 pcWin(_,[],_).
 
 pcWin(L1,[H|T],N):-H \== 2,
@@ -89,7 +85,7 @@ pcWin2(L1,[_|T],N):-N \== 1,
 	N1 is N - 1,
 	pcWin2(L1,T,N1).
 
-pcWin3([],[H|_]):-tell('Jogo_do_Galo.txt'),
+pcWin3([],[H|_]):-tell('pcWin.txt'),
 	write('PcWin#'),
 	write(H),
 	nl,
@@ -101,12 +97,73 @@ pcWin3([H|T],[H2|T2]):-H \== H2,
 pcWin3([H|T],[H|B]):-pcWin3(T,B).
 
 
+
+counter(J):-sort(J, L1),
+	findall(A,(vitoriax(A)),Lv),
+	pesquisa2(L1,Lv,_).
+
+
+subsetCounter([],_,N,N).
+subsetCounter([H|T],List,N,Listax):-member(H,List),N1 is N + 1,subsetCounter(T,List, N1,Listax).
+subsetCounter([H|T],List,N,Listax):- \+member(H,List),!,subsetCounter(T,List,N,Listax).
+
+pesquisa2(L1,[],Listax):-
+	reverse(Listax, Lx),
+	%print(Lx),
+	nl,
+	%print(L1),
+	!,
+	testarcounter(L1,Lx).
+
+pesquisa2(L1,[H|T],Listax):-subsetCounter(L1,H,0,HListax),
+	%print(Listax),nl,
+	%pcWin(L1,Listax,0),
+	(pesquisa2(L1,T,[HListax|Listax])).
+
+testarcounter(L1,Lx):-member(2,Lx),
+	pcCounter(L1,Lx,0).
+
+testarcounter(_,_):-!,fail.
+
+%pesquisa2(L1,[H|T],[]):-subsetCounter(L1,H,0,HListax),
+	%print(Listax),nl,
+	%pcWin(L1,Listax,0),
+%	(pesquisa2(L1,T,[HListax])).
+
+pcCounter(_,[],_).
+
+pcCounter(L1,[H|T],N):-H \== 2,
+	N1 is N + 1,
+	pcCounter(L1,T,N1).
+
+pcCounter(L1,[2|_],N):-N1 is N + 1,
+	findall(A,(vitoriax(A)),Lv),
+	pcCounter2(L1,Lv,N1).
+
+pcCounter2(L1,[H|_],1):-pcCounter3(L1,H).
+
+pcCounter2(L1,[_|T],N):-N \== 1,
+	N1 is N - 1,
+	pcCounter2(L1,T,N1).
+
+pcCounter3([],[H|_]):-tell('Counter.txt'),
+	write('PcCounter#'),
+	write(H),
+	nl,
+	told.
+
+pcCounter3([H|T],[H2|T2]):-H \== H2,
+	pcCounter3(T,[H2|T2]).
+
+pcCounter3([H|T],[H|B]):-pcCounter3(T,B).
+
+
 %testes!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 %
-pesquisa2([],[],N,N).
-pesquisa2([Q|W], [H|T],N,_):-member(Q,H),
-	N1 is N + 1,
-	pesquisa2(W,T, N1).
+%pesqui([],[],N,N).
+%pesqui([Q|W], [H|T],N,_):-member(Q,H),
+%	N1 is N + 1,
+%	pesquisa2(W,T, N1).
 
 print([]) :- !.
 print([H|T]) :- write(H), nl, print(T).
