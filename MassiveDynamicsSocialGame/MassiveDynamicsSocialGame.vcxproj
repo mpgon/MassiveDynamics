@@ -80,7 +80,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Teste.cpp" />
+    <ClCompile Include="grafos.cpp" />
+    <ClCompile Include="SocialGame.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="grafos.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
