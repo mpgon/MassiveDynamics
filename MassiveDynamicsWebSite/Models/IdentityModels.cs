@@ -2,6 +2,7 @@
 using Microsoft.AspNet.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
+using SocialGameWebSite.Models;
 
 namespace MassiveDynamicsWebSite.Models
 {
@@ -15,6 +16,14 @@ namespace MassiveDynamicsWebSite.Models
 
         [Required]
         public string Email { get; set; }
+
+
+        [DisplayFormat(DataFormatString = "{0:dd MMM yyyy}")]
+        public System.DateTime Date { get; set; }
+        /*public virtual Humor humor { get; set; }
+        public int humorID { get; set; }*/
+        public string perfilfacebook { get; set; }
+        public string perfillinkedin { get; set; }
     }
 
 

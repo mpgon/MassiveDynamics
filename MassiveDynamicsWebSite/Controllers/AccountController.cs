@@ -212,6 +212,13 @@ namespace MassiveDynamicsWebSite.Controllers
                 user.FirstName = model.FirstName;
                 user.LastName = model.LastName;
                 user.Email = model.Email;
+                user.Date = model.Date;
+                /*user.humor = model.humor;
+                user.humorID = model.humorID;*/
+                user.perfilfacebook = model.perfilfacebook;
+                user.perfillinkedin = model.perfillinkedin;
+
+              
                 Db.Entry(user).State = System.Data.Entity.EntityState.Modified;
                 await Db.SaveChangesAsync();
                 return RedirectToAction("Index");

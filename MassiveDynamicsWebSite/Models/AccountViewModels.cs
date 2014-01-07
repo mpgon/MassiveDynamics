@@ -3,6 +3,7 @@
 // New namespace imports:
 using Microsoft.AspNet.Identity.EntityFramework;
 using System.Collections.Generic;
+using SocialGameWebSite.Models;
 
 namespace MassiveDynamicsWebSite.Models
 {
@@ -76,6 +77,14 @@ namespace MassiveDynamicsWebSite.Models
         [Required]
         public string Email { get; set; }
 
+        [DisplayFormat(DataFormatString = "{0:dd MMM yyyy}")]
+        public System.DateTime Date { get; set; }
+        /*public virtual Humor humor { get; set; }
+        public int humorID { get; set; }*/
+        public string perfilfacebook { get; set; }
+        public string perfillinkedin { get; set; }
+
+
         // Return a pre-poulated instance of AppliationUser:
         public ApplicationUser GetUser()
         {
@@ -85,6 +94,11 @@ namespace MassiveDynamicsWebSite.Models
                 FirstName = this.FirstName,
                 LastName = this.LastName,
                 Email = this.Email,
+                Date = this.Date,
+                /*humor = this.humor,
+                humorID = this.humorID,*/
+                perfilfacebook = this.perfilfacebook,
+                perfillinkedin = this.perfillinkedin,
             };
             return user;
         }
@@ -102,6 +116,11 @@ namespace MassiveDynamicsWebSite.Models
             this.FirstName = user.FirstName;
             this.LastName = user.LastName;
             this.Email = user.Email;
+            this.Date = user.Date;
+            /*this.humor = user.humor;
+            this.humorID = user.humorID;*/
+            this.perfilfacebook = user.perfilfacebook;
+            this.perfillinkedin = user.perfillinkedin;
         }
 
         [Required]
@@ -118,6 +137,13 @@ namespace MassiveDynamicsWebSite.Models
 
         [Required]
         public string Email { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:dd MMM yyyy}")]
+        public System.DateTime Date { get; set; }
+        /*public virtual Humor humor { get; set; }
+        public int humorID { get; set; }*/
+        public string perfilfacebook { get; set; }
+        public string perfillinkedin { get; set; }
     }
 
 
