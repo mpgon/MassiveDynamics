@@ -25,6 +25,18 @@ namespace MassiveDynamicsWebSite.Models
         {
 
         }
+
+        public System.Data.Entity.DbSet<SocialGameWebSite.Models.Jogo> Jogo { get; set; }
+
+        public System.Data.Entity.DbSet<SocialGameWebSite.Models.EstadoRelacao> EstadoRelacao { get; set; }
+
+        public System.Data.Entity.DbSet<SocialGameWebSite.Models.Relacao> Relacao { get; set; }
+
+        public System.Data.Entity.DbSet<SocialGameWebSite.Models.Introducao> Introducao { get; set; }
+
+        public System.Data.Entity.DbSet<SocialGameWebSite.Models.Humor> Humor { get; set; }
+
+        public System.Data.Entity.DbSet<SocialGameWebSite.Models.Tag> Tag { get; set; }
     }
 
 

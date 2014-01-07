@@ -1,0 +1,33 @@
+﻿@model SocialGameWebSite.Models.EstadoRelacao
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<fieldset>
+    <legend>EstadoRelacao</legend>
+    <dl>
+        <dt>
+            @Html.DisplayNameFor(model => model.jogo.nome)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.jogo.nome)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.estado)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.estado)
+        </dd>
+
+    </dl>
+</fieldset>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id=Model.ID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

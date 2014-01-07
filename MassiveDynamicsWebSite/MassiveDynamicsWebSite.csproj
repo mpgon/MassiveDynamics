@@ -162,7 +162,13 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\EstadoRelacaoController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\HumorController.cs" />
+    <Compile Include="Controllers\IntroducaoController.cs" />
+    <Compile Include="Controllers\JogoController.cs" />
+    <Compile Include="Controllers\RelacaoController.cs" />
+    <Compile Include="Controllers\TagController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -174,9 +180,19 @@
     <Compile Include="Migrations\201311110510410_Init.Designer.cs">
       <DependentUpon>201311110510410_Init.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201401071054193_jogomig.cs" />
+    <Compile Include="Migrations\201401071054193_jogomig.Designer.cs">
+      <DependentUpon>201401071054193_jogomig.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\EstadoRelacao.cs" />
+    <Compile Include="Models\Humor.cs" />
     <Compile Include="Models\IdentityModels.cs" />
+    <Compile Include="Models\Introducao.cs" />
+    <Compile Include="Models\Jogo.cs" />
+    <Compile Include="Models\Relacao.cs" />
+    <Compile Include="Models\Tag.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -228,6 +244,36 @@
     <Content Include="Views\Account\Index.cshtml" />
     <Content Include="Views\Account\UserRoles.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\SelectRoleEditorViewModel.cshtml" />
+    <Content Include="Views\Jogo\Create.cshtml" />
+    <Content Include="Views\Jogo\Delete.cshtml" />
+    <Content Include="Views\Jogo\Details.cshtml" />
+    <Content Include="Views\Jogo\Edit.cshtml" />
+    <Content Include="Views\Jogo\Index.cshtml" />
+    <Content Include="Views\EstadoRelacao\Create.cshtml" />
+    <Content Include="Views\EstadoRelacao\Delete.cshtml" />
+    <Content Include="Views\EstadoRelacao\Details.cshtml" />
+    <Content Include="Views\EstadoRelacao\Edit.cshtml" />
+    <Content Include="Views\EstadoRelacao\Index.cshtml" />
+    <Content Include="Views\Introducao\Create.cshtml" />
+    <Content Include="Views\Introducao\Delete.cshtml" />
+    <Content Include="Views\Introducao\Details.cshtml" />
+    <Content Include="Views\Introducao\Edit.cshtml" />
+    <Content Include="Views\Introducao\Index.cshtml" />
+    <Content Include="Views\Humor\Create.cshtml" />
+    <Content Include="Views\Humor\Delete.cshtml" />
+    <Content Include="Views\Humor\Details.cshtml" />
+    <Content Include="Views\Humor\Edit.cshtml" />
+    <Content Include="Views\Humor\Index.cshtml" />
+    <Content Include="Views\Tag\Create.cshtml" />
+    <Content Include="Views\Tag\Delete.cshtml" />
+    <Content Include="Views\Tag\Details.cshtml" />
+    <Content Include="Views\Tag\Edit.cshtml" />
+    <Content Include="Views\Tag\Index.cshtml" />
+    <Content Include="Views\Relacao\Create.cshtml" />
+    <Content Include="Views\Relacao\Delete.cshtml" />
+    <Content Include="Views\Relacao\Details.cshtml" />
+    <Content Include="Views\Relacao\Edit.cshtml" />
+    <Content Include="Views\Relacao\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -242,6 +288,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201311110510410_Init.resx">
       <DependentUpon>201311110510410_Init.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201401071054193_jogomig.resx">
+      <DependentUpon>201401071054193_jogomig.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
