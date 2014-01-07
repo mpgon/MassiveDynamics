@@ -36,27 +36,27 @@ vitoriao([5,4,3]).
 vitoriao([8,7,6]).
 
 %inicio
-inicio(P,J):-verPcWin(P);counter(J);melhorjogada(P,J).
+inicio(P,J,Rf):-verPcWin(P,Rf);counter(J);melhorjogada(P,J).
 
 subset([],_,N,N).
 subset([H|T],List,N,Listax):-member(H,List),N1 is N + 1,subset(T,List, N1,Listax).
 subset([H|T],List,N,Listax):- \+member(H,List),!,subset(T,List,N,Listax).
 
-pesquisa(L1,[],Listax):-
+pesquisa(L1,[],Listax,Rf):-
 	reverse(Listax, Lx),
 	%print(Lx),
 	nl,
 	%print(L1),
 	!,
-	testarvitoria(L1,Lx).
+	testarvitoria(L1,Lx,Rf).
 
-pesquisa(L1,[H|T],Listax):-subset(L1,H,0,HListax),
+pesquisa(L1,[H|T],Listax,Rf):-subset(L1,H,0,HListax),
 	%print(Listax),nl,
 	%pcWin(L1,Listax,0),
-	(pesquisa(L1,T,[HListax|Listax])).
+	(pesquisa(L1,T,[HListax|Listax],Rf)).
 
-testarvitoria(L1,Lx):-member(2,Lx),
-	pcWin(L1,Lx,0).
+testarvitoria(L1,Lx,Rf):-member(2,Lx),
+	pcWin(L1,Lx,0,_,Rf).
 
 testarvitoria(_,_):-!,fail.
 
@@ -65,36 +65,37 @@ testarvitoria(_,_):-!,fail.
 %	pcWin(L1,Listax,0),
 %	(pesquisa(L1,T,[HListax])).
 
-verPcWin(L):-sort(L, L1),
+verPcWin(L,Rf):-sort(L, L1),
 	findall(A,(vitoriax(A)),Lv),
-	pesquisa(L1,Lv,_).
+	pesquisa(L1,Lv,_,Rf).
 
-pcWin(_,[],_).
+pcWin(_,[],_,Rf,Rf).
 
-pcWin(L1,[H|T],N):-H \== 2,
+pcWin(L1,[H|T],N,Rf,_):-H \== 2,
 	N1 is N + 1,
-	pcWin(L1,T,N1).
+	pcWin(L1,T,N1,Rf,_).
 
-pcWin(L1,[2|_],N):-N1 is N + 1,
+pcWin(L1,[2|_],N,Rf,Rf):-N1 is N + 1,
 	findall(A,(vitoriax(A)),Lv),
-	pcWin2(L1,Lv,N1).
+	pcWin2(L1,Lv,N1,Rf).
 
-pcWin2(L1,[H|_],1):-pcWin3(L1,H).
+pcWin2(L1,[H|_],1,Rf):-pcWin3(L1,H,Rf).
 
-pcWin2(L1,[_|T],N):-N \== 1,
+pcWin2(L1,[_|T],N,Rf):-N \== 1,
 	N1 is N - 1,
-	pcWin2(L1,T,N1).
+	pcWin2(L1,T,N1,Rf).
 
-pcWin3([],[H|_]):-tell('pcWin.txt'),
-	write('PcWin#'),
-	write(H),
-	nl,
-	told.
+pcWin3([],[H|_],H).
+	%tell('pcWin.txt'),
+	%write('PcWin#'),
+	%write(H),
+	%nl,
+	%told.
 
-pcWin3([H|T],[H2|T2]):-H \== H2,
-	pcWin3(T,[H2|T2]).
+pcWin3([H|T],[H2|T2],X):-H \== H2,
+	pcWin3(T,[H2|T2],X).
 
-pcWin3([H|T],[H|B]):-pcWin3(T,B).
+pcWin3([H|T],[H|B],X):-pcWin3(T,B,X).
 
 
 % vai dar counter!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
