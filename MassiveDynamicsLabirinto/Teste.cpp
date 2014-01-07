@@ -32,8 +32,8 @@ extern "C" int read_JPEG_file(const char *, char **, int *, int *, int *);
 
 #define	GAP					              25
 
-#define MAZE_HEIGHT			          20
-#define MAZE_WIDTH			          20
+#define MAZE_HEIGHT20			          20
+#define MAZE_WIDTH20			          21
 
 #define	OBJECTO_ALTURA		      0.4
 #define OBJECTO_VELOCIDADE	      0.05
@@ -114,27 +114,27 @@ typedef struct MODELO{
 ESTADO estado;
 MODELO modelo;
 
-char mazedata[MAZE_HEIGHT][MAZE_WIDTH + 1] = {
+char mazedata20[MAZE_HEIGHT20][MAZE_WIDTH20] = {
 	"                    ",
 	" ****************** ",
 	" *                * ",
-	" ***+*******      * ",
+	" *** *******      * ",
 	" * ** **  * *** *** ",
 	" *     *          * ",
-	" *     *    ***   * ",
+	" *          ***   * ",
 	" *   ***     *    * ",
 	" *     * *** ****** ",
 	" * *   *   *      * ",
 	" *   ****  *      * ",
-	" ********  ****   * ",
+	" *** ****  ****   * ",
 	" *            *   * ",
 	" *     *      *   * ",
 	" ** ** *    ***   * ",
-	" *   *      *     * ",
-	" *******  **** *  * ",
-	" * **  *    ****  * ",
-	" *                * ",
+	" *   *            * ",
+	" ** ** *  ***  *  * ",
+	" ****      *  *   * ",
 	" ****************** ",
+	"                    ",
 };
 
 
@@ -247,11 +247,11 @@ void strokeCenterString(char *str, double x, double y, double z, double s)
 
 GLboolean detectaColisao(GLfloat nx, GLfloat nz)
 {
-	int l = nz + MAZE_HEIGHT / 2.0 + 0.5;
-	int c = nx + MAZE_WIDTH / 2.0 + 0.5;
+	int l = nz + MAZE_HEIGHT20 / 2.0 + 0.5;
+	int c = nx + MAZE_WIDTH20 / 2.0 + 0.5;
 
 
-	if (mazedata[l][c] == '*'){
+	if (mazedata20[l][c] == '*'){
 		return GL_TRUE;
 	}
 	return GL_FALSE;
@@ -259,13 +259,10 @@ GLboolean detectaColisao(GLfloat nx, GLfloat nz)
 
 GLboolean detectaColisaoEstrela(GLfloat nx, GLfloat nz)
 {
-	int l = nz + MAZE_HEIGHT / 2.0 + 0.35;
-	int c = nx + MAZE_WIDTH / 2.0 + 0.35;
+	int l = nz + MAZE_HEIGHT20 / 2.0 + 0.3;
+	int c = nx + MAZE_WIDTH20 / 2.0 + 0.3;
 
-	printf("l: %d", l);
-	printf("c: %d", c);
-
-	if (mazedata[l][c] == '+'){
+	if (mazedata20[l][c] == '+'){
 		return GL_TRUE;
 	}
 	return GL_FALSE;
@@ -431,8 +428,25 @@ void desenhaModelo()
 }
 
 void desenhaEstrela(){
+
+	int z;
+	int x;
+
+	srand(time(NULL));
+
+	do{
+
+		z = rand() % (MAZE_HEIGHT20 - 2) + 1;
+		x = rand() % (MAZE_WIDTH20 - 2) + 1;
+
+		if (mazedata20[z][x] != '*'){
+			mazedata20[z][x] = '+';
+		}
+
+	} while (mazedata20[z][x] != '+');
+	
 	glPushMatrix();
-		glTranslatef(-6,.3,-7);
+		glTranslatef(x,.3,z);
 		glColor3f(1,1,0);
 		glBegin(GL_LINE_LOOP);
 			glVertex3f(0.0, 0.2, 0.0);
@@ -454,12 +468,12 @@ void desenhaLabirinto(GLuint texID)
 {
 
 	// código para desenhar o labirinto
-	desenhaEstrela();
 	glPushMatrix();
-	glTranslatef(-MAZE_WIDTH / 2.0, 0, -MAZE_HEIGHT / 2.0);
-	for (int mz = 0; mz < MAZE_HEIGHT; mz++){
-		for (int mx = 0; mx < MAZE_WIDTH + 1; mx++){
-			if (mazedata[mz][mx] == '*'){
+	glTranslatef(-MAZE_WIDTH20 / 2.0, 0, -MAZE_HEIGHT20 / 2.0);
+	desenhaEstrela();
+	for (int mz = 0; mz < MAZE_HEIGHT20; mz++){
+		for (int mx = 0; mx < MAZE_WIDTH20 + 1; mx++){
+			if (mazedata20[mz][mx] == '*'){
 				glPushMatrix();
 				glTranslatef(mx, 0.5, mz);
 				desenhaCubo(texID);
