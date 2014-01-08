@@ -21,9 +21,21 @@
     <ClCompile Include="SocialGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Arco.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="No.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="grafos.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Arco.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="No.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -2,6 +2,7 @@
 #include <math.h>
 #include <stdlib.h>     
 #include <GL\glut.h>
+
 #include <iostream>
 #include "grafos.h"
 
@@ -62,7 +63,8 @@ typedef struct Camera{
 	GLdouble dir_long;
 	GLfloat dist;
 	Vertice center;
-
+	GLint   pessoa;//1 ou3
+	GLfloat dir;
 }Camera;
 
 typedef struct Estado{
@@ -93,10 +95,12 @@ Estado estado;
 Modelo modelo;
 
 void initEstado(){
+	estado.camera.pessoa = 3;
 	estado.camera.dir_lat = M_PI / 4;
 	estado.camera.dir_long = -M_PI / 4;
 	estado.camera.fov = 60;
 	estado.camera.dist = 100;
+	estado.camera.dir = 0;
 	estado.eixo[0] = 0;
 	estado.eixo[1] = 0;
 	estado.eixo[2] = 0;
@@ -163,6 +167,7 @@ void imprime_ajuda(void)
 	printf("p,P - PolygonMode Point \n");
 	printf("c,C - Liga/Desliga Cull Face \n");
 	printf("n,N - Liga/Desliga apresentação das normais \n");
+	printf("v,V - Camara: Alernar entre 1a e 3a pessoa \n");
 	printf("******* grafos ******* \n");
 	printf("F1  - Grava grafo do ficheiro \n");
 	printf("F2  - Lê grafo para ficheiro \n");
@@ -412,6 +417,8 @@ void desenhaNo(int no){
 	//mudar a cor da esfera
 
 	glTranslatef(nos[no].x, nos[no].y, nos[no].z + 1);
+
+	
 	GLUquadricObj *quadric;
 	quadric = gluNewQuadric();
 
@@ -420,6 +427,7 @@ void desenhaNo(int no){
 	gluQuadricDrawStyle(quadric, GLU_FILL);
 	gluSphere(quadric, radius, 36, 18);
 	gluDeleteQuadric(quadric);
+	
 
 	glPopMatrix();
 	/*
@@ -581,8 +589,8 @@ void desenhaLabirinto(){
 	for (int i = 0; i < numNos; i++){
 		glPushMatrix();
 		material(preto);
-		glTranslatef(nos[i].x, nos[i].y, nos[i].z + 0.25);
-		glutSolidCube(0.5);
+		//glTranslatef(nos[i].x, nos[i].y, nos[i].z + 0.25);
+		//glutSolidCube(0.5);
 		glPopMatrix();
 		desenhaNo(i);
 	}
@@ -668,17 +676,43 @@ void desenhaEixos(){
 
 void setCamera(){
 	Vertice eye;
-	eye[0] = estado.camera.center[0] + estado.camera.dist*cos(estado.camera.dir_long)*cos(estado.camera.dir_lat);
-	eye[1] = estado.camera.center[1] + estado.camera.dist*sin(estado.camera.dir_long)*cos(estado.camera.dir_lat);
-	eye[2] = estado.camera.center[2] + estado.camera.dist*sin(estado.camera.dir_lat);
+	if (estado.camera.pessoa == 3){
+		eye[0] = estado.camera.center[0] + estado.camera.dist*cos(estado.camera.dir_long)*cos(estado.camera.dir_lat);
+		eye[1] = estado.camera.center[1] + estado.camera.dist*sin(estado.camera.dir_long)*cos(estado.camera.dir_lat);
+		eye[2] = estado.camera.center[2] + estado.camera.dist*sin(estado.camera.dir_lat);
 
-	if (estado.light){
-		gluLookAt(eye[0], eye[1], eye[2], estado.camera.center[0], estado.camera.center[1], estado.camera.center[2], 0, 0, 1);
-		putLights((GLfloat*)white_light);
+		if (estado.light){
+			gluLookAt(eye[0], eye[1], eye[2], estado.camera.center[0], estado.camera.center[1], estado.camera.center[2], 0, 0, 1);
+			putLights((GLfloat*)white_light);
+		}
+		else{
+			putLights((GLfloat*)white_light);
+			gluLookAt(eye[0], eye[1], eye[2], estado.camera.center[0], estado.camera.center[1], estado.camera.center[2], 0, 0, 1);
+		}
 	}
-	else{
-		putLights((GLfloat*)white_light);
-		gluLookAt(eye[0], eye[1], eye[2], estado.camera.center[0], estado.camera.center[1], estado.camera.center[2], 0, 0, 1);
+	else {//1ªpessoa
+		eye[0] = nos[0].x * 5;
+		eye[1] = nos[0].y * 5;
+		eye[2] = nos[0].z * 5 + 12;
+		
+		if (estado.camera.dir == 0){
+			estado.camera.center[0] = nos[1].x*5;
+			estado.camera.center[1] = nos[1].y*5;
+			estado.camera.center[2] = nos[1].z*5+12;
+		}
+		else {
+			estado.camera.center[0] = eye[0] + cos(estado.camera.dir);
+			estado.camera.center[1] = eye[1] - sin(estado.camera.dir);
+			estado.camera.center[2] = eye[2];
+		}
+		if (estado.light){
+			gluLookAt(eye[0], eye[1], eye[2], estado.camera.center[0], estado.camera.center[1], estado.camera.center[2], 0, 0, 1);
+			putLights((GLfloat*)white_light);
+		}
+		else{
+			putLights((GLfloat*)white_light);
+			gluLookAt(eye[0], eye[1], eye[2], estado.camera.center[0], estado.camera.center[1], estado.camera.center[2], 0, 0, 1);
+		}
 	}
 }
 
@@ -697,6 +731,10 @@ void display(void)
 	desenhaEixos();
 
 	desenhaLabirinto();
+
+	//glRasterPos2i(100, 120);
+	//glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
+	//_glutBitmapString(GLUT_BITMAP_HELVETICA_18, "text to render");
 
 	if (estado.eixoTranslaccao) {
 		// desenha plano de translacção
@@ -775,6 +813,14 @@ void keyboard(unsigned char key, int x, int y)
 		initModelo();
 		glutPostRedisplay();
 		break;
+	case 'v':
+	case 'V':
+		if (estado.camera.pessoa == 3)
+			estado.camera.pessoa = 1;
+		else
+			estado.camera.pessoa = 3;
+		glutPostRedisplay();
+		break;
 	}
 }
 
@@ -791,7 +837,7 @@ void Special(int key, int x, int y){
 
 	case GLUT_KEY_F6:
 		numNos = numArcos = 0;
-		addNo(criaNo(0, 10, 0));  // 0
+		/*addNo(No(0, 10, 0));  // 0
 		addNo(criaNo(0, 5, 0));  // 1
 		addNo(criaNo(-5, 5, 0));  // 2
 		addNo(criaNo(5, 5, 0));  // 3
@@ -804,7 +850,7 @@ void Special(int key, int x, int y){
 		addArco(criaArco(2, 4, 1, 1));  // 2 - 4
 		addArco(criaArco(3, 5, 1, 1));  // 3 - 5
 		addArco(criaArco(4, 5, 1, 1));  // 4 - 5
-		addArco(criaArco(4, 6, 1, 1));  // 4 - 6
+		addArco(criaArco(4, 6, 1, 1));  // 4 - 6*/
 		glutPostRedisplay();
 		break;
 	case GLUT_KEY_UP:
@@ -813,6 +859,24 @@ void Special(int key, int x, int y){
 		break;
 	case GLUT_KEY_DOWN:
 		estado.camera.dist += 1;
+		glutPostRedisplay();
+		break;
+	case GLUT_KEY_LEFT:
+		//estado.camera.center[0] -= 1;
+		//estado.camera.center[1] -= .2;
+		//nos[i].x, nos[i].y, nos[i].z + 0.25
+		//estado.camera.pessoa = 1;
+		//glutPostRedisplay();
+		estado.camera.dir -= .2;
+		glutPostRedisplay();
+		break;
+	case GLUT_KEY_RIGHT:
+		//estado.camera.center[0] -= 1;
+		//estado.camera.center[1] -= .2;
+		//nos[i].x, nos[i].y, nos[i].z + 0.25
+		//estado.camera.pessoa = 3;
+		//glutPostRedisplay();
+		estado.camera.dir += .2;
 		glutPostRedisplay();
 		break;
 	}
