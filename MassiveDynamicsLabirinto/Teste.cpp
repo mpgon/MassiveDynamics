@@ -32,11 +32,9 @@ extern "C" int read_JPEG_file(const char *, char **, int *, int *, int *);
 #define RAD(x)          (M_PI*(x)/180)
 #define GRAUS(x)        (180*(x)/M_PI)
 
-#define	GAP					              25
+#define	GAP					        25
 
-#define MAZE_HEIGHT20			          20
-#define MAZE_WIDTH20			          21
-
+#define OBJECTO_FAT			      0.175
 #define	OBJECTO_ALTURA		      0.4
 #define OBJECTO_VELOCIDADE	      0.05
 #define OBJECTO_ROTACAO		        5
@@ -60,8 +58,6 @@ extern "C" int read_JPEG_file(const char *, char **, int *, int *, int *);
 #define NUM_TEXTURAS              2
 #define ID_TEXTURA_CUBOS          0
 #define ID_TEXTURA_CHAO           1
-
-#define	CHAO_DIMENSAO		      10
 
 #define NUM_JANELAS               2
 #define JANELA_TOP                0
@@ -121,28 +117,108 @@ char * tempo = new char[1000000];
 int flagJogo = 0;
 int vidas = 5;
 char * vida = new char[1];
+int flagDificuldade = 3;
+const int heightConst = 40;
+const int widthConst = 41;
+int chaoConst = 0;
 
-char mazedata20[MAZE_HEIGHT20][MAZE_WIDTH20] = {
+char mazedata20[heightConst][widthConst] = {
 	"                    ",
 	" ****************** ",
 	" *                * ",
-	" *** *******      * ",
+	" *** * *** *      * ",
 	" * ** **  * *** *** ",
 	" *     *          * ",
-	" *          ***   * ",
+	" *          * *   * ",
 	" *   ***     *    * ",
 	" *     * *** ****** ",
 	" * *   *   *      * ",
-	" *   ****  *      * ",
+	" *   * **  *      * ",
 	" *** ****  ****   * ",
 	" *            *   * ",
 	" *     *      *   * ",
 	" ** ** *    ***   * ",
 	" *   *            * ",
-	" ** ** *  ***  *  * ",
-	" ****      *  *   * ",
+	" ** ** *  * *  *  * ",
+	" ***       *  *   * ",
 	" ****************** ",
 	"                    ",
+};
+
+char mazedata30[heightConst][widthConst] = {
+	"                              ",
+	" **************************** ",
+	" *      ****       *      * * ",
+	" ***** ****** ****** ****** * ",
+	" ** **  * ***  **           * ",
+	" *  **    **  **   ********** ",
+	" *                *         * ",
+	" ******** ******  ** ******** ",
+	" * *        *               * ",
+	" * ***** *    *  **** *  *  * ",
+	" *     * ***  * ****** * **** ",
+	" * *** *      *             * ",
+	" * * * *      **** ****** *** ",
+	" *** *   ***   **  **  *    * ",
+	" * *    ****          ***   * ",
+	" * ********** ******  * *   * ",
+	" *       *   *   **    ***  * ",
+	" * *** *  ** ** * ****  *   * ",
+	" *    *   *   *         * *** ",
+	" *   *    * ****   *    *   * ",
+	" ** *         * *** *** *** * ",
+	" ** * * * *****          ** * ",
+	" **  *    * **** ** ** **** * ",
+	" *  *     *  **  *  ** ***  * ",
+	" *   **      * *    *       * ",
+	" *  *     * **   * ******   * ",
+	" *  ***   ** * * * ** * *** * ",
+	" *    **                *** * ",
+	" **************************** ",
+	"                              ",
+};
+
+char mazedata40[heightConst][widthConst] = {
+	"                                        ",
+	" ************************************** ",
+	" *         *       *    * *           * ",
+	" ***  **** *  **** **** * * ********* * ",
+	" * ** **  *  ****  ** *      ******* ** ",
+	" *  *  *        *  ** ****** **** *   * ",
+	" *          * * *   * * * **   ** *** * ",
+	" *   ***  *  **                       * ",
+	" *  ** * * **** **** ******  *** ****** ",
+	" *     *  **           *     *        * ",
+	" *   * **  ***  * * * **     ******** * ",
+	" *** **** ***** ********     *        * ",
+	" *           **          ****** ******* ",
+	" *     ****   **** ***** **  **       * ",
+	" ** ** *    ***  **       *   ******* * ",
+	" *   *       *      *******        ** * ",
+	" ** ** * ** *  *    **      *** ****  * ",
+	" ***   *   ** *      *  ***           * ",
+	" *      *  *     *****  *   *****  **** ",
+	" * ******  *     *      *   ***    *  * ",
+	" *   ***** ***** ********   ****   *  * ",
+	" *   ** *  **           ** *** *   ** * ",
+	" **     *   *     *****        ***  * * ",
+	" *  *****   *     *   *******  **   * * ",
+	" *  ** *    *******               *** * ",
+	" *  *  *              ******  *****   * ",
+	" *     ****** **** ** * *     *       * ",
+	" *  *       *   *********  *      *** * ",
+	" *  ****    *   **      *  **  **   * * ",
+	" *   **  *  *              *  ******  * ",
+	" *  *   **       ******   *** **  * * * ",
+	" *  *  **  ***** *       **       * *** ",
+	" *    ****    *  *  **** ******     * * ",
+	" *      ** * **  ** *                 * ",
+	" *   *****   *   ****    *** ********** ",
+	" *  **   *****      *      *        * * ",
+	" * ****      **** **********   **** * * ",
+	" *    *                               * ",
+	" ************************************** ",
+	"                                        ",
 };
 
 
@@ -293,23 +369,46 @@ void strokeCenterString(char *str, double x, double y, double z, double s)
 
 GLboolean detectaColisao(GLfloat nx, GLfloat nz)
 {
-	int l = nz + MAZE_HEIGHT20 / 2.0 + 0.5;
-	int c = nx + MAZE_WIDTH20 / 2.0 + 0.5;
+	int l = nz + heightConst / 2.0 + 0.5;
+	int c = nx + widthConst / 2.0 + 0.5;
 
-
-	if (mazedata20[l][c] == '*'){
-		return GL_TRUE;
+	if (flagDificuldade == 1){
+		if (mazedata20[l][c] == '*'){
+			return GL_TRUE;
+		}
+	}
+	else if (flagDificuldade == 2){
+		if (mazedata30[l][c] == '*'){
+			return GL_TRUE;
+		}
+	}
+	else{
+		if (mazedata40[l][c] == '*'){
+			return GL_TRUE;
+		}
 	}
 	return GL_FALSE;
 }
 
 GLboolean detectaColisaoEstrela(GLfloat nx, GLfloat nz)
 {
-	int l = nz + MAZE_HEIGHT20 / 2.0 + 0.3;
-	int c = nx + MAZE_WIDTH20 / 2.0 + 0.3;
+	int l = nz + heightConst / 2.0 + 0.35;
+	int c = nx + widthConst / 2.0 + 0.35;
 
-	if (mazedata20[l][c] == '+'){
-		return GL_TRUE;
+	if (flagDificuldade == 1){
+		if (mazedata20[l][c] == '+'){
+			return GL_TRUE;
+		}
+	}
+	else if (flagDificuldade == 2){
+		if (mazedata30[l][c] == '+'){
+			return GL_TRUE;
+		}
+	}
+	else{
+		if (mazedata40[l][c] == '+'){
+			return GL_TRUE;
+		}
 	}
 	return GL_FALSE;
 }
@@ -402,13 +501,17 @@ void desenhaInfoJogo(int width, int height)  // largura e altura da janela
 		strokeCenterString(tempo, 8, -9.2, 0, 0.01);
 		break;
 	case 1:
+		glColor3f(0,1,0);
 		strokeCenterString("Congratulations!! You just", 0, 1, 0, 0.01);
 		strokeCenterString(" made a new friend!!", 0, 0, 0, 0.01);
+		glColor3f(0, 0, 0);
 		strokeCenterString("Press ESC to exit!!", 0, -2, 0, 0.01);
 		break;
 	case 2:
+		glColor3f(1,0,0);
 		strokeCenterString("Game Over!! You Lost", 0, 1, 0, 0.01);
 		strokeCenterString(" the challenge", 0, 0, 0, 0.01);
+		glColor3f(0, 0, 0);
 		strokeCenterString("Press ESC to exit!!", 0, -2, 0, 0.01);
 		break;
 	default:
@@ -500,16 +603,26 @@ void desenhaEstrela(){
 
 	do{
 
-		z = rand() % (MAZE_HEIGHT20 - 2) + 1;
-		x = rand() % (MAZE_WIDTH20 - 3) + 1;
+		z = rand() % (heightConst - 2) + 1;
+		x = rand() % (widthConst - 3) + 1;
 
 		printf("z = %d, x = %d", z, x);
-
-		if (mazedata20[z][x] != '*'){
-			mazedata20[z][x] = '+';
+		if (flagDificuldade == 1){
+			if (mazedata20[z][x] != '*'){
+				mazedata20[z][x] = '+';
+			}
 		}
-
-	} while (mazedata20[z][x] != '+');
+		else if (flagDificuldade == 2){
+			if (mazedata30[z][x] != '*'){
+				mazedata30[z][x] = '+';
+			}
+		}
+		else{
+			if (mazedata40[z][x] != '*'){
+				mazedata40[z][x] = '+';
+			}
+		}
+	} while ((mazedata20[z][x] != '+' && flagDificuldade == 1) || (mazedata30[z][x] != '+' && flagDificuldade == 2) || (mazedata40[z][x] != '+' && flagDificuldade == 3));
 	
 	glPushMatrix();
 		glTranslatef(x,.3,z);
@@ -535,15 +648,33 @@ void desenhaLabirinto(GLuint texID)
 
 	// código para desenhar o labirinto
 	glPushMatrix();
-	glTranslatef(-MAZE_WIDTH20 / 2.0, 0, -MAZE_HEIGHT20 / 2.0);
+	glTranslatef(-widthConst / 2.0, 0, -heightConst / 2.0);
 	desenhaEstrela();
-	for (int mz = 0; mz < MAZE_HEIGHT20; mz++){
-		for (int mx = 0; mx < MAZE_WIDTH20 + 1; mx++){
-			if (mazedata20[mz][mx] == '*'){
-				glPushMatrix();
-				glTranslatef(mx, 0.5, mz);
-				desenhaCubo(texID);
-				glPopMatrix();
+	for (int mz = 0; mz < heightConst; mz++){
+		for (int mx = 0; mx < widthConst + 1; mx++){
+			if (flagDificuldade == 1){
+				if (mazedata20[mz][mx] == '*'){
+					glPushMatrix();
+					glTranslatef(mx, 0.5, mz);
+					desenhaCubo(texID);
+					glPopMatrix();
+				}
+			}
+			else if (flagDificuldade == 2){
+				if (mazedata30[mz][mx] == '*'){
+					glPushMatrix();
+					glTranslatef(mx, 0.5, mz);
+					desenhaCubo(texID);
+					glPopMatrix();
+				}
+			}
+			else{
+				if (mazedata40[mz][mx] == '*'){
+					glPushMatrix();
+					glTranslatef(mx, 0.5, mz);
+					desenhaCubo(texID);
+					glPopMatrix();
+				}
 			}
 		}
 	}
@@ -669,10 +800,24 @@ void setTopSubwindowCamera(camera_t *cam, objecto_t obj)
 {
 	cam->eye.x = obj.pos.x;
 	cam->eye.z = obj.pos.z;
-	if (estado.vista[JANELA_TOP])
-		gluLookAt(obj.pos.x, CHAO_DIMENSAO* 2, obj.pos.z, obj.pos.x, obj.pos.y, obj.pos.z, 0, 0, -1);
-	else
-		gluLookAt(obj.pos.x, CHAO_DIMENSAO *.2, obj.pos.z, obj.pos.x, obj.pos.y, obj.pos.z, 0, 0, -1);
+	if (flagDificuldade == 1){
+		if (estado.vista[JANELA_TOP])
+			gluLookAt(obj.pos.x, chaoConst * 5, obj.pos.z, obj.pos.x, obj.pos.y, obj.pos.z, 0, 0, -1);
+		else
+			gluLookAt(obj.pos.x, chaoConst *.5, obj.pos.z, obj.pos.x, obj.pos.y, obj.pos.z, 0, 0, -1);
+	}
+	else if (flagDificuldade == 2){
+		if (estado.vista[JANELA_TOP])
+			gluLookAt(obj.pos.x, chaoConst * 3, obj.pos.z, obj.pos.x, obj.pos.y, obj.pos.z, 0, 0, -1);
+		else
+			gluLookAt(obj.pos.x, chaoConst *.3, obj.pos.z, obj.pos.x, obj.pos.y, obj.pos.z, 0, 0, -1);
+	}
+	else{
+		if (estado.vista[JANELA_TOP])
+			gluLookAt(obj.pos.x, chaoConst * 2, obj.pos.z, obj.pos.x, obj.pos.y, obj.pos.z, 0, 0, -1);
+		else
+			gluLookAt(obj.pos.x, chaoConst *.2, obj.pos.z, obj.pos.x, obj.pos.y, obj.pos.z, 0, 0, -1);
+	}
 }
 
 void displayTopSubwindow()
@@ -992,7 +1137,16 @@ void createDisplayLists(int janelaID)
 	modelo.chao[janelaID] = modelo.labirinto[janelaID] + 1;
 	glNewList(modelo.chao[janelaID], GL_COMPILE);
 	glPushAttrib(GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_ENABLE_BIT);
-	desenhaChao(CHAO_DIMENSAO, modelo.texID[janelaID][ID_TEXTURA_CHAO]);
+	if (flagDificuldade == 1){
+		chaoConst = 10;
+	}
+	else if (flagDificuldade == 2){
+		chaoConst = 20;
+	}
+	else{
+		chaoConst = 30;
+	}
+	desenhaChao(chaoConst, modelo.texID[janelaID][ID_TEXTURA_CHAO]);
 	glPopAttrib();
 	glEndList();
 }
