@@ -1,0 +1,55 @@
+﻿@model SocialGameWebSite.Models.Relacao
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<fieldset>
+    <legend>Relacao</legend>
+
+    <dl>
+        <dt>
+            @Html.DisplayNameFor(model => model.estadorelacao.estado)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.estadorelacao.estado)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.user1ID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.user1ID)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.user2ID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.user2ID)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.peso)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.peso)
+        </dd>
+
+    </dl>
+</fieldset>
+@using (Html.BeginForm()) {
+    @Html.AntiForgeryToken()
+
+    <div class="form-actions no-color">
+        <input type="submit" value="Delete" class="btn" /> |
+        @Html.ActionLink("Back to List", "Index")
+    </div>
+}

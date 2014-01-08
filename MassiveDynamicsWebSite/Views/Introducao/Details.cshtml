@@ -1,0 +1,49 @@
+﻿@model SocialGameWebSite.Models.Introducao
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<fieldset>
+    <legend>Introducao</legend>
+    <dl>
+        <dt>
+            @Html.DisplayNameFor(model => model.remetenteID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.remetenteID)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.intermediarioID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.intermediarioID)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.destinatarioID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.destinatarioID)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.estado)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.estado)
+        </dd>
+
+    </dl>
+</fieldset>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id=Model.ID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

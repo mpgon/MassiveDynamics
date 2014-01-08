@@ -1,5 +1,5 @@
 #include <stdio.h>
-#include <string.h>
+#include <string>
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
@@ -19,6 +19,8 @@
 #include "mdlviewer.h"
 
 #pragma comment (lib, "glaux.lib")    /* link with Win32 GLAUX lib usada para ler bitmaps */
+
+using namespace std;
 
 // função para ler jpegs do ficheiro readjpeg.c
 extern "C" int read_JPEG_file(const char *, char **, int *, int *, int *);
@@ -114,6 +116,12 @@ typedef struct MODELO{
 ESTADO estado;
 MODELO modelo;
 
+GLuint time1 = 0;
+char * tempo = new char[1000000];
+int flagJogo = 0;
+int vidas = 5;
+char * vida = new char[1];
+
 char mazedata20[MAZE_HEIGHT20][MAZE_WIDTH20] = {
 	"                    ",
 	" ****************** ",
@@ -137,6 +145,43 @@ char mazedata20[MAZE_HEIGHT20][MAZE_WIDTH20] = {
 	"                    ",
 };
 
+
+// È usada para escrever no ecra
+void imprimir(int x, int y, char *st)
+{
+	int tam, i;
+
+	tam = strlen(st); // tamanho da string
+	glRasterPos2i(x, y); // coordenadas para comeÁar a escrever
+	for (i = 0; i < tam; i++)  // loop para imprimir char
+	{
+		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, st[i]); // imprimir para o ecra
+	}
+
+}
+
+void mensagem_inicio(){
+	glPushMatrix();
+	glColor3f(1, 0.0, 0.0);
+	imprimir(0, 0, "Boa Sorte");
+	glPopMatrix();
+}
+
+void mensagem_final(int win){
+	glPushMatrix();
+	glColor3f(1.0, 0.0, 0.0);
+	if (win == 1) imprimir(-2, 1, "Ganhou!!!");
+	if (win == -1) imprimir(-2, 1, "Perdeu...");
+	if (win == 2) imprimir(-2, 1, "Empate...");
+	glPopMatrix();
+}
+
+void mensagem_perde(){
+	glPushMatrix();
+	glColor3f(1, 0, 0);
+	imprimir(0, 0, "Game Over! You Lose!");
+	glPopMatrix();
+}
 
 ////////////////////////////////////
 /// IluminaÁ„o e materiais
@@ -183,6 +228,7 @@ void setMaterial()
 
 void redisplayTopSubwindow(int width, int height)
 {
+
 	// glViewport(botom, left, width, height)
 	// define parte da janela a ser utilizada pelo OpenGL
 	glViewport(0, 0, (GLint)width, (GLint)height);
@@ -319,7 +365,7 @@ void desenhaCubo(GLuint texID)
 }
 
 
-void desenhaBussola(int width, int height)  // largura e altura da janela
+void desenhaInfoJogo(int width, int height)  // largura e altura da janela
 {
 
 	// Altera viewport e projecÁ„o para 2D (copia de um reshape de um projecto 2D)
@@ -343,13 +389,31 @@ void desenhaBussola(int width, int height)  // largura e altura da janela
 	//desenha bussola 2D
 	glColor4f(1, 1, 1, 0.5);
 
-	glBegin(GL_TRIANGLES);
+	/*glBegin(GL_TRIANGLES);
 	glVertex3f(8, -7.5, 0);
 	glVertex3f(7.5, -8.5, 0);
 	glVertex3f(8.5, -8.5, 0);
-	glEnd();
-	strokeCenterString("N", 8, -6.7, 0, 0.01); // string, x ,y ,z ,scale
-	strokeCenterString("S", 8, -9.2, 0, 0.01);
+	glEnd();*/
+
+	switch(flagJogo){
+	case 0:
+		strokeCenterString(vida, 8, 9, 0, 0.01);
+		strokeCenterString("", 8, -6.7, 0, 0.01); // string, x ,y ,z ,scale
+		strokeCenterString(tempo, 8, -9.2, 0, 0.01);
+		break;
+	case 1:
+		strokeCenterString("Congratulations!! You just", 0, 1, 0, 0.01);
+		strokeCenterString(" made a new friend!!", 0, 0, 0, 0.01);
+		strokeCenterString("Press ESC to exit!!", 0, -2, 0, 0.01);
+		break;
+	case 2:
+		strokeCenterString("Game Over!! You Lost", 0, 1, 0, 0.01);
+		strokeCenterString(" the challenge", 0, 0, 0, 0.01);
+		strokeCenterString("Press ESC to exit!!", 0, -2, 0, 0.01);
+		break;
+	default:
+		break;
+	}
 
 	//latitude da camara, para mudar angulo de vis„o
 	//em qualquer momento sabemos  a posiÁ„o 
@@ -437,7 +501,9 @@ void desenhaEstrela(){
 	do{
 
 		z = rand() % (MAZE_HEIGHT20 - 2) + 1;
-		x = rand() % (MAZE_WIDTH20 - 2) + 1;
+		x = rand() % (MAZE_WIDTH20 - 3) + 1;
+
+		printf("z = %d, x = %d", z, x);
 
 		if (mazedata20[z][x] != '*'){
 			mazedata20[z][x] = '+';
@@ -592,7 +658,7 @@ void displayNavigateSubwindow()
 		glPopMatrix();
 	}
 
-	desenhaBussola(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
+	desenhaInfoJogo(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
 
 	glutSwapBuffers();
 }
@@ -604,9 +670,9 @@ void setTopSubwindowCamera(camera_t *cam, objecto_t obj)
 	cam->eye.x = obj.pos.x;
 	cam->eye.z = obj.pos.z;
 	if (estado.vista[JANELA_TOP])
-		gluLookAt(obj.pos.x, CHAO_DIMENSAO*.2, obj.pos.z, obj.pos.x, obj.pos.y, obj.pos.z, 0, 0, -1);
+		gluLookAt(obj.pos.x, CHAO_DIMENSAO* 2, obj.pos.z, obj.pos.x, obj.pos.y, obj.pos.z, 0, 0, -1);
 	else
-		gluLookAt(obj.pos.x, CHAO_DIMENSAO * 2, obj.pos.z, obj.pos.x, obj.pos.y, obj.pos.z, 0, 0, -1);
+		gluLookAt(obj.pos.x, CHAO_DIMENSAO *.2, obj.pos.z, obj.pos.x, obj.pos.y, obj.pos.z, 0, 0, -1);
 }
 
 void displayTopSubwindow()
@@ -631,6 +697,7 @@ void displayTopSubwindow()
 
 	desenhaAngVisao(&estado.camera);
 	desenhaModeloDir(modelo.objecto, glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
+	desenhaInfoJogo(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
 	glutSwapBuffers();
 	
 }
@@ -657,109 +724,152 @@ void displayMainWindow()
 
 void Timer(int value)
 {
+			
+	if (flagJogo != 2){
+		if (flagJogo != 1){
+			if (vidas == 0){
+				flagJogo = 2;
+				desenhaInfoJogo(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
+			}
+			else{
 
-	if (modelo.homer[JANELA_NAVIGATE].GetSequence() == 20){
-		if (value < 10){
-			glutTimerFunc(estado.timer, Timer, value + 1);
-			redisplayAll();
-			return;
-		}
-		else
-		{
-			modelo.homer[JANELA_NAVIGATE].SetSequence(0);
-
-		}
-	}
-
-	GLfloat nx = 0, nz = 0;
-	GLboolean andar = GL_FALSE;
-
-	GLuint curr = glutGet(GLUT_ELAPSED_TIME);
-	// calcula velocidade baseado no tempo passado
-	float velocidade = modelo.objecto.vel*(curr - modelo.prev)*0.001;
-
-	glutTimerFunc(estado.timer, Timer, 0);
-	modelo.prev = curr;
-
-
-	if (estado.teclas.up){
-
-		// calcula nova posiÁ„o nx,nz
-		nx = modelo.objecto.pos.x + modelo.objecto.vel * cos(modelo.objecto.dir);
-		nz = modelo.objecto.pos.z - modelo.objecto.vel * sin(modelo.objecto.dir);
-
-		if (!detectaColisaoEstrela(nx, nz)){
-			if (!detectaColisao(nx, nz)){
-				modelo.objecto.pos.x = nx;
-				modelo.objecto.pos.z = nz;
-				if (modelo.homer[JANELA_NAVIGATE].GetSequence() != 3){
-					modelo.homer[JANELA_NAVIGATE].SetSequence(3);
+				if (modelo.homer[JANELA_NAVIGATE].GetSequence() == 20){
+					if (value < 10){
+						glutTimerFunc(estado.timer, Timer, value + 1);
+						redisplayAll();
+						return;
+					}
+					else
+					{
+						modelo.homer[JANELA_NAVIGATE].SetSequence(0);
+						modelo.homer[JANELA_TOP].SetSequence(0);
+					}
 				}
+
+
+				GLfloat nx = 0, nz = 0;
+				GLboolean andar = GL_FALSE;
+
+				GLuint curr = glutGet(GLUT_ELAPSED_TIME);
+				int minutos = (curr % (1000 * 60 * 60)) / (1000 * 60);
+				int segundos = ((curr % (1000 * 60 * 60)) % (1000 * 60)) / 1000;
+				string temp = to_string(minutos) + ":" + to_string(segundos);
+				strcpy(tempo, temp.c_str());
+
+				string tmp = to_string(vidas);
+				strcpy(vida, tmp.c_str());
+
+				desenhaInfoJogo(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
+				// calcula velocidade baseado no tempo passado
+				float velocidade = modelo.objecto.vel*(curr - modelo.prev)*0.001;
+
+				glutTimerFunc(estado.timer, Timer, 0);
+				modelo.prev = curr;
+
+				if (estado.teclas.up){
+
+					// calcula nova posiÁ„o nx,nz
+					nx = modelo.objecto.pos.x + modelo.objecto.vel * cos(modelo.objecto.dir);
+					nz = modelo.objecto.pos.z - modelo.objecto.vel * sin(modelo.objecto.dir);
+
+					if (!detectaColisaoEstrela(nx, nz)){
+						if (!detectaColisao(nx, nz)){
+							modelo.objecto.pos.x = nx;
+							modelo.objecto.pos.z = nz;
+							if (modelo.homer[JANELA_NAVIGATE].GetSequence() != 3){
+								modelo.homer[JANELA_NAVIGATE].SetSequence(3);
+								modelo.homer[JANELA_TOP].SetSequence(3);
+							}
+						}
+						else
+						{
+							modelo.homer[JANELA_NAVIGATE].SetSequence(20);
+							modelo.homer[JANELA_TOP].SetSequence(20);
+							vidas -= 1;
+						}
+					}
+					else
+					{
+						//printf("%d minutes and %d seconds\n", (Milliseconds % (1000 * 60 * 60)) / (1000 * 60), ((Milliseconds % (1000 * 60 * 60)) % (1000 * 60)) / 1000);
+						modelo.homer[JANELA_NAVIGATE].SetSequence(5);
+						modelo.homer[JANELA_TOP].SetSequence(5);
+						flagJogo = 1;
+						desenhaInfoJogo(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
+					}
+
+					andar = GL_TRUE;
+				}
+
+
+				if (estado.teclas.down){
+					// calcula nova posiÁ„o nx,nz
+					nx = modelo.objecto.pos.x - modelo.objecto.vel * cos(modelo.objecto.dir);
+					nz = modelo.objecto.pos.z + modelo.objecto.vel * sin(modelo.objecto.dir);
+
+					if (!detectaColisaoEstrela(nx, nz)){
+						if (!detectaColisao(nx, nz)){
+							modelo.objecto.pos.x = nx;
+							modelo.objecto.pos.z = nz;
+							if (modelo.homer[JANELA_NAVIGATE].GetSequence() != 3){
+								modelo.homer[JANELA_NAVIGATE].SetSequence(3);
+								modelo.homer[JANELA_TOP].SetSequence(3);
+							}
+						}
+						else
+						{
+							modelo.homer[JANELA_NAVIGATE].SetSequence(20);
+							modelo.homer[JANELA_TOP].SetSequence(20);
+							vidas -= 1;
+						}
+					}
+					else
+					{
+						flagJogo = 1;
+						desenhaInfoJogo(glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
+						modelo.homer[JANELA_NAVIGATE].SetSequence(5);
+						modelo.homer[JANELA_TOP].SetSequence(5);
+
+					}
+
+					andar = GL_TRUE;
+				}
+
+				if (estado.teclas.left){
+					// rodar camara e objecto
+					modelo.objecto.dir += .2;
+					estado.camera.dir_long += .2;
+				}
+				if (estado.teclas.right){
+					// rodar camara e objecto
+					modelo.objecto.dir -= .2;
+					estado.camera.dir_long -= .2;
+				}
+				/*/*
+				if (modelo.homer[JANELA_NAVIGATE].GetSequence() == 0){
+				if (estado.contaAnimaCair>0){
+				estado.contaAnimaCair--;
+				}
+				}
+				*/
+
+				if (!andar)
+				{
+					modelo.homer[JANELA_NAVIGATE].SetSequence(0);
+					modelo.homer[JANELA_TOP].SetSequence(0);
+				}
+
+
+				// Sequencias - 0(parado) 3(andar) 20(choque)
+				//  modelo.homer[JANELA_NAVIGATE].GetSequence()  le Sequencia usada pelo homer
+				//  modelo.homer[JANELA_NAVIGATE].SetSequence()  muda Sequencia usada pelo homer
 			}
-			else
-			{
-				modelo.homer[JANELA_NAVIGATE].SetSequence(20);
-			}
 		}
-		else
-		{
-			printf("%d", 2);
-			modelo.homer[JANELA_NAVIGATE].SetSequence(5);
-
-		}
-
-		andar = GL_TRUE;
 	}
-
-
-	if (estado.teclas.down){
-		// calcula nova posiÁ„o nx,nz
-		nx = modelo.objecto.pos.x - modelo.objecto.vel * cos(modelo.objecto.dir);
-		nz = modelo.objecto.pos.z + modelo.objecto.vel * sin(modelo.objecto.dir);
-
-		if (!detectaColisao(nx, nz)){
-			modelo.objecto.pos.x = nx;
-			modelo.objecto.pos.z = nz;
-			if (modelo.homer[JANELA_NAVIGATE].GetSequence() != 3){
-				modelo.homer[JANELA_NAVIGATE].SetSequence(3);
-			}
-		}
-		else
-		{
-			modelo.homer[JANELA_NAVIGATE].SetSequence(20);
-
-		}
-		andar = GL_TRUE;
+	else{
+		modelo.homer[JANELA_NAVIGATE].SetSequence(75);
+		modelo.homer[JANELA_TOP].SetSequence(75);
 	}
-
-	if (estado.teclas.left){
-		// rodar camara e objecto
-		modelo.objecto.dir += .2;
-		estado.camera.dir_long += .2;
-	}
-	if (estado.teclas.right){
-		// rodar camara e objecto
-		modelo.objecto.dir -= .2;
-		estado.camera.dir_long -= .2;
-	}
-	/*/*
-	if (modelo.homer[JANELA_NAVIGATE].GetSequence() == 0){
-	if (estado.contaAnimaCair>0){
-	estado.contaAnimaCair--;
-	}
-	}
-	*/
-
-	if (!andar)
-	{
-		modelo.homer[JANELA_NAVIGATE].SetSequence(0);
-	}
-
-
-	// Sequencias - 0(parado) 3(andar) 20(choque)
-	//  modelo.homer[JANELA_NAVIGATE].GetSequence()  le Sequencia usada pelo homer
-	//  modelo.homer[JANELA_NAVIGATE].SetSequence()  muda Sequencia usada pelo homer
-
+	
 	redisplayAll();
 
 }
@@ -767,22 +877,14 @@ void Timer(int value)
 
 void imprime_ajuda(void)
 {
-	printf("\n\nDesenho de um quadrado\n");
 	printf("h,H - Ajuda \n");
 	printf("******* Diversos ******* \n");
 	printf("l,L - Alterna o calculo luz entre Z e eye (GL_LIGHT_MODEL_LOCAL_VIEWER)\n");
 	printf("w,W - Wireframe \n");
 	printf("f,F - Fill \n");
-	printf("******* Movimento ******* \n");
-	printf("up  - Acelera \n");
-	printf("down- Trava \n");
-	printf("left- Vira rodas para a direita\n");
-	printf("righ- Vira rodas para a esquerda\n");
 	printf("******* Camara ******* \n");
-	printf("F1 - Alterna camara da janela da Esquerda \n");
 	printf("F2 - Alterna camara da janela da Direita \n");
 	printf("PAGE_UP, PAGE_DOWN - Altera abertura da camara \n");
-	printf("botao esquerdo + movimento na Janela da Direita altera o olhar \n");
 	printf("ESC - Sair\n");
 }
 
@@ -833,8 +935,8 @@ void SpecialKey(int key, int x, int y)
 		break;
 	case GLUT_KEY_RIGHT: estado.teclas.right = GL_TRUE;
 		break;
-	case GLUT_KEY_F1: estado.vista[JANELA_TOP] = !estado.vista[JANELA_TOP];
-		break;
+	//case GLUT_KEY_F1: estado.vista[JANELA_TOP] = !estado.vista[JANELA_TOP];
+		//break;
 	case GLUT_KEY_F2: estado.vista[JANELA_NAVIGATE] = !estado.vista[JANELA_NAVIGATE];
 		break;
 	case GLUT_KEY_PAGE_UP:
@@ -984,6 +1086,9 @@ void createTextures(GLuint texID[])
 
 void init()
 {
+
+	time1 = glutGet(GLUT_ELAPSED_TIME);
+
 	GLfloat amb[] = { 0.3f, 0.3f, 0.3f, 1.0f };
 
 	estado.timer = 100;
@@ -999,12 +1104,12 @@ void init()
 	//estado.vista[JANELA_TOP] = 0;
 	estado.vista[JANELA_NAVIGATE] = 0;
 
-	modelo.objecto.pos.x = 7;
+
+	modelo.objecto.pos.x = 6;
 	modelo.objecto.pos.y = OBJECTO_ALTURA*.5;
 	modelo.objecto.pos.z = 6;
 	modelo.objecto.dir = 0;
 	modelo.objecto.vel = OBJECTO_VELOCIDADE;
-
 	modelo.xMouse = modelo.yMouse = -1;
 	modelo.andar = GL_FALSE;
 
@@ -1046,9 +1151,9 @@ int main(int argc, char **argv)
 	glutSpecialFunc(SpecialKey);
 	glutSpecialUpFunc(SpecialKeyUp);
 
-	
 	// criar a sub window topSubwindow
 	estado.topSubwindow = glutCreateSubWindow(estado.mainWindow, GAP, GAP, 400, 400);
+
 	init();
 	setLight();
 	setMaterial();

@@ -1,0 +1,49 @@
+﻿@model SocialGameWebSite.Models.Relacao
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<fieldset>
+    <legend>Relacao</legend>
+    <dl>
+        <dt>
+            @Html.DisplayNameFor(model => model.estadorelacao.estado)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.estadorelacao.estado)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.user1ID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.user1ID)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.user2ID)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.user2ID)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.peso)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.peso)
+        </dd>
+
+    </dl>
+</fieldset>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id=Model.ID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

@@ -2,6 +2,7 @@
 using Microsoft.AspNet.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
+using SocialGameWebSite.Models;
 
 namespace MassiveDynamicsWebSite.Models
 {
@@ -15,6 +16,14 @@ namespace MassiveDynamicsWebSite.Models
 
         [Required]
         public string Email { get; set; }
+
+
+        [DisplayFormat(DataFormatString = "{0:dd MMM yyyy}")]
+        public System.DateTime Date { get; set; }
+        /*public virtual Humor humor { get; set; }
+        public int humorID { get; set; }*/
+        public string perfilfacebook { get; set; }
+        public string perfillinkedin { get; set; }
     }
 
 
@@ -25,6 +34,18 @@ namespace MassiveDynamicsWebSite.Models
         {
 
         }
+
+        public System.Data.Entity.DbSet<SocialGameWebSite.Models.Jogo> Jogo { get; set; }
+
+        public System.Data.Entity.DbSet<SocialGameWebSite.Models.EstadoRelacao> EstadoRelacao { get; set; }
+
+        public System.Data.Entity.DbSet<SocialGameWebSite.Models.Relacao> Relacao { get; set; }
+
+        public System.Data.Entity.DbSet<SocialGameWebSite.Models.Introducao> Introducao { get; set; }
+
+        public System.Data.Entity.DbSet<SocialGameWebSite.Models.Humor> Humor { get; set; }
+
+        public System.Data.Entity.DbSet<SocialGameWebSite.Models.Tag> Tag { get; set; }
     }
 
 
