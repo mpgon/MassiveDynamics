@@ -1,4 +1,27 @@
-﻿body {
+﻿.jumbotron {
+     position: relative;
+     background: none;
+     padding: 5px;
+     margin-bottom: 50px;
+     text-align: center;
+     /*font-size: 10px;
+     font-weight: 200;
+     line-height: 2.1428571435;*/
+ }
+
+.jumbotron:after {
+     content:"";
+     background: url("http://www.moodlelivre.com.br/images/stories/img_blog/social.jpg");
+     opacity: 0.3;
+     top: 0;
+     left: 0;
+     bottom: 0;
+     right: 0;
+     position: absolute;
+     z-index: -1;
+ }
+
+body {
     padding-top: 50px;
     padding-bottom: 20px;
 }
