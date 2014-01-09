@@ -124,7 +124,7 @@ char * tempo = new char[1000000];
 int flagJogo = 0;
 int vidas = 5;
 char * vida = new char[1];
-int flagDificuldade = 1;
+int flagDificuldade = 2;
 int heightTemp = 0, widthTemp = 0;
 int chaoConst = 0;
 
@@ -167,7 +167,7 @@ char mazedata30[HEIGHT_30][WIDTH_30] = {
 	" * * * *      **** ****** *** ",
 	" *** *   ***   **  **  *    * ",
 	" * *    ****          ***   * ",
-	" * ********** ******  * *   * ",
+	" * ********** ******  ***   * ",
 	" *       *   *   **    ***  * ",
 	" * *** *  ** ** * ****  *   * ",
 	" *    *   *   *         * *** ",
@@ -197,8 +197,8 @@ char mazedata40[HEIGHT_40][WIDTH_40] = {
 	" *     *  **           *     *        * ",
 	" *   * **  ***  * * * **     ******** * ",
 	" *** **** ***** ********     *        * ",
-	" *           **          ****** ******* ",
-	" *     ****   **** ***** **  **       * ",
+	" **          **          ****** ******* ",
+	" *  *  ****   **** ***** **  **       * ",
 	" ** ** *    ***  **       *   ******* * ",
 	" *   *       *      *******        ** * ",
 	" ** ** * ** *  *    **      *** ****  * ",
@@ -584,7 +584,7 @@ void desenhaEstrela(){
 	do{
 		if (flagDificuldade == 1){
 			z = rand() % (HEIGHT_20 - 2) + 1;
-			x = rand() % (WIDTH_20 - 3) + 1;
+			x = rand() % (WIDTH_20 - 2) + 1;
 
 			printf("z = %d, x = %d", z, x);
 			if (mazedata20[z][x] != '*'){
@@ -593,7 +593,7 @@ void desenhaEstrela(){
 		}
 		else if (flagDificuldade == 2){
 			z = rand() % (HEIGHT_30 - 2) + 1;
-			x = rand() % (WIDTH_30 - 3) + 1;
+			x = rand() % (WIDTH_30 - 2) + 1;
 
 			if (mazedata30[z][x] != '*'){
 				mazedata30[z][x] = '+';
@@ -601,7 +601,7 @@ void desenhaEstrela(){
 		}
 		else{
 			z = rand() % (HEIGHT_40 - 2) + 1;
-			x = rand() % (WIDTH_40 - 3) + 1;
+			x = rand() % (WIDTH_40 - 2) + 1;
 
 			if (mazedata40[z][x] != '*'){
 				mazedata40[z][x] = '+';
@@ -637,7 +637,7 @@ void desenhaLabirinto(GLuint texID)
 		glTranslatef(-WIDTH_20 / 2.0, 0, -HEIGHT_20 / 2.0);
 		desenhaEstrela();
 		for (int mz = 0; mz < HEIGHT_20; mz++){
-			for (int mx = 0; mx < WIDTH_20 + 1; mx++){
+			for (int mx = 0; mx < WIDTH_20; mx++){
 				if (mazedata20[mz][mx] == '*'){
 					glPushMatrix();
 					glTranslatef(mx, 0.5, mz);
@@ -651,7 +651,7 @@ void desenhaLabirinto(GLuint texID)
 		glTranslatef(-WIDTH_30 / 2.0, 0, -HEIGHT_30 / 2.0);
 		desenhaEstrela();
 		for (int mz = 0; mz < HEIGHT_30; mz++){
-			for (int mx = 0; mx < WIDTH_30 + 1; mx++){
+			for (int mx = 0; mx < WIDTH_30; mx++){
 				if (mazedata30[mz][mx] == '*'){
 					glPushMatrix();
 					glTranslatef(mx, 0.5, mz);
@@ -665,7 +665,7 @@ void desenhaLabirinto(GLuint texID)
 		glTranslatef(-WIDTH_40 / 2.0, 0, -HEIGHT_40 / 2.0);
 		desenhaEstrela();
 		for (int mz = 0; mz < HEIGHT_40; mz++){
-			for (int mx = 0; mx < WIDTH_40 + 1; mx++){
+			for (int mx = 0; mx < WIDTH_40; mx++){
 				if (mazedata40[mz][mx] == '*'){
 					glPushMatrix();
 					glTranslatef(mx, 0.5, mz);
@@ -675,6 +675,9 @@ void desenhaLabirinto(GLuint texID)
 			}
 		}
 	}
+
+	glPopMatrix();
+
 }
 	
 
