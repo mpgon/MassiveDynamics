@@ -65,6 +65,10 @@ typedef struct Camera{
 	Vertice center;
 	GLint   pessoa;//1 ou3
 	GLfloat dir;
+	GLfloat posx;
+	GLfloat posy;
+	GLfloat posz;
+	GLfloat vel;
 }Camera;
 
 typedef struct Estado{
@@ -101,6 +105,10 @@ void initEstado(){
 	estado.camera.fov = 60;
 	estado.camera.dist = 100;
 	estado.camera.dir = 0;
+	estado.camera.vel = 1;
+	estado.camera.posx = nos[0].x * 5;
+	estado.camera.posy = nos[0].y * 5;
+	estado.camera.posz = nos[0].z * 5 + 12;
 	estado.eixo[0] = 0;
 	estado.eixo[1] = 0;
 	estado.eixo[2] = 0;
@@ -130,6 +138,8 @@ void initModelo(){
 void myInit()
 {
 
+	leGrafo();
+
 	GLfloat LuzAmbiente[] = { 0.5, 0.5, 0.5, 0.0 };
 
 	glClearColor(0.0, 0.0, 0.0, 0.0);
@@ -151,7 +161,7 @@ void myInit()
 	gluQuadricDrawStyle(modelo.quad, GLU_FILL);
 	gluQuadricNormals(modelo.quad, GLU_OUTSIDE);
 
-	leGrafo();
+	
 }
 
 void imprime_ajuda(void)
@@ -691,14 +701,15 @@ void setCamera(){
 		}
 	}
 	else {//1ªpessoa
-		eye[0] = nos[0].x * 5;
-		eye[1] = nos[0].y * 5;
-		eye[2] = nos[0].z * 5 + 12;
+
+		eye[0] = estado.camera.posx;
+		eye[1] = estado.camera.posy;
+		eye[2] = estado.camera.posz;
 		
 		if (estado.camera.dir == 0){
-			estado.camera.center[0] = nos[1].x*5;
-			estado.camera.center[1] = nos[1].y*5;
-			estado.camera.center[2] = nos[1].z*5+12;
+			estado.camera.center[0] = eye[0];
+			estado.camera.center[1] = eye[1];
+			estado.camera.center[2] = eye[2];
 		}
 		else {
 			estado.camera.center[0] = eye[0] + cos(estado.camera.dir);
@@ -854,11 +865,27 @@ void Special(int key, int x, int y){
 		glutPostRedisplay();
 		break;
 	case GLUT_KEY_UP:
-		estado.camera.dist -= 1;
+		if (estado.camera.pessoa==3)
+			estado.camera.dist -= 1;
+		else 
+		{
+			//estado.camera.vel--;
+			estado.camera.posx = estado.camera.posx + estado.camera.vel * cos(estado.camera.dir);
+			estado.camera.posy = estado.camera.posy - estado.camera.vel * sin(estado.camera.dir);
+			estado.camera.posz = estado.camera.posz;
+		}
 		glutPostRedisplay();
 		break;
 	case GLUT_KEY_DOWN:
-		estado.camera.dist += 1;
+		if (estado.camera.pessoa == 3)
+			estado.camera.dist += 1;
+		else
+		{
+			//estado.camera.vel++;
+			estado.camera.posx = estado.camera.posx - estado.camera.vel * cos(estado.camera.dir);
+			estado.camera.posy = estado.camera.posy + estado.camera.vel * sin(estado.camera.dir);
+			estado.camera.posz = estado.camera.posz;
+		}
 		glutPostRedisplay();
 		break;
 	case GLUT_KEY_LEFT:
