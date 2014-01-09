@@ -122,6 +122,8 @@ const int heightConst = 40;
 const int widthConst = 41;
 int chaoConst = 0;
 
+
+
 char mazedata20[heightConst][widthConst] = {
 	"                    ",
 	" ****************** ",
@@ -220,44 +222,6 @@ char mazedata40[heightConst][widthConst] = {
 	" ************************************** ",
 	"                                        ",
 };
-
-
-// é usada para escrever no ecra
-void imprimir(int x, int y, char *st)
-{
-	int tam, i;
-
-	tam = strlen(st); // tamanho da string
-	glRasterPos2i(x, y); // coordenadas para começar a escrever
-	for (i = 0; i < tam; i++)  // loop para imprimir char
-	{
-		glutBitmapCharacter(GLUT_BITMAP_TIMES_ROMAN_24, st[i]); // imprimir para o ecra
-	}
-
-}
-
-void mensagem_inicio(){
-	glPushMatrix();
-	glColor3f(1, 0.0, 0.0);
-	imprimir(0, 0, "Boa Sorte");
-	glPopMatrix();
-}
-
-void mensagem_final(int win){
-	glPushMatrix();
-	glColor3f(1.0, 0.0, 0.0);
-	if (win == 1) imprimir(-2, 1, "Ganhou!!!");
-	if (win == -1) imprimir(-2, 1, "Perdeu...");
-	if (win == 2) imprimir(-2, 1, "Empate...");
-	glPopMatrix();
-}
-
-void mensagem_perde(){
-	glPushMatrix();
-	glColor3f(1, 0, 0);
-	imprimir(0, 0, "Game Over! You Lose!");
-	glPopMatrix();
-}
 
 ////////////////////////////////////
 /// Iluminação e materiais
