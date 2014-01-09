@@ -34,6 +34,13 @@ extern "C" int read_JPEG_file(const char *, char **, int *, int *, int *);
 
 #define	GAP					        25
 
+#define HEIGHT_20					20
+#define HEIGHT_30					30
+#define HEIGHT_40					40
+#define WIDTH_20					21
+#define WIDTH_30					31
+#define WIDTH_40					41
+
 #define OBJECTO_FAT			      0.175
 #define	OBJECTO_ALTURA		      0.4
 #define OBJECTO_VELOCIDADE	      0.05
@@ -117,14 +124,11 @@ char * tempo = new char[1000000];
 int flagJogo = 0;
 int vidas = 5;
 char * vida = new char[1];
-int flagDificuldade = 3;
-const int heightConst = 40;
-const int widthConst = 41;
+int flagDificuldade = 1;
+int heightTemp = 0, widthTemp = 0;
 int chaoConst = 0;
 
-
-
-char mazedata20[heightConst][widthConst] = {
+char mazedata20[HEIGHT_20][WIDTH_20] = {
 	"                    ",
 	" ****************** ",
 	" *                * ",
@@ -147,7 +151,7 @@ char mazedata20[heightConst][widthConst] = {
 	"                    ",
 };
 
-char mazedata30[heightConst][widthConst] = {
+char mazedata30[HEIGHT_30][WIDTH_30] = {
 	"                              ",
 	" **************************** ",
 	" *      ****       *      * * ",
@@ -180,7 +184,7 @@ char mazedata30[heightConst][widthConst] = {
 	"                              ",
 };
 
-char mazedata40[heightConst][widthConst] = {
+char mazedata40[HEIGHT_40][WIDTH_40] = {
 	"                                        ",
 	" ************************************** ",
 	" *         *       *    * *           * ",
@@ -333,20 +337,26 @@ void strokeCenterString(char *str, double x, double y, double z, double s)
 
 GLboolean detectaColisao(GLfloat nx, GLfloat nz)
 {
-	int l = nz + heightConst / 2.0 + 0.5;
-	int c = nx + widthConst / 2.0 + 0.5;
-
 	if (flagDificuldade == 1){
+		int l = nz + HEIGHT_20 / 2.0 + 0.5;
+		int c = nx + WIDTH_20 / 2.0 + 0.5;
+
 		if (mazedata20[l][c] == '*'){
 			return GL_TRUE;
 		}
 	}
 	else if (flagDificuldade == 2){
+		int l = nz + HEIGHT_30 / 2.0 + 0.5;
+		int c = nx + WIDTH_30 / 2.0 + 0.5;
+
 		if (mazedata30[l][c] == '*'){
 			return GL_TRUE;
 		}
 	}
 	else{
+		int l = nz + HEIGHT_40 / 2.0 + 0.5;
+		int c = nx + WIDTH_40 / 2.0 + 0.5;
+
 		if (mazedata40[l][c] == '*'){
 			return GL_TRUE;
 		}
@@ -356,20 +366,26 @@ GLboolean detectaColisao(GLfloat nx, GLfloat nz)
 
 GLboolean detectaColisaoEstrela(GLfloat nx, GLfloat nz)
 {
-	int l = nz + heightConst / 2.0 + 0.35;
-	int c = nx + widthConst / 2.0 + 0.35;
-
 	if (flagDificuldade == 1){
+		int l = nz + HEIGHT_20 / 2.0 + 0.5;
+		int c = nx + WIDTH_20 / 2.0 + 0.5;
+
 		if (mazedata20[l][c] == '+'){
 			return GL_TRUE;
 		}
 	}
 	else if (flagDificuldade == 2){
+		int l = nz + HEIGHT_30 / 2.0 + 0.5;
+		int c = nx + WIDTH_30 / 2.0 + 0.5;
+
 		if (mazedata30[l][c] == '+'){
 			return GL_TRUE;
 		}
 	}
 	else{
+		int l = nz + HEIGHT_40 / 2.0 + 0.5;
+		int c = nx + WIDTH_40 / 2.0 + 0.5;
+
 		if (mazedata40[l][c] == '+'){
 			return GL_TRUE;
 		}
@@ -566,22 +582,27 @@ void desenhaEstrela(){
 	srand(time(NULL));
 
 	do{
-
-		z = rand() % (heightConst - 2) + 1;
-		x = rand() % (widthConst - 3) + 1;
-
-		printf("z = %d, x = %d", z, x);
 		if (flagDificuldade == 1){
+			z = rand() % (HEIGHT_20 - 2) + 1;
+			x = rand() % (WIDTH_20 - 3) + 1;
+
+			printf("z = %d, x = %d", z, x);
 			if (mazedata20[z][x] != '*'){
 				mazedata20[z][x] = '+';
 			}
 		}
 		else if (flagDificuldade == 2){
+			z = rand() % (HEIGHT_30 - 2) + 1;
+			x = rand() % (WIDTH_30 - 3) + 1;
+
 			if (mazedata30[z][x] != '*'){
 				mazedata30[z][x] = '+';
 			}
 		}
 		else{
+			z = rand() % (HEIGHT_40 - 2) + 1;
+			x = rand() % (WIDTH_40 - 3) + 1;
+
 			if (mazedata40[z][x] != '*'){
 				mazedata40[z][x] = '+';
 			}
@@ -612,11 +633,11 @@ void desenhaLabirinto(GLuint texID)
 
 	// código para desenhar o labirinto
 	glPushMatrix();
-	glTranslatef(-widthConst / 2.0, 0, -heightConst / 2.0);
-	desenhaEstrela();
-	for (int mz = 0; mz < heightConst; mz++){
-		for (int mx = 0; mx < widthConst + 1; mx++){
-			if (flagDificuldade == 1){
+	if (flagDificuldade == 1){
+		glTranslatef(-WIDTH_20 / 2.0, 0, -HEIGHT_20 / 2.0);
+		desenhaEstrela();
+		for (int mz = 0; mz < HEIGHT_20; mz++){
+			for (int mx = 0; mx < WIDTH_20 + 1; mx++){
 				if (mazedata20[mz][mx] == '*'){
 					glPushMatrix();
 					glTranslatef(mx, 0.5, mz);
@@ -624,7 +645,13 @@ void desenhaLabirinto(GLuint texID)
 					glPopMatrix();
 				}
 			}
-			else if (flagDificuldade == 2){
+		}
+	}
+	else if (flagDificuldade == 2){
+		glTranslatef(-WIDTH_30 / 2.0, 0, -HEIGHT_30 / 2.0);
+		desenhaEstrela();
+		for (int mz = 0; mz < HEIGHT_30; mz++){
+			for (int mx = 0; mx < WIDTH_30 + 1; mx++){
 				if (mazedata30[mz][mx] == '*'){
 					glPushMatrix();
 					glTranslatef(mx, 0.5, mz);
@@ -632,7 +659,13 @@ void desenhaLabirinto(GLuint texID)
 					glPopMatrix();
 				}
 			}
-			else{
+		}
+	}
+	else{
+		glTranslatef(-WIDTH_40 / 2.0, 0, -HEIGHT_40 / 2.0);
+		desenhaEstrela();
+		for (int mz = 0; mz < HEIGHT_40; mz++){
+			for (int mx = 0; mx < WIDTH_40 + 1; mx++){
 				if (mazedata40[mz][mx] == '*'){
 					glPushMatrix();
 					glTranslatef(mx, 0.5, mz);
@@ -642,10 +675,8 @@ void desenhaLabirinto(GLuint texID)
 			}
 		}
 	}
-
-	glPopMatrix();
-
 }
+	
 
 #define STEP    1
 
