@@ -2,14 +2,33 @@
 #include <math.h>
 #include <stdlib.h>     
 #include <GL\glut.h>
+#include <GL\glaux.h>
 
 #include <iostream>
 #include "grafos.h"
 
 using namespace std;
 
+#define NOME_TEXTURA_SKYBOX		  "Skybox.jpg"
+
+#define ID_TEXTURA_SKYBOX         3
+#define	xMax 200.0
+#define xMin -200.0
+#define yMax 200.0
+#define yMin -200.0
+#define zMax 65.0
+#define zMin -65.0 
+
+GLuint		  textIDSkybox;
+extern "C" {
+	FILE* _iob = NULL;
+}
+
 #define graus(X) (double)((X)*180/M_PI)
 #define rad(X)   (double)((X)*M_PI/180)
+
+// função para ler jpegs do ficheiro readjpeg.c
+extern "C" int read_JPEG_file(char *, char **, int *, int *, int *);
 
 // luzes e materiais
 
@@ -240,6 +259,86 @@ void putLights(GLfloat* diffuse)
 	glEnable(GL_LIGHT1);
 }
 
+void desenhaSkyBox(){
+
+	
+		glPushMatrix();
+		glRotatef(90, 1, 0, 0); // rotate on z-axis
+		glTranslated(estado.eixo[0], estado.eixo[1]-60, estado.eixo[2]);
+		glPushAttrib(GL_ENABLE_BIT);
+		glEnable(GL_TEXTURE_2D);
+		//glDisable(GL_DEPTH_TEST);
+		glDisable(GL_LIGHTING);
+		glDisable(GL_BLEND);
+
+		// Just in case we set all vertices to white.
+		glColor4f(1, 1, 1, 1);
+
+		// frente
+		glBindTexture(GL_TEXTURE_2D, textIDSkybox);
+		glBegin(GL_POLYGON);
+		glTexCoord2f(0.75, 0.25); glVertex3f(xMin, zMin, yMin);
+		glTexCoord2f(0.5, 0.25); glVertex3f(xMax, zMin, yMin);
+		glTexCoord2f(0.5, 0.5); glVertex3f(xMax, zMax * 2, yMin);
+		glTexCoord2f(0.75, 0.5); glVertex3f(xMin, zMax * 2, yMin);
+		glEnd();
+
+		// esquerda
+		glBindTexture(GL_TEXTURE_2D, textIDSkybox);
+		glBegin(GL_POLYGON);
+		glTexCoord2f(1, 0.25); glVertex3f(xMin + 0.1, zMin, yMax);
+		glTexCoord2f(0.75, 0.25);   glVertex3f(xMin + 0.1, zMin, yMin);
+		glTexCoord2f(0.75, 0.5);    glVertex3f(xMin + 0.1, zMax * 2, yMin);
+		glTexCoord2f(1, 0.5); glVertex3f(xMin + 0.1, zMax * 2, yMax);
+		glEnd();
+
+		// tras
+		glBegin(GL_POLYGON);
+		glTexCoord2f(0.5, 1.0); glVertex3f(xMax, zMin, yMax);
+		glTexCoord2f(0.75, 1.0);   glVertex3f(xMin, zMin, yMax);
+		glTexCoord2f(0.75, 0.75);    glVertex3f(xMin, zMax * 2, yMax);
+		glTexCoord2f(0.5, 0.75); glVertex3f(xMax, zMax * 2, yMax);
+		glEnd();
+
+		// direita
+		glBegin(GL_POLYGON);
+		glTexCoord2f(0.5, 0.25); glVertex3f(xMax - 0.1, zMin, yMin);
+		glTexCoord2f(0.25, 0.25);   glVertex3f(xMax - 0.1, zMin, yMax);
+		glTexCoord2f(0.25, 0.5);    glVertex3f(xMax - 0.1, zMax * 2, yMax);
+		glTexCoord2f(0.5, 0.5); glVertex3f(xMax - 0.1, zMax * 2, yMin);
+		glEnd();
+
+		// topo
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK);
+		glBegin(GL_POLYGON);
+		glNormal3f(0, -1, 0);
+		glTexCoord2f(0.75, 0.5); glVertex3f(xMin, zMax * 2, yMin);
+		glTexCoord2f(0.5, 0.5);   glVertex3f(xMax, zMax * 2, yMin);
+		glTexCoord2f(0.5, 0.75);    glVertex3f(xMax, zMax * 2, yMax);
+		glTexCoord2f(0.75, 0.75); glVertex3f(xMin, zMax * 2, yMax);
+		glEnd();
+		glDisable(GL_CULL_FACE);
+
+		// chao
+		glBegin(GL_POLYGON);
+		glTexCoord2f(0.75, 0.25); glVertex3f(xMin, zMin, yMin);
+		glTexCoord2f(0.5, 0.25);   glVertex3f(xMax, zMin, yMin);
+		glTexCoord2f(0.5, 0.0);    glVertex3f(xMax, zMin, yMax);
+		glTexCoord2f(0.75, 0.0); glVertex3f(xMin, zMin, yMax);
+		glEnd();
+
+		glBindTexture(GL_TEXTURE_2D, NULL);
+		//glEnable(GL_DEPTH_TEST);
+		glEnable(GL_LIGHTING);
+		glEnable(GL_BLEND);
+		glDisable(GL_TEXTURE_2D);
+		glPopAttrib();
+		glPopMatrix();
+		glBindTexture(GL_TEXTURE_2D, NULL);
+	
+}
+
 void desenhaSolo(){
 #define STEP 10
 	glBegin(GL_QUADS);
@@ -417,10 +516,10 @@ void desenhaChao(GLfloat xi, GLfloat yi, GLfloat zi, GLfloat xf, GLfloat yf, GLf
 }
 
 void desenhaNo(int no){
-	GLboolean norte, sul, este, oeste;
-	GLfloat larguraNorte, larguraSul, larguraEste, larguraOeste;
+	//GLboolean norte, sul, este, oeste;
+	//GLfloat larguraNorte, larguraSul, larguraEste, larguraOeste;
 	Arco arco = arcos[0];
-	No *noi = &nos[no], *nof;
+	No *noi = &nos[no];// *nof;
 
 	glPushMatrix();
 
@@ -736,7 +835,9 @@ void display(void)
 	setCamera();
 
 	material(slate);
-	desenhaSolo();
+
+	desenhaSkyBox();
+	//desenhaSolo();
 
 
 	desenhaEixos();
@@ -1088,6 +1189,37 @@ void mouse(int btn, int state, int x, int y){
 	}
 }
 
+void createTextures(GLuint texID[])
+{
+	AUX_RGBImageRec *TextureImage[1];					// Create Storage Space For The Texture
+	char *image;
+	int w, h, bpp;
+
+	glGenTextures(1, texID);
+
+	memset(TextureImage, 0, sizeof(void *)* 1);           	// Set The Pointer To NULL
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	
+	//Para criar a textura da skybox em jpeg-----------------------------------------
+	if (read_JPEG_file(NOME_TEXTURA_SKYBOX, &image, &w, &h, &bpp)){
+		glBindTexture(GL_TEXTURE_2D, textIDSkybox);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		gluBuild2DMipmaps(GL_TEXTURE_2D, 3, w, h, GL_RGB, GL_UNSIGNED_BYTE, image);
+		free(image);
+	}
+	else{
+		printf("Textura %s not Found\n", NOME_TEXTURA_SKYBOX);
+		exit(0);
+	}
+
+
+
+	glBindTexture(GL_TEXTURE_2D, NULL);
+}
+
 void main(int argc, char **argv)
 {
 	glutInit(&argc, argv);
@@ -1102,6 +1234,10 @@ void main(int argc, char **argv)
 	glutKeyboardFunc(keyboard);
 	glutSpecialFunc(Special);
 	glutMouseFunc(mouse);
+
+	GLuint * texID = new GLuint[1];
+	texID[0] = textIDSkybox;
+	createTextures(texID);
 
 	myInit();
 

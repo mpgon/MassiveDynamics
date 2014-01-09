@@ -27,6 +27,9 @@
     <ClCompile Include="No.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="readjpeg.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="grafos.h">
