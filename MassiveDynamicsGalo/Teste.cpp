@@ -7,6 +7,10 @@
 #include <time.h>
 #include <GL/glut.h>
 #include <windows.h>
+#include <SWI-cpp.h>
+#include <iostream>
+
+using namespace std;
 
 #define DEBUG 1
 
@@ -22,6 +26,7 @@ typedef struct {
 	int computador;
 	int start_game;
 	int win;
+	int Rf;
 }Jogo;
 
 typedef struct {
@@ -49,6 +54,90 @@ Rato rato;
 Estado estado;
 
 GLUquadricObj *cylinder;
+
+char buffer2[100];
+char buffer[100];
+
+//metodo que comunica com Prolog
+int pcjogada(){
+	//Alterar o caminho!
+	//F:\\LAPR5\\Prolog\\MassiveDynamicsSocialGame\\antecessor.pl
+	char* argv[] = { "libswipl.dll", "-s", "C:\\Users\\Marco\\Desktop\\LAPR5\\Prolog\\MassiveDynamicsGalo\\jogo_do_galo.pl", NULL };
+
+	PlEngine e(3, argv);
+	PlTermv av(3);
+
+	int n[5];
+	//char buffer[100];
+	int p = 0;
+
+	for (int i = 0; i < 9; i++)
+	{
+		if (mapa_caixa[i] == jogo.computador)
+		{
+			n[p] = i;
+			p++;
+		}
+	}
+
+	if (p == 5) sprintf_s(buffer, "[%d,%d,%d,%d,%d]", n[0], n[1], n[2], n[3], n[4]);
+
+	if (p == 4) sprintf_s(buffer, "[%d,%d,%d,%d]", n[0], n[1], n[2], n[3]);
+
+	if (p == 3) sprintf_s(buffer, "[%d,%d,%d]", n[0], n[1], n[2]);
+
+	if (p == 2) sprintf_s(buffer, "[%d,%d]", n[0], n[1]);
+
+	if (p == 1) sprintf_s(buffer, "[%d]", n[0]);
+
+	if (p == 0) sprintf_s(buffer, "[]");
+
+	int n1[5];
+	//char buffer2[100];
+	int j = 0;
+
+	for (int i = 0; i < 9; i++)
+	{
+		if (mapa_caixa[i] == jogo.player)
+		{
+			n1[j] = i;
+			j++;
+		}
+	}
+
+	if (j == 5) sprintf_s(buffer2, "[%d,%d,%d,%d,%d]", n1[0], n1[1], n1[2], n1[3], n1[4]);
+
+	if (j == 4) sprintf_s(buffer2, "[%d,%d,%d,%d]", n1[0], n1[1], n1[2], n1[3]);
+
+	if (j == 3) sprintf_s(buffer2, "[%d,%d,%d]", n1[0], n1[1], n1[2]);
+
+	if (j == 2) sprintf_s(buffer2, "[%d,%d]", n1[0], n1[1]);
+
+	if (j == 1) sprintf_s(buffer2, "[%d]", n1[0]);
+
+	if (j == 0) sprintf_s(buffer2, "[]");
+
+	av[0] = PlCompound(buffer);
+	av[1] = PlCompound(buffer2);
+
+	PlQuery q("inicio", av);
+	int flag = 0;
+	while (q.next_solution() && flag == 0)
+	{
+		//cout << (char*)av[2] << endl;
+		jogo.Rf = av[2];
+		flag = 1;
+	}
+
+	//cin.get();
+	/*cout << buffer << endl;
+	cout << buffer2 << endl;*/
+	mapa_caixa[jogo.Rf] = jogo.computador;
+
+	return (1);
+}
+
+
 //Modelo modelo;
 
 
@@ -149,105 +238,6 @@ int movimentos(void)
 	return(0);
 }
 
-// verifca se e preciso bloquear
-int bloquear(void)
-{
-	int i, t;
-	for (i = 0; i < 8; i++)
-	{
-		t = mapa_caixa[caixa[i][0]] + mapa_caixa[caixa[i][1]] + mapa_caixa[caixa[i][2]];
-		if ((t == 2) || (t == -2))
-		{
-			if (mapa_caixa[caixa[i][0]] == 0) mapa_caixa[caixa[i][0]] = jogo.computador;
-			if (mapa_caixa[caixa[i][1]] == 0) mapa_caixa[caixa[i][1]] = jogo.computador;
-			if (mapa_caixa[caixa[i][2]] == 0) mapa_caixa[caixa[i][2]] = jogo.computador;
-			return(1);
-		}
-	}
-	return(0);
-}
-
-// verifca se pode jogar no canto
-int check_cantos(void)
-{
-	int i;
-
-	if (mapa_caixa[0] == 0)
-	{
-		mapa_caixa[0] = jogo.computador;
-		i = 1;
-		return(1);
-	}
-
-	if (mapa_caixa[2] == 0)
-	{
-		mapa_caixa[2] = jogo.computador;
-		i = 1;
-		return(1);
-	}
-
-	if (mapa_caixa[6] == 0)
-	{
-		mapa_caixa[6] = jogo.computador;
-		i = 1;
-		return(1);
-	}
-
-	if (mapa_caixa[8] == 0)
-	{
-		mapa_caixa[8] = jogo.computador;
-		i = 1;
-		return(1);
-	}
-
-	return(0);
-}
-
-// verifca se ha espaco em linha
-int check_linha(void)
-{
-
-	if (mapa_caixa[4] == 0)
-	{
-		mapa_caixa[4] = jogo.computador;
-		return(1);
-	}
-
-	if (mapa_caixa[1] == 0)
-	{
-		mapa_caixa[1] = jogo.computador;
-		return(1);
-	}
-
-	if (mapa_caixa[3] == 0)
-	{
-		mapa_caixa[3] = jogo.computador;
-		return(1);
-	}
-	if (mapa_caixa[5] == 0)
-	{
-		mapa_caixa[5] = jogo.computador;
-		return(1);
-	}
-	if (mapa_caixa[7] == 0)
-	{
-		mapa_caixa[7] = jogo.computador;
-		return(1);
-	}
-
-	return(0);
-}
-
-// movimentos do pc
-int computer_move()
-{
-	if (bloquear() == 1) return(1);
-	if (check_cantos() == 1) return(1);
-	if (check_linha() == 1) return(1);
-
-	return(0);
-}
-
 // é usada para escrever no ecra
 void imprimir(int x, int y, char *st)
 {
@@ -274,10 +264,12 @@ void mensagem_inicio(){
 
 void mensagem_final(int win){
 	glPushMatrix();
+
 	glColor3f(1.0, 0.0, 0.0);
 	if (win == 1) imprimir(-2, 1, "Ganhou!!!");
 	if (win == -1) imprimir(-2, 1, "Perdeu...");
 	if (win == 2) imprimir(-2, 1, "Empate...");
+
 	glPopMatrix();
 }
 
@@ -391,7 +383,7 @@ void Timer(int value)
 {
 	// redesenhar o ecrã (invoca o callback de desenho)
 	glutPostRedisplay();
-	
+
 	glutTimerFunc(10, Timer, 1);
 }
 
@@ -441,7 +433,14 @@ void mouse(int button, int state, int x, int y){
 						jogo.start_game = 0;
 						return;
 					}
-					computer_move();//chamar o prolog para o pc jogar
+
+					if (jogo.win == 2){
+						jogo.start_game = 0;
+						return;
+					}
+					//chamar o prolog para o pc jogar
+					pcjogada();
+
 					jogo.win = movimentos();//verificar se ganhou
 					if (jogo.win == 1)//se ganhou acabou o jogo
 					{
