@@ -61,8 +61,8 @@ char buffer[100];
 //metodo que comunica com Prolog
 int pcjogada(){
 	//Alterar o caminho!
-	//F:\\LAPR5\\Prolog\\MassiveDynamicsSocialGame\\antecessor.pl
-	char* argv[] = { "libswipl.dll", "-s", "C:\\Users\\Marco\\Desktop\\LAPR5\\Prolog\\MassiveDynamicsGalo\\jogo_do_galo.pl", NULL };
+	//F:\\LAPR5\\Prolog\\MassiveDynamicsSocialGame\\antecessor.pl  C:\\Users\\Marco\\Desktop\\LAPR5\\Prolog\\MassiveDynamicsGalo
+	char* argv[] = { "libswipl.dll", "-s", "jogo_do_galo.pl", NULL };
 
 	PlEngine e(3, argv);
 	PlTermv av(3);
