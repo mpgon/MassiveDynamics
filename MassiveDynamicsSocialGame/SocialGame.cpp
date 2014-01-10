@@ -637,7 +637,7 @@ void desenhaArco(Arco arco){
 
 		GLUquadricObj *quadric;
 		quadric = gluNewQuadric();
-
+	
 		double dist = sqrt(0 + pow(nof->y - noi->y, 2) + pow(nof->z - noi->z, 2));
 
 		gluQuadricDrawStyle(quadric, GLU_FILL);
@@ -790,14 +790,7 @@ void setCamera(){
 		eye[1] = estado.camera.center[1] + estado.camera.dist*sin(estado.camera.dir_long)*cos(estado.camera.dir_lat);
 		eye[2] = estado.camera.center[2] + estado.camera.dist*sin(estado.camera.dir_lat);
 
-		if (estado.light){
-			gluLookAt(eye[0], eye[1], eye[2], estado.camera.center[0], estado.camera.center[1], estado.camera.center[2], 0, 0, 1);
-			putLights((GLfloat*)white_light);
-		}
-		else{
-			putLights((GLfloat*)white_light);
-			gluLookAt(eye[0], eye[1], eye[2], estado.camera.center[0], estado.camera.center[1], estado.camera.center[2], 0, 0, 1);
-		}
+
 	}
 	else {//1ªpessoa
 
@@ -815,14 +808,16 @@ void setCamera(){
 			estado.camera.center[1] = eye[1] - sin(estado.camera.dir);
 			estado.camera.center[2] = eye[2];
 		}
-		if (estado.light){
-			gluLookAt(eye[0], eye[1], eye[2], estado.camera.center[0], estado.camera.center[1], estado.camera.center[2], 0, 0, 1);
-			putLights((GLfloat*)white_light);
-		}
-		else{
-			putLights((GLfloat*)white_light);
-			gluLookAt(eye[0], eye[1], eye[2], estado.camera.center[0], estado.camera.center[1], estado.camera.center[2], 0, 0, 1);
-		}
+		
+	}
+
+	if (estado.light){
+		gluLookAt(eye[0], eye[1], eye[2], estado.camera.center[0], estado.camera.center[1], estado.camera.center[2], 0, 0, 1);
+		putLights((GLfloat*)white_light);
+	}
+	else{
+		putLights((GLfloat*)white_light);
+		gluLookAt(eye[0], eye[1], eye[2], estado.camera.center[0], estado.camera.center[1], estado.camera.center[2], 0, 0, 1);
 	}
 }
 
@@ -936,6 +931,21 @@ void keyboard(unsigned char key, int x, int y)
 	}
 }
 
+void moveArco(No *noi, No *nof, int i, GLfloat x, GLfloat y){
+	GLfloat ang = atan2((nof->y - noi->y), (nof->x - noi->x));
+	double ang2 = 90 + atan2(nof->z - noi->z, nof->y - noi->y) * 180 / M_PI + 180;
+	GLfloat x2 = (x - noi->x) * cos(ang) + (y - noi->y) * sin(ang);
+	GLfloat y2 = (y - noi->y) * cos(ang) - (x - noi->x) * sin(ang);
+	double dist = sqrt(0 + pow(nof->y - noi->y, 2) + pow(nof->z - noi->z, 2));
+	if (0 < x2 && x2 < dist && -1 * .5 <= y2 && y2 <= 1 * .5){
+		cout << "ARCO[" << i << "]" << endl;
+		estado.camera.posx = x * 5;
+		estado.camera.posy = y * 5;
+		estado.camera.posz = (noi->z) * 5 + (x2 / dist) * 1 + 12;
+	}
+
+}
+
 void Special(int key, int x, int y){
 
 	switch (key){
@@ -965,24 +975,73 @@ void Special(int key, int x, int y){
 		addArco(criaArco(4, 6, 1, 1));  // 4 - 6*/
 		glutPostRedisplay();
 		break;
-	case GLUT_KEY_UP:
-		if (estado.camera.pessoa==3)
-			estado.camera.dist -= 1;
-		else 
-		{
-			//estado.camera.vel--;
-			estado.camera.posx = estado.camera.posx + estado.camera.vel * cos(estado.camera.dir);
-			estado.camera.posy = estado.camera.posy - estado.camera.vel * sin(estado.camera.dir);
-			estado.camera.posz = estado.camera.posz;
-		}
-		glutPostRedisplay();
-		break;
+	case GLUT_KEY_UP:{
+						
+						 if (estado.camera.pessoa == 3)
+							 estado.camera.dist -= 1;
+						 else
+						 {
+							 GLfloat x = (estado.camera.posx + estado.camera.vel * cos(estado.camera.dir))*.2;
+							 GLfloat y = (estado.camera.posy - estado.camera.vel * sin(estado.camera.dir))*.2;
+							 GLfloat z = (estado.camera.posz)*.2;
+					
+							 
+
+								 for (int i = 0; i < numArcos; i++){
+									 No *noi, *nof;
+									/* if (nos[arcos[i].noi].x == nos[arcos[i].nof].x){
+										 // arco vertical
+										 if (nos[arcos[i].noi].y < nos[arcos[i].nof].y){
+											 noi = &nos[arcos[i].noi];
+											 nof = &nos[arcos[i].nof];
+										 }
+										 else{
+											 nof = &nos[arcos[i].noi];
+											 noi = &nos[arcos[i].nof];
+										 }
+									 }
+									 else {
+										 //arco horizontal
+										 if (nos[arcos[i].noi].x < nos[arcos[i].nof].x){
+											 noi = &nos[arcos[i].noi];
+											 nof = &nos[arcos[i].nof];
+										 }
+										 else{
+											 nof = &nos[arcos[i].noi];
+											 noi = &nos[arcos[i].nof];
+										 }
+									 }*/
+									 noi = &nos[arcos[i].noi];
+									 nof = &nos[arcos[i].nof];
+
+									 moveArco(noi, nof, i, x, y);
+
+									 noi = &nos[arcos[i].nof];
+									 nof = &nos[arcos[i].noi];
+
+									 moveArco(noi, nof, i, x, y);
+									 
+								 }
+								 for (int i = 0; i < numNos; i++){
+									 if (pow(x - nos[i].x, 2) + pow(y - nos[i].y, 2) <= pow(1, 2)){
+										 cout << "NO[" << i << "]" << endl;
+										 estado.camera.posx = x * 5;
+										 estado.camera.posy = y * 5;
+										 estado.camera.posz = nos[i].z * 5 + 12;
+									 }
+								 }
+							 }
+
+
+
+						 
+						 glutPostRedisplay();
+	}break;
 	case GLUT_KEY_DOWN:
 		if (estado.camera.pessoa == 3)
 			estado.camera.dist += 1;
 		else
 		{
-			//estado.camera.vel++;
 			estado.camera.posx = estado.camera.posx - estado.camera.vel * cos(estado.camera.dir);
 			estado.camera.posy = estado.camera.posy + estado.camera.vel * sin(estado.camera.dir);
 			estado.camera.posz = estado.camera.posz;
@@ -990,25 +1049,18 @@ void Special(int key, int x, int y){
 		glutPostRedisplay();
 		break;
 	case GLUT_KEY_LEFT:
-		//estado.camera.center[0] -= 1;
-		//estado.camera.center[1] -= .2;
-		//nos[i].x, nos[i].y, nos[i].z + 0.25
-		//estado.camera.pessoa = 1;
-		//glutPostRedisplay();
+
 		estado.camera.dir -= .2;
 		glutPostRedisplay();
 		break;
 	case GLUT_KEY_RIGHT:
-		//estado.camera.center[0] -= 1;
-		//estado.camera.center[1] -= .2;
-		//nos[i].x, nos[i].y, nos[i].z + 0.25
-		//estado.camera.pessoa = 3;
-		//glutPostRedisplay();
+
 		estado.camera.dir += .2;
 		glutPostRedisplay();
 		break;
 	}
 }
+
 
 
 void setProjection(int x, int y, GLboolean picking){
