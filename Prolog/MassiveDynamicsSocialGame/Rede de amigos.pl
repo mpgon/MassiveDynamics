@@ -9,6 +9,9 @@ amizade(miguel,cristiano).
 amizade(miguel,maria).
 amizade(miguel,marco).
 
+%tamanho da rede de um utilizador
+tamanhoRedeUt(Ut,Tam):-amigosUtilizador(Ut,L),length(L,Tam).
+
 %saber a rede de amigos de um utilizador
 amigosUtilizador(Ut,Lamif):-amigos1grau(Ut,Lami),amigos2grau(Ut,Lami,Lami,Lamif).
 
