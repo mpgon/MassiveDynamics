@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include "grafos.h"
+#include "rain.h"
 
 using namespace std;
 
@@ -95,6 +96,7 @@ typedef struct Estado{
 	int			xMouse, yMouse;
 	GLboolean	light;
 	GLboolean	apresentaNormais;
+	GLboolean   chuva;
 	GLint		lightViewer;
 	GLint		eixoTranslaccao;
 	GLdouble	eixo[3];
@@ -117,6 +119,17 @@ typedef struct Modelo {
 Estado estado;
 Modelo modelo;
 
+//Chuva
+const int numgotas = 15000;
+CHUVA rain;
+
+void chuva()
+{
+	glPushMatrix();
+	DesenharChuva(rain, numgotas);
+	glPopMatrix();
+}
+
 void initEstado(){
 	estado.camera.pessoa = 3;
 	estado.camera.dir_lat = M_PI / 4;
@@ -136,6 +149,7 @@ void initEstado(){
 	estado.camera.center[2] = 0;
 	estado.light = GL_FALSE;
 	estado.apresentaNormais = GL_FALSE;
+	estado.chuva = GL_TRUE;
 	estado.lightViewer = 1;
 }
 
@@ -179,6 +193,8 @@ void myInit()
 	modelo.quad = gluNewQuadric();
 	gluQuadricDrawStyle(modelo.quad, GLU_FILL);
 	gluQuadricNormals(modelo.quad, GLU_OUTSIDE);
+
+	InicializarChuva(rain, numgotas);
 
 	
 }
@@ -842,6 +858,14 @@ void display(void)
 	//glRasterPos2i(100, 120);
 	//glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
 	//_glutBitmapString(GLUT_BITMAP_HELVETICA_18, "text to render");
+
+	//desenha chuva
+	if (estado.chuva){
+		glPushMatrix();
+		chuva();
+		glutPostRedisplay();
+		glPopMatrix();
+	}
 
 	if (estado.eixoTranslaccao) {
 		// desenha plano de translacção

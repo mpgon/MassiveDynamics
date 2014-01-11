@@ -83,6 +83,7 @@
     <ClCompile Include="Arco.cpp" />
     <ClCompile Include="grafos.cpp" />
     <ClCompile Include="No.cpp" />
+    <ClCompile Include="rain.cpp" />
     <ClCompile Include="readjpeg.c" />
     <ClCompile Include="SocialGame.cpp" />
   </ItemGroup>
@@ -90,6 +91,7 @@
     <ClInclude Include="Arco.h" />
     <ClInclude Include="grafos.h" />
     <ClInclude Include="No.h" />
+    <ClInclude Include="rain.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
