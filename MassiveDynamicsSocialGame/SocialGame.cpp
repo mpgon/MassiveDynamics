@@ -943,7 +943,55 @@ void moveArco(No *noi, No *nof, int i, GLfloat x, GLfloat y){
 		estado.camera.posy = y * 5;
 		estado.camera.posz = (noi->z) * 5 + (x2 / dist) * 1 + 12;
 	}
+}
 
+void moveArcos(GLfloat x, GLfloat y, GLfloat z){
+	for (int i = 0; i < numArcos; i++){
+		No *noi, *nof;
+		/* if (nos[arcos[i].noi].x == nos[arcos[i].nof].x){
+		// arco vertical
+		if (nos[arcos[i].noi].y < nos[arcos[i].nof].y){
+		noi = &nos[arcos[i].noi];
+		nof = &nos[arcos[i].nof];
+		}
+		else{
+		nof = &nos[arcos[i].noi];
+		noi = &nos[arcos[i].nof];
+		}
+		}
+		else {
+		//arco horizontal
+		if (nos[arcos[i].noi].x < nos[arcos[i].nof].x){
+		noi = &nos[arcos[i].noi];
+		nof = &nos[arcos[i].nof];
+		}
+		else{
+		nof = &nos[arcos[i].noi];
+		noi = &nos[arcos[i].nof];
+		}
+		}*/
+		noi = &nos[arcos[i].noi];
+		nof = &nos[arcos[i].nof];
+
+		moveArco(noi, nof, i, x, y);
+
+		noi = &nos[arcos[i].nof];
+		nof = &nos[arcos[i].noi];
+
+		moveArco(noi, nof, i, x, y);
+
+	}
+}
+
+void moveNos(GLfloat x, GLfloat y, GLfloat z){
+	for (int i = 0; i < numNos; i++){
+		if (pow(x - nos[i].x, 2) + pow(y - nos[i].y, 2) <= pow(1, 2)){
+			cout << "NO[" << i << "]" << endl;
+			estado.camera.posx = x * 5;
+			estado.camera.posy = y * 5;
+			estado.camera.posz = nos[i].z * 5 + 12;
+		}
+	}
 }
 
 void Special(int key, int x, int y){
@@ -975,76 +1023,29 @@ void Special(int key, int x, int y){
 		addArco(criaArco(4, 6, 1, 1));  // 4 - 6*/
 		glutPostRedisplay();
 		break;
-	case GLUT_KEY_UP:{
-						
-						 if (estado.camera.pessoa == 3)
-							 estado.camera.dist -= 1;
-						 else
-						 {
-							 GLfloat x = (estado.camera.posx + estado.camera.vel * cos(estado.camera.dir))*.2;
-							 GLfloat y = (estado.camera.posy - estado.camera.vel * sin(estado.camera.dir))*.2;
-							 GLfloat z = (estado.camera.posz)*.2;
-					
-							 
-
-								 for (int i = 0; i < numArcos; i++){
-									 No *noi, *nof;
-									/* if (nos[arcos[i].noi].x == nos[arcos[i].nof].x){
-										 // arco vertical
-										 if (nos[arcos[i].noi].y < nos[arcos[i].nof].y){
-											 noi = &nos[arcos[i].noi];
-											 nof = &nos[arcos[i].nof];
-										 }
-										 else{
-											 nof = &nos[arcos[i].noi];
-											 noi = &nos[arcos[i].nof];
-										 }
-									 }
-									 else {
-										 //arco horizontal
-										 if (nos[arcos[i].noi].x < nos[arcos[i].nof].x){
-											 noi = &nos[arcos[i].noi];
-											 nof = &nos[arcos[i].nof];
-										 }
-										 else{
-											 nof = &nos[arcos[i].noi];
-											 noi = &nos[arcos[i].nof];
-										 }
-									 }*/
-									 noi = &nos[arcos[i].noi];
-									 nof = &nos[arcos[i].nof];
-
-									 moveArco(noi, nof, i, x, y);
-
-									 noi = &nos[arcos[i].nof];
-									 nof = &nos[arcos[i].noi];
-
-									 moveArco(noi, nof, i, x, y);
-									 
-								 }
-								 for (int i = 0; i < numNos; i++){
-									 if (pow(x - nos[i].x, 2) + pow(y - nos[i].y, 2) <= pow(1, 2)){
-										 cout << "NO[" << i << "]" << endl;
-										 estado.camera.posx = x * 5;
-										 estado.camera.posy = y * 5;
-										 estado.camera.posz = nos[i].z * 5 + 12;
-									 }
-								 }
-							 }
-
-
-
-						 
-						 glutPostRedisplay();
-	}break;
+	case GLUT_KEY_UP:
+		if (estado.camera.pessoa == 3)
+			estado.camera.dist -= 1;
+		else
+		{
+			GLfloat x = (estado.camera.posx + estado.camera.vel * cos(estado.camera.dir))*.2;
+			GLfloat y = (estado.camera.posy - estado.camera.vel * sin(estado.camera.dir))*.2;
+			GLfloat z = (estado.camera.posz)*.2;
+			moveArcos(x, y, z);
+			moveNos(x, y, z);
+		}						 
+		glutPostRedisplay();
+	break;
 	case GLUT_KEY_DOWN:
 		if (estado.camera.pessoa == 3)
 			estado.camera.dist += 1;
 		else
 		{
-			estado.camera.posx = estado.camera.posx - estado.camera.vel * cos(estado.camera.dir);
-			estado.camera.posy = estado.camera.posy + estado.camera.vel * sin(estado.camera.dir);
-			estado.camera.posz = estado.camera.posz;
+			GLfloat x = (estado.camera.posx - estado.camera.vel * cos(estado.camera.dir))*.2;
+			GLfloat y = (estado.camera.posy + estado.camera.vel * sin(estado.camera.dir))*.2;
+			GLfloat z = (estado.camera.posz)*.2;
+			moveArcos(x, y, z);
+			moveNos(x, y, z);
 		}
 		glutPostRedisplay();
 		break;
