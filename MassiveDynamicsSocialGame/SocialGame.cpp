@@ -125,9 +125,9 @@ void initEstado(){
 	estado.camera.dist = 100;
 	estado.camera.dir = 0;
 	estado.camera.vel = 1;
-	estado.camera.posx = nos[0].x * 5;
-	estado.camera.posy = nos[0].y * 5;
-	estado.camera.posz = nos[0].z * 5 + 12;
+	estado.camera.posx = nos[2].x * 5;
+	estado.camera.posy = nos[2].y * 5;
+	estado.camera.posz = nos[2].z * 5 + 12;
 	estado.eixo[0] = 0;
 	estado.eixo[1] = 0;
 	estado.eixo[2] = 0;
@@ -931,9 +931,8 @@ void keyboard(unsigned char key, int x, int y)
 	}
 }
 
-void moveArco(No *noi, No *nof, int i, GLfloat x, GLfloat y){
+void colisaoArcoVertical(No *noi, No *nof, int i, GLfloat x, GLfloat y){
 	GLfloat ang = atan2((nof->y - noi->y), (nof->x - noi->x));
-	double ang2 = 90 + atan2(nof->z - noi->z, nof->y - noi->y) * 180 / M_PI + 180;
 	GLfloat x2 = (x - noi->x) * cos(ang) + (y - noi->y) * sin(ang);
 	GLfloat y2 = (y - noi->y) * cos(ang) - (x - noi->x) * sin(ang);
 	double dist = sqrt(0 + pow(nof->y - noi->y, 2) + pow(nof->z - noi->z, 2));
@@ -944,46 +943,34 @@ void moveArco(No *noi, No *nof, int i, GLfloat x, GLfloat y){
 		estado.camera.posz = (noi->z) * 5 + (x2 / dist) * 1 + 12;
 	}
 }
+void colisaoArcoHorizontal(No *noi, No *nof, int i, GLfloat x, GLfloat y){
+	GLfloat ang = atan2((nof->x - noi->x), (nof->y - noi->y));
+	//double ang2 = 90 + atan2(nof->z - noi->z, nof->y - noi->y) * 180 / M_PI + 180;
+	GLfloat x2 = (y - noi->y) * cos(ang) + (x - noi->x) * sin(ang);
+	GLfloat y2 = (x - noi->x) * cos(ang) - (y - noi->y) * sin(ang);
+	double dist = sqrt(0 + pow(nof->x - noi->x, 2) + pow(nof->z - noi->z, 2));
+	if (0 < x2 && x2 < dist && -1 * .5 <= y2 && y2 <= 1 * .5){
+		cout << "ARCO[" << i << "]" << endl;
+		estado.camera.posx = x * 5;
+		estado.camera.posy = y * 5;
+		estado.camera.posz = (noi->z) * 5 + (x2 / dist) * 1 + 12;
+	}
+}
 
-void moveArcos(GLfloat x, GLfloat y, GLfloat z){
+void colisaoArcos(GLfloat x, GLfloat y, GLfloat z){
 	for (int i = 0; i < numArcos; i++){
 		No *noi, *nof;
-		/* if (nos[arcos[i].noi].x == nos[arcos[i].nof].x){
-		// arco vertical
-		if (nos[arcos[i].noi].y < nos[arcos[i].nof].y){
-		noi = &nos[arcos[i].noi];
-		nof = &nos[arcos[i].nof];
-		}
-		else{
-		nof = &nos[arcos[i].noi];
-		noi = &nos[arcos[i].nof];
-		}
-		}
-		else {
-		//arco horizontal
-		if (nos[arcos[i].noi].x < nos[arcos[i].nof].x){
-		noi = &nos[arcos[i].noi];
-		nof = &nos[arcos[i].nof];
-		}
-		else{
-		nof = &nos[arcos[i].noi];
-		noi = &nos[arcos[i].nof];
-		}
-		}*/
+
 		noi = &nos[arcos[i].noi];
 		nof = &nos[arcos[i].nof];
 
-		moveArco(noi, nof, i, x, y);
-
-		noi = &nos[arcos[i].nof];
-		nof = &nos[arcos[i].noi];
-
-		moveArco(noi, nof, i, x, y);
+		colisaoArcoVertical(noi, nof, i, x, y);
+		colisaoArcoHorizontal(noi, nof, i, x, y);
 
 	}
 }
 
-void moveNos(GLfloat x, GLfloat y, GLfloat z){
+void colisaoNos(GLfloat x, GLfloat y, GLfloat z){
 	for (int i = 0; i < numNos; i++){
 		if (pow(x - nos[i].x, 2) + pow(y - nos[i].y, 2) <= pow(1, 2)){
 			cout << "NO[" << i << "]" << endl;
@@ -1031,8 +1018,8 @@ void Special(int key, int x, int y){
 			GLfloat x = (estado.camera.posx + estado.camera.vel * cos(estado.camera.dir))*.2;
 			GLfloat y = (estado.camera.posy - estado.camera.vel * sin(estado.camera.dir))*.2;
 			GLfloat z = (estado.camera.posz)*.2;
-			moveArcos(x, y, z);
-			moveNos(x, y, z);
+			colisaoArcos(x, y, z);
+			colisaoNos(x, y, z);
 		}						 
 		glutPostRedisplay();
 	break;
@@ -1044,8 +1031,8 @@ void Special(int key, int x, int y){
 			GLfloat x = (estado.camera.posx - estado.camera.vel * cos(estado.camera.dir))*.2;
 			GLfloat y = (estado.camera.posy + estado.camera.vel * sin(estado.camera.dir))*.2;
 			GLfloat z = (estado.camera.posz)*.2;
-			moveArcos(x, y, z);
-			moveNos(x, y, z);
+			colisaoArcos(x, y, z);
+			colisaoNos(x, y, z);
 		}
 		glutPostRedisplay();
 		break;
@@ -1203,7 +1190,7 @@ int picking(int x, int y){
 
 	return objid;
 }
-void mouse(int btn, int state, int x, int y){
+void mouse(int btn, int state, int x,  int y){
 	switch (btn) {
 	case GLUT_RIGHT_BUTTON:
 		if (state == GLUT_DOWN){
