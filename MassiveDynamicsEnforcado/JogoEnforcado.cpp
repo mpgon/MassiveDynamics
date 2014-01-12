@@ -68,11 +68,14 @@ typedef struct {
 Estado estado;
 Enforcado enforcado;
 char* palavras[] = { "amalia rodrigues", "castelo branco", "eca de queiros", "institucionalizacao", "rosa dos ventos" };
+//char* abc[] = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
+char* abc = "abcdefghijklmnopqrstuvwxyz";
 int NUMTOTALPALAVRAS; // Inicializado no main de forma a ser dinamico conforme actualizacao do array
 char* PALAVRA;
 vector<char> vecLetrasErradas;
 vector<char> vecLetrasCorrectas;
 int TENTATIVAS;
+float ang;
 
 //-------------------------------------------------------------------------
 //  Inicialização das variaveis
@@ -80,6 +83,7 @@ int TENTATIVAS;
 void Init(void)
 {
 	TENTATIVAS = 0;
+	ang = 0;
 
 	enforcado.baseIniX = -0.6;
 	enforcado.baseIniY = -0.7;
@@ -194,7 +198,6 @@ void printWord(float x, float y, float z, char* text)
 //-------------------------------------------------------------------------
 void printLetra(float x, float y, float z, char* text, int pos)
 {
-	printf("ENTROU EM PRINT (%s) com index: %d\n", text, pos);
 	//  Difrentes fonts:
 	//  GLUT_BITMAP_8_BY_13, 
 	//  GLUT_BITMAP_9_BY_15,
@@ -205,11 +208,7 @@ void printLetra(float x, float y, float z, char* text, int pos)
 	//	GLUT_BITMAP_HELVETICA_18.
 	GLvoid *font_style = GLUT_BITMAP_TIMES_ROMAN_24;
 
-	
-
 	glRasterPos3f(x, y, z); // Posicionamento
-
-	
 
 	// Imprimir caracter
 	glutBitmapCharacter(font_style, text[pos]);
@@ -411,8 +410,7 @@ void printLetrasPalavra()
 {
 	int length;
 	length = strlen(PALAVRA);
-	//printWord(0,0.9,0,PALAVRA);
-	if (TENTATIVAS < 10){
+	
 		for (int i = 0; i < length; i++){
 			if (vecsContem(PALAVRA[i]) == 1){
 				printLetra((-1 + i*0.1), -0.9, 0, PALAVRA, i);
@@ -424,11 +422,34 @@ void printLetrasPalavra()
 				printLetra((-1 + i*0.1), -0.9, 0, "_", 0);
 			}
 		}
-	}
-	else{
-		printWord(-1, -0.9, 0, "PERDEU");
-	}
+}
 
+//-------------------------------------------------------------------------
+//  Imprime letras usadas
+//-------------------------------------------------------------------------
+void printLetrasUsadas()
+{
+	int length;
+	int k = 0;
+	length = strlen(abc);
+
+	printWord(-1,0.9,0,"Letras Usadas:");
+
+	for (int i = 0; i < length; i++){
+		if (vecsContem(abc[i]) == 1){
+			k = i;
+			if (i<20){				
+				printLetra((-1 + k*0.1), 0.8, 0, abc, i);
+			}
+			else if (i<26){
+				printLetra((-1 + (k-20)*0.1), 0.7, 0, abc, i);
+			}
+			else{
+				printLetra((-1 + (k - 20)*0.1), 0.6, 0, abc, i);
+			}
+			
+		}
+	}
 }
 
 //-------------------------------------------------------------------------
@@ -474,21 +495,19 @@ void letraCarregada(char letra)
 	if (vecsContem(letra) == 0){ // Se nao foi usada
 		// Verificar se letra esta contido na palavra
 		if (letraPertence(letra) == 0){ // Se nao conter letra
-			//printf("------------Nao pertence\n");
 			TENTATIVAS++;
 			desenhaBoneco();
 			vecLetrasErradas.push_back(letra);
 		}
 		else{
-			//printf("------------Pertence\n");
 			vecLetrasCorrectas.push_back(letra);
-			//printLetrasPalavra();
 		}
 	}
 	else{
-		//printf("------------REPETIDA\n");
+		//REPETIDA
 	}
-	//ACTUALIZA = GL_TRUE;
+	
+
 }
 
 //-------------------------------------------------------------------------
@@ -499,24 +518,31 @@ void Draw(void)
 
 	glClear(GL_COLOR_BUFFER_BIT);
 
-	//desenhaBase();
-	//desenhaBarraVertical();
-	//desenhaBarraHorizontal();
-		//glTranslated(0.5,0.5,0);
-		//glRotated(20,0,0,1);
-	//desenhaCorda();
-	//desenhaCabeca();
-	//desenhaCorpo();
-	//desenhaBracoE();
-	//desenhaBracoD();
-	//desenhaPernaE();
-	//desenhaPernaD();
-		//glRotated(-20, 0, 0, 1);
 
-	//desenharPalavra();
-	printLetrasPalavra();
-	desenhaBoneco();
+	if (TENTATIVAS < 10){
+		printLetrasPalavra();
+		desenhaBoneco();
+		printLetrasUsadas();
+	}
+	else{
+		printLetrasUsadas();
+		printWord(-1, -0.9, 0, "PERDEU");
 
+		//											Animacao baloucar do boneco
+		desenhaBase();
+		desenhaBarraVertical();
+		desenhaBarraHorizontal();
+		glRotated(ang,0,0,1);
+		desenhaCorda();
+		desenhaCabeca();
+		desenhaCorpo();
+		desenhaBracoE();
+		desenhaBracoD();
+		desenhaPernaE();
+		desenhaPernaD();
+		glRotated(-ang, 0, 0, 1);
+		ang++;
+	}
 
 	glFlush();
 	if (estado.doubleBuffer)
@@ -529,12 +555,6 @@ void Draw(void)
 //-------------------------------------------------------------------------
 void Timer(int value)
 {
-	//if (ACTUALIZA == GL_TRUE){
-		//printLetrasPalavra();
-		//ACTUALIZA = GL_FALSE;
-	//}
-	// redesenhar o ecra 
-	//glutPostRedisplay();
 }
 
 //-------------------------------------------------------------------------
@@ -654,8 +674,8 @@ void Key(unsigned char key, int x, int y)
 
 	glutPostRedisplay();
 
-	if (DEBUG)
-		printf("Carregou na tecla %c\n", key);
+	//if (DEBUG)
+	//	printf("Carregou na tecla %c\n", key);
 
 }
 
