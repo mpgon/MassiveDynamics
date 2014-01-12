@@ -2,14 +2,34 @@
 #include <math.h>
 #include <stdlib.h>     
 #include <GL\glut.h>
+#include <GL\glaux.h>
 
 #include <iostream>
 #include "grafos.h"
+#include "rain.h"
 
 using namespace std;
 
+#define NOME_TEXTURA_SKYBOX		  "Skybox.jpg"
+
+#define ID_TEXTURA_SKYBOX         3
+#define	xMax 200.0
+#define xMin -200.0
+#define yMax 200.0
+#define yMin -200.0
+#define zMax 65.0
+#define zMin -65.0 
+
+GLuint		  textIDSkybox;
+extern "C" {
+	FILE* _iob = NULL;
+}
+
 #define graus(X) (double)((X)*180/M_PI)
 #define rad(X)   (double)((X)*M_PI/180)
+
+// função para ler jpegs do ficheiro readjpeg.c
+extern "C" int read_JPEG_file(char *, char **, int *, int *, int *);
 
 // luzes e materiais
 
@@ -65,6 +85,10 @@ typedef struct Camera{
 	Vertice center;
 	GLint   pessoa;//1 ou3
 	GLfloat dir;
+	GLfloat posx;
+	GLfloat posy;
+	GLfloat posz;
+	GLfloat vel;
 }Camera;
 
 typedef struct Estado{
@@ -72,6 +96,7 @@ typedef struct Estado{
 	int			xMouse, yMouse;
 	GLboolean	light;
 	GLboolean	apresentaNormais;
+	GLboolean   chuva;
 	GLint		lightViewer;
 	GLint		eixoTranslaccao;
 	GLdouble	eixo[3];
@@ -94,6 +119,17 @@ typedef struct Modelo {
 Estado estado;
 Modelo modelo;
 
+//Chuva
+const int numgotas = 15000;
+CHUVA rain;
+
+void chuva()
+{
+	glPushMatrix();
+	DesenharChuva(rain, numgotas);
+	glPopMatrix();
+}
+
 void initEstado(){
 	estado.camera.pessoa = 3;
 	estado.camera.dir_lat = M_PI / 4;
@@ -101,6 +137,10 @@ void initEstado(){
 	estado.camera.fov = 60;
 	estado.camera.dist = 100;
 	estado.camera.dir = 0;
+	estado.camera.vel = 1;
+	estado.camera.posx = nos[2].x * 5;
+	estado.camera.posy = nos[2].y * 5;
+	estado.camera.posz = nos[2].z * 5 + 12;
 	estado.eixo[0] = 0;
 	estado.eixo[1] = 0;
 	estado.eixo[2] = 0;
@@ -109,6 +149,7 @@ void initEstado(){
 	estado.camera.center[2] = 0;
 	estado.light = GL_FALSE;
 	estado.apresentaNormais = GL_FALSE;
+	estado.chuva = GL_TRUE;
 	estado.lightViewer = 1;
 }
 
@@ -129,6 +170,8 @@ void initModelo(){
 
 void myInit()
 {
+
+	leGrafo();
 
 	GLfloat LuzAmbiente[] = { 0.5, 0.5, 0.5, 0.0 };
 
@@ -151,7 +194,9 @@ void myInit()
 	gluQuadricDrawStyle(modelo.quad, GLU_FILL);
 	gluQuadricNormals(modelo.quad, GLU_OUTSIDE);
 
-	leGrafo();
+	InicializarChuva(rain, numgotas);
+
+	
 }
 
 void imprime_ajuda(void)
@@ -228,6 +273,86 @@ void putLights(GLfloat* diffuse)
 
 	glEnable(GL_LIGHT0);
 	glEnable(GL_LIGHT1);
+}
+
+void desenhaSkyBox(){
+
+	
+		glPushMatrix();
+		glRotatef(90, 1, 0, 0); // rotate on z-axis
+		glTranslated(estado.eixo[0], estado.eixo[1]-60, estado.eixo[2]);
+		glPushAttrib(GL_ENABLE_BIT);
+		glEnable(GL_TEXTURE_2D);
+		//glDisable(GL_DEPTH_TEST);
+		glDisable(GL_LIGHTING);
+		glDisable(GL_BLEND);
+
+		// Just in case we set all vertices to white.
+		glColor4f(1, 1, 1, 1);
+
+		// frente
+		glBindTexture(GL_TEXTURE_2D, textIDSkybox);
+		glBegin(GL_POLYGON);
+		glTexCoord2f(0.75, 0.25); glVertex3f(xMin, zMin, yMin);
+		glTexCoord2f(0.5, 0.25); glVertex3f(xMax, zMin, yMin);
+		glTexCoord2f(0.5, 0.5); glVertex3f(xMax, zMax * 2, yMin);
+		glTexCoord2f(0.75, 0.5); glVertex3f(xMin, zMax * 2, yMin);
+		glEnd();
+
+		// esquerda
+		glBindTexture(GL_TEXTURE_2D, textIDSkybox);
+		glBegin(GL_POLYGON);
+		glTexCoord2f(1, 0.25); glVertex3f(xMin + 0.1, zMin, yMax);
+		glTexCoord2f(0.75, 0.25);   glVertex3f(xMin + 0.1, zMin, yMin);
+		glTexCoord2f(0.75, 0.5);    glVertex3f(xMin + 0.1, zMax * 2, yMin);
+		glTexCoord2f(1, 0.5); glVertex3f(xMin + 0.1, zMax * 2, yMax);
+		glEnd();
+
+		// tras
+		glBegin(GL_POLYGON);
+		glTexCoord2f(0.5, 1.0); glVertex3f(xMax, zMin, yMax);
+		glTexCoord2f(0.75, 1.0);   glVertex3f(xMin, zMin, yMax);
+		glTexCoord2f(0.75, 0.75);    glVertex3f(xMin, zMax * 2, yMax);
+		glTexCoord2f(0.5, 0.75); glVertex3f(xMax, zMax * 2, yMax);
+		glEnd();
+
+		// direita
+		glBegin(GL_POLYGON);
+		glTexCoord2f(0.5, 0.25); glVertex3f(xMax - 0.1, zMin, yMin);
+		glTexCoord2f(0.25, 0.25);   glVertex3f(xMax - 0.1, zMin, yMax);
+		glTexCoord2f(0.25, 0.5);    glVertex3f(xMax - 0.1, zMax * 2, yMax);
+		glTexCoord2f(0.5, 0.5); glVertex3f(xMax - 0.1, zMax * 2, yMin);
+		glEnd();
+
+		// topo
+		glEnable(GL_CULL_FACE);
+		glCullFace(GL_BACK);
+		glBegin(GL_POLYGON);
+		glNormal3f(0, -1, 0);
+		glTexCoord2f(0.75, 0.5); glVertex3f(xMin, zMax * 2, yMin);
+		glTexCoord2f(0.5, 0.5);   glVertex3f(xMax, zMax * 2, yMin);
+		glTexCoord2f(0.5, 0.75);    glVertex3f(xMax, zMax * 2, yMax);
+		glTexCoord2f(0.75, 0.75); glVertex3f(xMin, zMax * 2, yMax);
+		glEnd();
+		glDisable(GL_CULL_FACE);
+
+		// chao
+		glBegin(GL_POLYGON);
+		glTexCoord2f(0.75, 0.25); glVertex3f(xMin, zMin, yMin);
+		glTexCoord2f(0.5, 0.25);   glVertex3f(xMax, zMin, yMin);
+		glTexCoord2f(0.5, 0.0);    glVertex3f(xMax, zMin, yMax);
+		glTexCoord2f(0.75, 0.0); glVertex3f(xMin, zMin, yMax);
+		glEnd();
+
+		glBindTexture(GL_TEXTURE_2D, NULL);
+		//glEnable(GL_DEPTH_TEST);
+		glEnable(GL_LIGHTING);
+		glEnable(GL_BLEND);
+		glDisable(GL_TEXTURE_2D);
+		glPopAttrib();
+		glPopMatrix();
+		glBindTexture(GL_TEXTURE_2D, NULL);
+	
 }
 
 void desenhaSolo(){
@@ -407,10 +532,10 @@ void desenhaChao(GLfloat xi, GLfloat yi, GLfloat zi, GLfloat xf, GLfloat yf, GLf
 }
 
 void desenhaNo(int no){
-	GLboolean norte, sul, este, oeste;
-	GLfloat larguraNorte, larguraSul, larguraEste, larguraOeste;
+	//GLboolean norte, sul, este, oeste;
+	//GLfloat larguraNorte, larguraSul, larguraEste, larguraOeste;
 	Arco arco = arcos[0];
-	No *noi = &nos[no], *nof;
+	No *noi = &nos[no];// *nof;
 
 	glPushMatrix();
 
@@ -528,7 +653,7 @@ void desenhaArco(Arco arco){
 
 		GLUquadricObj *quadric;
 		quadric = gluNewQuadric();
-
+	
 		double dist = sqrt(0 + pow(nof->y - noi->y, 2) + pow(nof->z - noi->z, 2));
 
 		gluQuadricDrawStyle(quadric, GLU_FILL);
@@ -681,38 +806,34 @@ void setCamera(){
 		eye[1] = estado.camera.center[1] + estado.camera.dist*sin(estado.camera.dir_long)*cos(estado.camera.dir_lat);
 		eye[2] = estado.camera.center[2] + estado.camera.dist*sin(estado.camera.dir_lat);
 
-		if (estado.light){
-			gluLookAt(eye[0], eye[1], eye[2], estado.camera.center[0], estado.camera.center[1], estado.camera.center[2], 0, 0, 1);
-			putLights((GLfloat*)white_light);
-		}
-		else{
-			putLights((GLfloat*)white_light);
-			gluLookAt(eye[0], eye[1], eye[2], estado.camera.center[0], estado.camera.center[1], estado.camera.center[2], 0, 0, 1);
-		}
+
 	}
 	else {//1ªpessoa
-		eye[0] = nos[0].x * 5;
-		eye[1] = nos[0].y * 5;
-		eye[2] = nos[0].z * 5 + 12;
+
+		eye[0] = estado.camera.posx;
+		eye[1] = estado.camera.posy;
+		eye[2] = estado.camera.posz;
 		
 		if (estado.camera.dir == 0){
-			estado.camera.center[0] = nos[1].x*5;
-			estado.camera.center[1] = nos[1].y*5;
-			estado.camera.center[2] = nos[1].z*5+12;
+			estado.camera.center[0] = eye[0];
+			estado.camera.center[1] = eye[1];
+			estado.camera.center[2] = eye[2];
 		}
 		else {
 			estado.camera.center[0] = eye[0] + cos(estado.camera.dir);
 			estado.camera.center[1] = eye[1] - sin(estado.camera.dir);
 			estado.camera.center[2] = eye[2];
 		}
-		if (estado.light){
-			gluLookAt(eye[0], eye[1], eye[2], estado.camera.center[0], estado.camera.center[1], estado.camera.center[2], 0, 0, 1);
-			putLights((GLfloat*)white_light);
-		}
-		else{
-			putLights((GLfloat*)white_light);
-			gluLookAt(eye[0], eye[1], eye[2], estado.camera.center[0], estado.camera.center[1], estado.camera.center[2], 0, 0, 1);
-		}
+		
+	}
+
+	if (estado.light){
+		gluLookAt(eye[0], eye[1], eye[2], estado.camera.center[0], estado.camera.center[1], estado.camera.center[2], 0, 0, 1);
+		putLights((GLfloat*)white_light);
+	}
+	else{
+		putLights((GLfloat*)white_light);
+		gluLookAt(eye[0], eye[1], eye[2], estado.camera.center[0], estado.camera.center[1], estado.camera.center[2], 0, 0, 1);
 	}
 }
 
@@ -725,7 +846,9 @@ void display(void)
 	setCamera();
 
 	material(slate);
-	desenhaSolo();
+
+	desenhaSkyBox();
+	//desenhaSolo();
 
 
 	desenhaEixos();
@@ -735,6 +858,14 @@ void display(void)
 	//glRasterPos2i(100, 120);
 	//glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
 	//_glutBitmapString(GLUT_BITMAP_HELVETICA_18, "text to render");
+
+	//desenha chuva
+	if (estado.chuva){
+		glPushMatrix();
+		chuva();
+		glutPostRedisplay();
+		glPopMatrix();
+	}
 
 	if (estado.eixoTranslaccao) {
 		// desenha plano de translacção
@@ -824,6 +955,56 @@ void keyboard(unsigned char key, int x, int y)
 	}
 }
 
+void colisaoArcoVertical(No *noi, No *nof, int i, GLfloat x, GLfloat y){
+	GLfloat ang = atan2((nof->y - noi->y), (nof->x - noi->x));
+	GLfloat x2 = (x - noi->x) * cos(ang) + (y - noi->y) * sin(ang);
+	GLfloat y2 = (y - noi->y) * cos(ang) - (x - noi->x) * sin(ang);
+	double dist = sqrt(0 + pow(nof->y - noi->y, 2) + pow(nof->z - noi->z, 2));
+	if (0 < x2 && x2 < dist && -1 * .5 <= y2 && y2 <= 1 * .5){
+		cout << "ARCO[" << i << "]" << endl;
+		estado.camera.posx = x * 5;
+		estado.camera.posy = y * 5;
+		estado.camera.posz = (noi->z) * 5 + (x2 / dist) * 1 + 12;
+	}
+}
+void colisaoArcoHorizontal(No *noi, No *nof, int i, GLfloat x, GLfloat y){
+	GLfloat ang = atan2((nof->x - noi->x), (nof->y - noi->y));
+	//double ang2 = 90 + atan2(nof->z - noi->z, nof->y - noi->y) * 180 / M_PI + 180;
+	GLfloat x2 = (y - noi->y) * cos(ang) + (x - noi->x) * sin(ang);
+	GLfloat y2 = (x - noi->x) * cos(ang) - (y - noi->y) * sin(ang);
+	double dist = sqrt(0 + pow(nof->x - noi->x, 2) + pow(nof->z - noi->z, 2));
+	if (0 < x2 && x2 < dist && -1 * .5 <= y2 && y2 <= 1 * .5){
+		cout << "ARCO[" << i << "]" << endl;
+		estado.camera.posx = x * 5;
+		estado.camera.posy = y * 5;
+		estado.camera.posz = (noi->z) * 5 + (x2 / dist) * 1 + 12;
+	}
+}
+
+void colisaoArcos(GLfloat x, GLfloat y, GLfloat z){
+	for (int i = 0; i < numArcos; i++){
+		No *noi, *nof;
+
+		noi = &nos[arcos[i].noi];
+		nof = &nos[arcos[i].nof];
+
+		colisaoArcoVertical(noi, nof, i, x, y);
+		colisaoArcoHorizontal(noi, nof, i, x, y);
+
+	}
+}
+
+void colisaoNos(GLfloat x, GLfloat y, GLfloat z){
+	for (int i = 0; i < numNos; i++){
+		if (pow(x - nos[i].x, 2) + pow(y - nos[i].y, 2) <= pow(1, 2)){
+			cout << "NO[" << i << "]" << endl;
+			estado.camera.posx = x * 5;
+			estado.camera.posy = y * 5;
+			estado.camera.posz = nos[i].z * 5 + 12;
+		}
+	}
+}
+
 void Special(int key, int x, int y){
 
 	switch (key){
@@ -854,33 +1035,44 @@ void Special(int key, int x, int y){
 		glutPostRedisplay();
 		break;
 	case GLUT_KEY_UP:
-		estado.camera.dist -= 1;
+		if (estado.camera.pessoa == 3)
+			estado.camera.dist -= 1;
+		else
+		{
+			GLfloat x = (estado.camera.posx + estado.camera.vel * cos(estado.camera.dir))*.2;
+			GLfloat y = (estado.camera.posy - estado.camera.vel * sin(estado.camera.dir))*.2;
+			GLfloat z = (estado.camera.posz)*.2;
+			colisaoArcos(x, y, z);
+			colisaoNos(x, y, z);
+		}						 
 		glutPostRedisplay();
-		break;
+	break;
 	case GLUT_KEY_DOWN:
-		estado.camera.dist += 1;
+		if (estado.camera.pessoa == 3)
+			estado.camera.dist += 1;
+		else
+		{
+			GLfloat x = (estado.camera.posx - estado.camera.vel * cos(estado.camera.dir))*.2;
+			GLfloat y = (estado.camera.posy + estado.camera.vel * sin(estado.camera.dir))*.2;
+			GLfloat z = (estado.camera.posz)*.2;
+			colisaoArcos(x, y, z);
+			colisaoNos(x, y, z);
+		}
 		glutPostRedisplay();
 		break;
 	case GLUT_KEY_LEFT:
-		//estado.camera.center[0] -= 1;
-		//estado.camera.center[1] -= .2;
-		//nos[i].x, nos[i].y, nos[i].z + 0.25
-		//estado.camera.pessoa = 1;
-		//glutPostRedisplay();
+
 		estado.camera.dir -= .2;
 		glutPostRedisplay();
 		break;
 	case GLUT_KEY_RIGHT:
-		//estado.camera.center[0] -= 1;
-		//estado.camera.center[1] -= .2;
-		//nos[i].x, nos[i].y, nos[i].z + 0.25
-		//estado.camera.pessoa = 3;
-		//glutPostRedisplay();
+
 		estado.camera.dir += .2;
 		glutPostRedisplay();
 		break;
 	}
 }
+
 
 
 void setProjection(int x, int y, GLboolean picking){
@@ -1022,7 +1214,7 @@ int picking(int x, int y){
 
 	return objid;
 }
-void mouse(int btn, int state, int x, int y){
+void mouse(int btn, int state, int x,  int y){
 	switch (btn) {
 	case GLUT_RIGHT_BUTTON:
 		if (state == GLUT_DOWN){
@@ -1061,6 +1253,37 @@ void mouse(int btn, int state, int x, int y){
 	}
 }
 
+void createTextures(GLuint texID[])
+{
+	AUX_RGBImageRec *TextureImage[1];					// Create Storage Space For The Texture
+	char *image;
+	int w, h, bpp;
+
+	glGenTextures(1, texID);
+
+	memset(TextureImage, 0, sizeof(void *)* 1);           	// Set The Pointer To NULL
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+	
+	//Para criar a textura da skybox em jpeg-----------------------------------------
+	if (read_JPEG_file(NOME_TEXTURA_SKYBOX, &image, &w, &h, &bpp)){
+		glBindTexture(GL_TEXTURE_2D, textIDSkybox);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		gluBuild2DMipmaps(GL_TEXTURE_2D, 3, w, h, GL_RGB, GL_UNSIGNED_BYTE, image);
+		free(image);
+	}
+	else{
+		printf("Textura %s not Found\n", NOME_TEXTURA_SKYBOX);
+		exit(0);
+	}
+
+
+
+	glBindTexture(GL_TEXTURE_2D, NULL);
+}
+
 void main(int argc, char **argv)
 {
 	glutInit(&argc, argv);
@@ -1075,6 +1298,10 @@ void main(int argc, char **argv)
 	glutKeyboardFunc(keyboard);
 	glutSpecialFunc(Special);
 	glutMouseFunc(mouse);
+
+	GLuint * texID = new GLuint[1];
+	texID[0] = textIDSkybox;
+	createTextures(texID);
 
 	myInit();
 

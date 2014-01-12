@@ -9,7 +9,7 @@
 
 </head>
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar navbar-default navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -17,7 +17,7 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                @Html.ActionLink("Application name", "Index", "Home", null, new { @class = "navbar-brand" })
+                @Html.ActionLink("Graphs4Social", "Index", "Home", null, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
@@ -31,6 +31,39 @@
                     <li>@Html.ActionLink("Introducao", "Index", "Introducao")</li>
                     <li>@Html.ActionLink("Humor", "Index", "Humor")</li>
                     <li>@Html.ActionLink("Tag", "Index", "Tag")</li>
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">Serviços <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a href="#">Download Game</a>
+                            </li>
+                            <li>
+                                <a href="#">Leaderboard</a>
+                            </li>
+                            <li>
+                                <a href="#">Dimensão da Rede</a>
+                            </li>
+                            <li>
+                                <a href="#">Tag cloud de todos os utilizadores</a>
+                            </li>
+                            <li>
+                                <a href="#">Tag cloud de todas as relações</a>
+                            </li>
+                            <li>
+                                <a href="#">Sugestões de amigos</a>
+                            </li>
+                            <li>
+                                <a href="#">Tamanho da sua rede</a>
+                            </li>
+                            <li>
+                                <a href="#">Tag cloud dos seus utilizadores</a>
+                            </li>
+                            <li>
+                                <a href="#">Tag cloud das suas relações</a>
+                            </li>
+
+                        </ul>
+                    </li>
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>
@@ -39,7 +72,7 @@
     <div class="container body-content">
         <hr />
         @RenderBody()
-        <hr />
+        
         <footer>
             <p>&copy; @DateTime.Now.Year - My ASP.NET Application</p>
         </footer>

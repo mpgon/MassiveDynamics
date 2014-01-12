@@ -27,6 +27,12 @@
     <ClCompile Include="No.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="readjpeg.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="rain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="grafos.h">
@@ -36,6 +42,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="No.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="rain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

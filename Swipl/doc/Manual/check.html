@@ -1,0 +1,286 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+<head>
+<title>SWI-Prolog 7.1.2 Reference Manual: Section A.6</title><link rel="home" href="index.html">
+<link rel="contents" href="Contents.html">
+<link rel="index" href="DocIndex.html">
+<link rel="summary" href="summary.html">
+<link rel="previous" href="charsio.html">
+<link rel="next" href="clpfd.html">
+
+<style type="text/css">
+
+/* Style sheet for SWI-Prolog latex2html
+*/
+
+dd.defbody
+{ margin-bottom: 1em;
+}
+
+dt.pubdef
+{ background-color: #c5e1ff;
+}
+
+dt.multidef
+{ background-color: #c8ffc7;
+}
+
+.bib dd
+{ margin-bottom: 1em;
+}
+
+.bib dt
+{ float: left;
+margin-right: 1.3ex;
+}
+
+pre.code
+{ margin-left: 1.5em;
+margin-right: 1.5em;
+border: 1px dotted;
+padding-top: 5px;
+padding-left: 5px;
+padding-bottom: 5px;
+background-color: #f8f8f8;
+}
+
+div.navigate
+{ text-align: center;
+background-color: #f0f0f0;
+border: 1px dotted;
+padding: 5px;
+}
+
+div.title
+{ text-align: center;
+padding-bottom: 1em;
+font-size: 200%;
+font-weight: bold;
+}
+
+div.author
+{ text-align: center;
+font-style: italic;
+}
+
+div.abstract
+{ margin-top: 2em;
+background-color: #f0f0f0;
+border: 1px dotted;
+padding: 5px;
+margin-left: 10%; margin-right:10%;
+}
+
+div.abstract-title
+{ text-align: center;
+padding: 5px;
+font-size: 120%;
+font-weight: bold;
+}
+
+div.toc-h1
+{ font-size: 200%;
+font-weight: bold;
+}
+
+div.toc-h2
+{ font-size: 120%;
+font-weight: bold;
+margin-left: 2em;
+}
+
+div.toc-h3
+{ font-size: 100%;
+font-weight: bold;
+margin-left: 4em;
+}
+
+div.toc-h4
+{ font-size: 100%;
+margin-left: 6em;
+}
+
+span.sec-nr
+{
+}
+
+span.sec-title
+{
+}
+
+span.pred-ext
+{ font-weight: bold;
+}
+
+span.pred-tag
+{ float: right;
+padding-top: 0.2em;
+font-size: 80%;
+font-style: italic;
+color: #202020;
+}
+
+div.caption
+{ width: 80%;
+margin: auto;
+text-align:center;
+}
+
+/* Footnotes */
+
+sup.fn { color: blue; text-decoration: underline; }
+span.fn-text { display: none; }
+sup.fn span {display: none;}
+sup:hover span
+{ display: block !important;
+position: absolute; top: auto; left: auto; width: 80%;
+color: #000; background: white;
+border: 2px solid;
+padding: 5px; margin: 10px; z-index: 100;
+font-size: smaller;
+}
+
+/* Lists */
+
+dl.latex
+{ margin-top: 1ex;
+margin-bottom: 0.5ex;
+}
+
+dl.latex dl.latex dd.defbody
+{ margin-bottom: 0.5ex;
+}
+
+/* PlDoc Tags */
+
+dl.tags
+{ font-size: 90%;
+margin-left: 5ex;
+margin-top: 1ex;
+margin-bottom: 0.5ex;
+}
+
+dl.tags dt
+{ margin-left: 0pt;
+font-weight: bold;
+}
+
+dl.tags dd
+{ margin-left: 3ex;
+}
+
+td.param
+{ font-style: italic;
+font-weight: bold;
+}
+
+/* Index */
+
+dt.index-sep
+{ font-weight: bold;
+font-size: +1;
+margin-top: 1ex;
+}
+
+/* Tables */
+
+table.center
+{ margin: auto;
+}
+
+table.latex
+{ border-collapse:collapse;
+}
+
+table.latex tr
+{ vertical-align: text-top;
+}
+
+table.latex td,th
+{ padding: 2px 1em;
+}
+
+table.latex tr.hline td,th
+{ border-top: 1px solid black;
+}
+
+table.frame-box
+{ border: 2px solid black;
+}
+
+</style>
+</head>
+<body style="background:white">
+<div class="navigate"><a class="nav" href="index.html"><img src="home.gif" alt="Home"></a>
+<a class="nav" href="Contents.html"><img src="index.gif" alt="Contents"></a>
+<a class="nav" href="DocIndex.html"><img src="yellow_pages.gif" alt="Index"></a>
+<a class="nav" href="summary.html"><img src="info.gif" alt="Summary"></a>
+<a class="nav" href="charsio.html"><img src="prev.gif" alt="Previous"></a>
+<a class="nav" href="clpfd.html"><img src="next.gif" alt="Next"></a>
+</div>
+<h2 id="sec:check"><a id="sec:A.6"><span class="sec-nr">A.6</span> <span class="sec-title">library(check): 
+Elementary completeness checks</span></a></h2>
+
+<a id="sec:check"></a>
+
+<p>This library defines the predicate <a id="idx:check0:1798"></a><a class="pred" href="check.html#check/0">check/0</a> 
+and a few friends that allow for a quick-and-dirty cross-referencing.
+
+<dl class="latex">
+<dt class="pubdef"><a id="check/0"><strong>check</strong></a></dt>
+<dd class="defbody">
+Performs the three checking passes implemented by <a id="idx:listundefined0:1799"></a><a class="pred" href="check.html#list_undefined/0">list_undefined/0</a>,
+<a id="idx:listautoload0:1800"></a><a class="pred" href="check.html#list_autoload/0">list_autoload/0</a> 
+and <a id="idx:listredefined0:1801"></a><a class="pred" href="check.html#list_redefined/0">list_redefined/0</a>. 
+Please check the definition of these predicates for details.
+
+<p>The typical usage of this predicate is right after loading your 
+program to get a quick overview on the completeness and possible 
+conflicts in your program.</dd>
+<dt class="pubdef"><a id="list_undefined/0"><strong>list_undefined</strong></a></dt>
+<dd class="defbody">
+Scans the database for predicates that have no definition. A predicate 
+is considered defined if it has clauses or is declared using <a id="idx:dynamic1:1802"></a><a class="pred" href="dynamic.html#dynamic/1">dynamic/1</a> 
+or
+<a id="idx:multifile1:1803"></a><a class="pred" href="dynamic.html#multifile/1">multifile/1</a>. 
+As a program is compiled, calls are translated to predicates. If the 
+called predicate is not yet defined it is created as a predicate without 
+definition. The same happens with runtime generated calls. This 
+predicate lists all such undefined predicates that are referenced and 
+not defined in the library. See also
+<a id="idx:listautoload0:1804"></a><a class="pred" href="check.html#list_autoload/0">list_autoload/0</a>. 
+Below is an example from a real program and an illustration of how to 
+edit the referencing predicate using <a id="idx:edit1:1805"></a><a class="pred" href="edit.html#edit/1">edit/1</a>.
+
+<pre class="code">
+?- list_undefined.
+Warning: The predicates below are not defined. If these are
+Warning: defined at runtime using assert/1, use
+Warning: :- dynamic Name/Arity.
+Warning:
+Warning: rdf_edit:rdfe_retract/4, which is referenced by
+Warning:         1-st clause of rdf_edit:undo/4
+Warning: rdf_edit:rdfe_retract/3, which is referenced by
+Warning:         1-st clause of rdf_edit:delete_object/1
+Warning:         1-st clause of rdf_edit:delete_subject/1
+Warning:         1-st clause of rdf_edit:delete_predicate/1
+
+?- edit(rdf_edit:undo/4).
+</pre>
+
+</dd>
+<dt class="pubdef"><a id="list_autoload/0"><strong>list_autoload</strong></a></dt>
+<dd class="defbody">
+Lists all undefined (see <a id="idx:listundefined0:1806"></a><a class="pred" href="check.html#list_undefined/0">list_undefined/0</a>) 
+predicates that have a definition in the library along with the file 
+from which they will be autoloaded when accessed. See also <a id="idx:autoload0:1807"></a><a class="pred" href="runtime.html#autoload/0">autoload/0</a>.</dd>
+<dt class="pubdef"><a id="list_redefined/0"><strong>list_redefined</strong></a></dt>
+<dd class="defbody">
+Lists predicates that are defined in the global module <code>user</code> 
+as well as in a normal module; that is, predicates for which the local 
+definition overrules the global default definition.
+</dd>
+</dl>
+
+</body></html>

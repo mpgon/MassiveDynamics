@@ -1,0 +1,328 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+<head>
+<title>SWI-Prolog 7.1.2 Reference Manual: Section 4.24</title><link rel="home" href="index.html">
+<link rel="contents" href="Contents.html">
+<link rel="index" href="DocIndex.html">
+<link rel="summary" href="summary.html">
+<link rel="previous" href="chartype.html">
+<link rel="next" href="operators.html">
+
+<style type="text/css">
+
+/* Style sheet for SWI-Prolog latex2html
+*/
+
+dd.defbody
+{ margin-bottom: 1em;
+}
+
+dt.pubdef
+{ background-color: #c5e1ff;
+}
+
+dt.multidef
+{ background-color: #c8ffc7;
+}
+
+.bib dd
+{ margin-bottom: 1em;
+}
+
+.bib dt
+{ float: left;
+margin-right: 1.3ex;
+}
+
+pre.code
+{ margin-left: 1.5em;
+margin-right: 1.5em;
+border: 1px dotted;
+padding-top: 5px;
+padding-left: 5px;
+padding-bottom: 5px;
+background-color: #f8f8f8;
+}
+
+div.navigate
+{ text-align: center;
+background-color: #f0f0f0;
+border: 1px dotted;
+padding: 5px;
+}
+
+div.title
+{ text-align: center;
+padding-bottom: 1em;
+font-size: 200%;
+font-weight: bold;
+}
+
+div.author
+{ text-align: center;
+font-style: italic;
+}
+
+div.abstract
+{ margin-top: 2em;
+background-color: #f0f0f0;
+border: 1px dotted;
+padding: 5px;
+margin-left: 10%; margin-right:10%;
+}
+
+div.abstract-title
+{ text-align: center;
+padding: 5px;
+font-size: 120%;
+font-weight: bold;
+}
+
+div.toc-h1
+{ font-size: 200%;
+font-weight: bold;
+}
+
+div.toc-h2
+{ font-size: 120%;
+font-weight: bold;
+margin-left: 2em;
+}
+
+div.toc-h3
+{ font-size: 100%;
+font-weight: bold;
+margin-left: 4em;
+}
+
+div.toc-h4
+{ font-size: 100%;
+margin-left: 6em;
+}
+
+span.sec-nr
+{
+}
+
+span.sec-title
+{
+}
+
+span.pred-ext
+{ font-weight: bold;
+}
+
+span.pred-tag
+{ float: right;
+padding-top: 0.2em;
+font-size: 80%;
+font-style: italic;
+color: #202020;
+}
+
+div.caption
+{ width: 80%;
+margin: auto;
+text-align:center;
+}
+
+/* Footnotes */
+
+sup.fn { color: blue; text-decoration: underline; }
+span.fn-text { display: none; }
+sup.fn span {display: none;}
+sup:hover span
+{ display: block !important;
+position: absolute; top: auto; left: auto; width: 80%;
+color: #000; background: white;
+border: 2px solid;
+padding: 5px; margin: 10px; z-index: 100;
+font-size: smaller;
+}
+
+/* Lists */
+
+dl.latex
+{ margin-top: 1ex;
+margin-bottom: 0.5ex;
+}
+
+dl.latex dl.latex dd.defbody
+{ margin-bottom: 0.5ex;
+}
+
+/* PlDoc Tags */
+
+dl.tags
+{ font-size: 90%;
+margin-left: 5ex;
+margin-top: 1ex;
+margin-bottom: 0.5ex;
+}
+
+dl.tags dt
+{ margin-left: 0pt;
+font-weight: bold;
+}
+
+dl.tags dd
+{ margin-left: 3ex;
+}
+
+td.param
+{ font-style: italic;
+font-weight: bold;
+}
+
+/* Index */
+
+dt.index-sep
+{ font-weight: bold;
+font-size: +1;
+margin-top: 1ex;
+}
+
+/* Tables */
+
+table.center
+{ margin: auto;
+}
+
+table.latex
+{ border-collapse:collapse;
+}
+
+table.latex tr
+{ vertical-align: text-top;
+}
+
+table.latex td,th
+{ padding: 2px 1em;
+}
+
+table.latex tr.hline td,th
+{ border-top: 1px solid black;
+}
+
+table.frame-box
+{ border: 2px solid black;
+}
+
+</style>
+</head>
+<body style="background:white">
+<div class="navigate"><a class="nav" href="index.html"><img src="home.gif" alt="Home"></a>
+<a class="nav" href="Contents.html"><img src="index.gif" alt="Contents"></a>
+<a class="nav" href="DocIndex.html"><img src="yellow_pages.gif" alt="Index"></a>
+<a class="nav" href="summary.html"><img src="info.gif" alt="Summary"></a>
+<a class="nav" href="chartype.html"><img src="prev.gif" alt="Previous"></a>
+<a class="nav" href="operators.html"><img src="next.gif" alt="Next"></a>
+</div>
+<h2 id="sec:strings"><a id="sec:4.24"><span class="sec-nr">4.24</span> <span class="sec-title">Representing 
+text in strings</span></a></h2>
+
+<a id="sec:strings"></a>
+
+<p>SWI-Prolog supports the data type <var>string</var>. Strings are a 
+time- and space-efficient mechanism to handle text in Prolog. Strings 
+are stored as a byte array on the global (term) stack and are thus 
+destroyed on backtracking and reclaimed by the garbage collector.
+
+<p>Strings were added to SWI-Prolog based on an early draft of the ISO 
+standard, offering a mechanism to represent temporary character data 
+efficiently. As SWI-Prolog strings can handle 0-bytes, they are 
+frequently used through the foreign language interface (<a class="sec" href="foreign.html">section 
+9</a>) for storing arbitrary byte sequences.
+
+<p>Starting with version 3.3, SWI-Prolog offers garbage collection on 
+the atom space as well as representing 0-bytes in atoms. Although 
+strings and atoms still have different features, new code should 
+consider using atoms to avoid too many representations for text as well 
+as for compatibility with other Prolog implementations. Below are some 
+of the differences:
+
+<p>
+<ul class="latex">
+<li><i>creation</i><br>
+Creating strings is fast, as the data is simply copied to the global 
+stack. Atoms are unique and therefore more expensive in terms of memory 
+and time to create. On the other hand, if the same text has to be 
+represented multiple times, atoms are more efficient.
+<li><i>destruction</i><br>
+Backtracking destroys strings at no cost. They are cheap to handle by 
+the garbage collector, but it should be noted that extensive use of 
+strings will cause many garbage collections. Atom garbage collection is 
+generally faster.
+</ul>
+
+<p>String objects by default have no lexical representation and thus can 
+only be created using the predicates below or through the foreign 
+language interface (see <a class="sec" href="foreign.html">chapter 9</a>). 
+There are two ways to make
+<a id="idx:read1:1148"></a><a class="pred" href="termrw.html#read/1">read/1</a> 
+read text into strings, both controlled through Prolog flags. One is by 
+setting the <a class="flag" href="flags.html#flag:double_quotes">double_quotes</a> 
+flag to <code>string</code>, and the other is by setting the <a class="flag" href="flags.html#flag:backquoted_string">backquoted_string</a> 
+flag to <code>true</code>. In the latter case, <code>`Hello world`</code> 
+is read into a string and
+<a id="idx:writeterm2:1149"></a><a class="pred" href="termrw.html#write_term/2">write_term/2</a> 
+prints strings between back-quotes if <code>quoted</code> is
+<code>true</code>. This flag provides compatibility with LPA Prolog 
+string handling.
+
+<dl class="latex">
+<dt class="pubdef"><a id="atom_string/2"><strong>atom_string</strong>(<var>?Atom, 
+?String</var>)</a></dt>
+<dd class="defbody">
+Bi-directional conversion between an atom and a string. At least one of 
+the two arguments must be instantiated. <var>Atom</var> can also be an 
+integer or floating point number.</dd>
+<dt class="pubdef"><a id="string_codes/2"><strong>string_codes</strong>(<var>?String, 
+?Codes</var>)</a></dt>
+<dd class="defbody">
+Bi-directional conversion between a string and a list of character 
+codes. At least one of the two arguments must be instantiated.</dd>
+<dt class="pubdef"><a id="string_length/2"><strong>string_length</strong>(<var>+String, 
+-Length</var>)</a></dt>
+<dd class="defbody">
+Unify <var>Length</var> with the number of characters in <var>String</var>. 
+This predicate is functionally equivalent to <a id="idx:atomlength2:1150"></a><a class="pred" href="manipatom.html#atom_length/2">atom_length/2</a> 
+and also accepts atoms, integers and floats as its first argument.</dd>
+<dt class="pubdef"><a id="string_code/3"><strong>string_code</strong>(<var>?Index, 
++String, ?Code</var>)</a></dt>
+<dd class="defbody">
+True when <var>Code</var> represents the character at the 0-based <var>Index</var> 
+position in <var>String</var>. If <var>Index</var> is unbound the string 
+is scanned from index 0. Raises a domain error if <var>Index</var> is 
+negative. The mode <code>string_code(-,+,+)</code> is deterministic if 
+the searched-for
+<var>Code</var> appears only once in <var>String</var>. Note that this 
+is similar to <code>sub_string(String, Index, 1, _, Char)</code>, except 
+that the character is represented as a code in <a id="idx:stringcode3:1151"></a><a class="pred" href="strings.html#string_code/3">string_code/3</a> 
+and as a one-character string in <a id="idx:substring5:1152"></a><a class="pred" href="strings.html#sub_string/5">sub_string/5</a>. 
+See also <a id="idx:subatom5:1153"></a><a class="pred" href="manipatom.html#sub_atom/5">sub_atom/5</a>.</dd>
+<dt class="pubdef"><a id="string_concat/3"><strong>string_concat</strong>(<var>?String1, 
+?String2, ?String3</var>)</a></dt>
+<dd class="defbody">
+Similar to <a id="idx:atomconcat3:1154"></a><a class="pred" href="manipatom.html#atom_concat/3">atom_concat/3</a>, 
+but the unbound argument will be unified with a string object rather 
+than an atom. Also, if both <var>String1</var> and
+<var>String2</var> are unbound and <var>String3</var> is bound to text, 
+it breaks
+<var>String3</var>, unifying the start with <var>String1</var> and the 
+end with
+<var>String2</var> as append does with lists. Note that this is not 
+particularly fast on long strings, as for each redo the system has to 
+create two entirely new strings, while the list equivalent only creates 
+a single new list-cell and moves some pointers around.</dd>
+<dt class="pubdef"><a id="sub_string/5"><strong>sub_string</strong>(<var>+String, 
+?Start, ?Length, ?After, ?Sub</var>)</a></dt>
+<dd class="defbody">
+<var>Sub</var> is a substring of <var>String</var> starting at <var>Start</var>, 
+with length <var>Length</var>, and <var>String</var> has <var>After</var> 
+characters left after the match. See also <a id="idx:subatom5:1155"></a><a class="pred" href="manipatom.html#sub_atom/5">sub_atom/5</a>.
+</dd>
+</dl>
+
+<p></body></html>

@@ -1,0 +1,329 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+<head>
+<title>SWI-Prolog 7.1.2 Reference Manual: Section B.3</title><link rel="home" href="index.html">
+<link rel="contents" href="Contents.html">
+<link rel="index" href="DocIndex.html">
+<link rel="summary" href="summary.html">
+<link rel="previous" href="ancestral-cut.html">
+<link rel="next" href="tracehook.html">
+
+<style type="text/css">
+
+/* Style sheet for SWI-Prolog latex2html
+*/
+
+dd.defbody
+{ margin-bottom: 1em;
+}
+
+dt.pubdef
+{ background-color: #c5e1ff;
+}
+
+dt.multidef
+{ background-color: #c8ffc7;
+}
+
+.bib dd
+{ margin-bottom: 1em;
+}
+
+.bib dt
+{ float: left;
+margin-right: 1.3ex;
+}
+
+pre.code
+{ margin-left: 1.5em;
+margin-right: 1.5em;
+border: 1px dotted;
+padding-top: 5px;
+padding-left: 5px;
+padding-bottom: 5px;
+background-color: #f8f8f8;
+}
+
+div.navigate
+{ text-align: center;
+background-color: #f0f0f0;
+border: 1px dotted;
+padding: 5px;
+}
+
+div.title
+{ text-align: center;
+padding-bottom: 1em;
+font-size: 200%;
+font-weight: bold;
+}
+
+div.author
+{ text-align: center;
+font-style: italic;
+}
+
+div.abstract
+{ margin-top: 2em;
+background-color: #f0f0f0;
+border: 1px dotted;
+padding: 5px;
+margin-left: 10%; margin-right:10%;
+}
+
+div.abstract-title
+{ text-align: center;
+padding: 5px;
+font-size: 120%;
+font-weight: bold;
+}
+
+div.toc-h1
+{ font-size: 200%;
+font-weight: bold;
+}
+
+div.toc-h2
+{ font-size: 120%;
+font-weight: bold;
+margin-left: 2em;
+}
+
+div.toc-h3
+{ font-size: 100%;
+font-weight: bold;
+margin-left: 4em;
+}
+
+div.toc-h4
+{ font-size: 100%;
+margin-left: 6em;
+}
+
+span.sec-nr
+{
+}
+
+span.sec-title
+{
+}
+
+span.pred-ext
+{ font-weight: bold;
+}
+
+span.pred-tag
+{ float: right;
+padding-top: 0.2em;
+font-size: 80%;
+font-style: italic;
+color: #202020;
+}
+
+div.caption
+{ width: 80%;
+margin: auto;
+text-align:center;
+}
+
+/* Footnotes */
+
+sup.fn { color: blue; text-decoration: underline; }
+span.fn-text { display: none; }
+sup.fn span {display: none;}
+sup:hover span
+{ display: block !important;
+position: absolute; top: auto; left: auto; width: 80%;
+color: #000; background: white;
+border: 2px solid;
+padding: 5px; margin: 10px; z-index: 100;
+font-size: smaller;
+}
+
+/* Lists */
+
+dl.latex
+{ margin-top: 1ex;
+margin-bottom: 0.5ex;
+}
+
+dl.latex dl.latex dd.defbody
+{ margin-bottom: 0.5ex;
+}
+
+/* PlDoc Tags */
+
+dl.tags
+{ font-size: 90%;
+margin-left: 5ex;
+margin-top: 1ex;
+margin-bottom: 0.5ex;
+}
+
+dl.tags dt
+{ margin-left: 0pt;
+font-weight: bold;
+}
+
+dl.tags dd
+{ margin-left: 3ex;
+}
+
+td.param
+{ font-style: italic;
+font-weight: bold;
+}
+
+/* Index */
+
+dt.index-sep
+{ font-weight: bold;
+font-size: +1;
+margin-top: 1ex;
+}
+
+/* Tables */
+
+table.center
+{ margin: auto;
+}
+
+table.latex
+{ border-collapse:collapse;
+}
+
+table.latex tr
+{ vertical-align: text-top;
+}
+
+table.latex td,th
+{ padding: 2px 1em;
+}
+
+table.latex tr.hline td,th
+{ border-top: 1px solid black;
+}
+
+table.frame-box
+{ border: 2px solid black;
+}
+
+</style>
+</head>
+<body style="background:white">
+<div class="navigate"><a class="nav" href="index.html"><img src="home.gif" alt="Home"></a>
+<a class="nav" href="Contents.html"><img src="index.gif" alt="Contents"></a>
+<a class="nav" href="DocIndex.html"><img src="yellow_pages.gif" alt="Index"></a>
+<a class="nav" href="summary.html"><img src="info.gif" alt="Summary"></a>
+<a class="nav" href="ancestral-cut.html"><img src="prev.gif" alt="Previous"></a>
+<a class="nav" href="tracehook.html"><img src="next.gif" alt="Next"></a>
+</div>
+<h2 id="sec:syntaxext"><a id="sec:B.3"><span class="sec-nr">B.3</span> <span class="sec-title">Syntax 
+extensions</span></a></h2>
+
+<a id="sec:syntaxext"></a>
+
+<p>Prolog is commonly used to define <em>domain specific languages</em> 
+(DSL) as well as to interact with external languages that have a 
+concrete syntax, such as HTML, JavaScript or SQL. Standard Prolog 
+provides operators (see <a class="sec" href="operators.html">section 
+4.25</a>) for extending its syntax. Unfortunately, Prolog's syntax is 
+rather peculiar and operators do not allow for commonly seen syntactical 
+patterns such as array subscripting, expressing attributes, scope or a 
+body using curly brackets, distinguishing identifiers or strings from 
+`functions', etc.
+
+<p>The syntactic extensions described in <a class="sec" href="syntaxext.html">section 
+B.3.1</a> provide additional constructs to extend the syntax. These 
+extensions allow for coping with a large part of the <em>curly bracket 
+languages</em>, which allows for defining DSLs that are more natural to 
+use, in particular for people that are less familiar with Prolog.
+
+<p>For some external languages it can be sufficient to support the 
+simple data model using a completely different Prolog concrete syntax. 
+This is for example the case for HTML, as implemented by the library
+<code>library(http/html_write)</code>. With the extensions of <a class="sec" href="syntaxext.html">section 
+B.3.1</a>, this also becomes true for the statistics language <b>R</b>, 
+which was one of the motivations for these extensions. These extensions 
+are motivated in <cite><a class="cite" href="Bibliography.html#WLPE/Wielemaker/2012">Wielemaker &amp; 
+Angelopoulos,</a></cite>.
+
+<p>Other languages, such as full JavaScript, are too different from 
+Prolog for dealing with them using (extended) Prolog operator. While 
+most of the JavaScript syntax can be covered with the extended notion of 
+operators, the produced Prolog term does not unambiguishly describe the 
+JavaScript abstract syntax. For example, both <code>++a</code> and <code>a++</code> 
+are, with the appropriate operator declarations, valid Prolog syntax. 
+However, they both map to the term <code>++(a)</code> and thus a Prolog 
+JavaScript serialization does not know which these two forms the 
+generate.<sup class="fn">126<span class="fn-text">This example comes 
+from Richard O'Keefe.</span></sup> More classical, <code>"string"</code> 
+produces the same Prolog term as
+<code>[115,116,114,105,110,103]</code>.
+
+<p>An alternative to syntax extension using (extended) operators are
+<em>quasi quotations</em> <cite><a class="cite" href="Bibliography.html#DBLP:conf/haskell/Mainland07">Mainland, 
+2007</a></cite>. Quasi quotations embed external languages in a Prolog 
+term using their native syntax. The language is specified in the 
+quotation. Parsing such a term causes Prolog to call the associated 
+parser which creates an abstract syntax tree that unambiguosly 
+represents the code fragment and which can be processed in Prolog or 
+serialized for external processing. Quasi quotations are realised by 
+library <code>library(quasi_quotations)</code>, which is documented in <a class="sec" href="quasiquotations.html">section 
+A.23</a>.
+
+<p><h3 id="sec:blockop"><a id="sec:B.3.1"><span class="sec-nr">B.3.1</span> <span class="sec-title">Block 
+operators</span></a></h3>
+
+<a id="sec:blockop"></a>
+
+<p>Introducing curly bracket, array subscripting and empty argument 
+lists is achieved using <em>block operators</em>.<sup class="fn">127<span class="fn-text">Introducing 
+block operators was proposed by Jose Morales. It was discussed in the 
+Prolog standardization mailing list, but there were too many conflicts 
+with existing extensions (ECLiPSe and B-Prolog) and doubt their need to 
+reach an agreement. Increasing need to get to some solution resulted in 
+what is documented in this section.</span></sup> The atoms <code>[]</code>, <code>{}</code> 
+and <code>()</code> may be declared as an operator, which has the 
+following effect:
+
+<dl class="latex">
+<dt><strong>[&nbsp;]</strong></dt>
+<dd class="defbody">
+This operator is typically declared as a low-priority <code>yf</code> 
+postfix operator, which allows for <code>array[index]</code> notation. 
+This syntax produces a term <code>[]([index],array)</code>.</dd>
+<dt><strong>{&nbsp;}</strong></dt>
+<dd class="defbody">
+This operator is typically declared as a low-priority <code>xf</code> 
+postfix operator, which allows for <code>head(arg) { body }</code> 
+notation. This syntax produces a term <code>{}({body},head(arg))</code>.</dd>
+<dt><strong>(&nbsp;)</strong></dt>
+<dd class="defbody">
+This operator can only meaningfully be declared as a low-priority
+<code>xf</code> postfix operator, which allows for <code>name()</code> 
+notation. This syntax produces a term <code>'()'(name)</code>. This 
+transformation only applies if the opening bracket immediately follows 
+the functor name, i.e., following the same rules as for constructing a 
+compound term.
+</dd>
+</dl>
+
+<p>Below is an example that illustrates the representation of a typical 
+`curly bracket language' in Prolog.
+
+<pre class="code">
+?- op(1, xf, '()').
+?- op(100, xf, {}).
+?- op(100, yf, []).
+?- op(1100, yf, ;).
+
+?- displayq(func(arg)
+            { a[10] = 5;
+              update();
+            }).
+{}({}(;(=([]('.'(10,[]),a),5),;('()'(update)))),func(arg))
+</pre>
+
+<p></body></html>
