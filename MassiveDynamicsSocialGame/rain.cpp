@@ -22,9 +22,9 @@ void InicializarChuva(CHUVA &rain, int numgotas)
 	//	xg, yg, zg;    gravidade em cada eixo
 		
 	rain.grosor = 0.4f;
-	rain.x = 400;
-	rain.y = 400;
-	rain.z = 400;
+	rain.x = 7;
+	rain.y = 12;
+	rain.z = 7;
 	rain.xg = 0.0f;
 	rain.yg = -0.002f;
 	rain.zg = 0.0f;
@@ -59,7 +59,7 @@ void DesenharChuva(CHUVA &rain, int numgotas)
 	glEnable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 
-	glTranslatef(0,-75,-200);
+	glTranslatef(0,-75,0);
 	glRotatef(90,1,0,0);
 
 	for (int i = 0; i<numgotas; i++)

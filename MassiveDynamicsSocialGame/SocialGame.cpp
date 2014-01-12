@@ -120,7 +120,7 @@ Estado estado;
 Modelo modelo;
 
 //Chuva
-const int numgotas = 15000;
+const int numgotas = 150;
 CHUVA rain;
 
 void chuva()
@@ -136,11 +136,11 @@ void initEstado(){
 	estado.camera.dir_long = -M_PI / 4;
 	estado.camera.fov = 60;
 	estado.camera.dist = 100;
-	estado.camera.dir = 0;
+	estado.camera.dir = 11;
 	estado.camera.vel = 1;
-	estado.camera.posx = nos[2].x * 5;
-	estado.camera.posy = nos[2].y * 5;
-	estado.camera.posz = nos[2].z * 5 + 12;
+	estado.camera.posx = nos[0].x * 5;
+	estado.camera.posy = nos[0].y * 5;
+	estado.camera.posz = nos[0].z * 5 + 12;
 	estado.eixo[0] = 0;
 	estado.eixo[1] = 0;
 	estado.eixo[2] = 0;
@@ -835,13 +835,35 @@ void setCamera(){
 		putLights((GLfloat*)white_light);
 		gluLookAt(eye[0], eye[1], eye[2], estado.camera.center[0], estado.camera.center[1], estado.camera.center[2], 0, 0, 1);
 	}
+	//cout << "gluLookat(" << eye[0] << " - " << eye[1] << " - " << eye[2] << " - " << estado.camera.center[0] << " - " << estado.camera.center[1] << " - " << estado.camera.center[2] << endl;
+}
+
+void setCameraMiniMapa(){
+	Vertice eye;
+
+	GLfloat dist = (100) -20;
+	GLfloat longit = (-M_PI / 4) - 4;
+	GLfloat latit = (M_PI / 4) + 6;
+
+	eye[0] = 0 + dist*cos(longit)*cos(latit);
+	eye[1] = 0 + dist*sin(longit)*cos(latit);
+	eye[2] = 0 + dist*sin(latit);
+
+	putLights((GLfloat*)white_light);
+	//gluLookAt(eye[0], eye[1], eye[2], 0, 0, 0, 0, 0, 1);
+	gluLookAt(46.33, 60.06, -46.55, 0, 0, 0, 0, 0, 1);
+
 }
 
 void display(void)
 {
 
-
+	
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glEnable(GL_SCISSOR_TEST);
+	glScissor(0, 0, glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
+	glViewport(0, 0, glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
+
 	glLoadIdentity();
 	setCamera();
 
@@ -873,6 +895,53 @@ void display(void)
 		desenhaPlanoDrag(estado.eixoTranslaccao);
 
 	}
+
+	//glFlush();
+	//glutSwapBuffers();
+	//-----------------------------------------------------------
+	glClear(GL_DEPTH_BUFFER_BIT);
+	glScissor(0, 0, 100, 100);
+	glViewport(0, 0, 100, 100);
+	//glMatrixMode(GL_PROJECTION);
+	//setProjection(0, 0, GL_FALSE);
+	//glMatrixMode(GL_MODELVIEW);
+
+	//glClear(GL_DEPTH_BUFFER_BIT);
+	glLoadIdentity();
+	setCameraMiniMapa();
+
+	material(slate);
+
+	desenhaSkyBox();
+	//desenhaSolo();
+
+
+	desenhaEixos();
+
+	desenhaLabirinto();
+
+	//glRasterPos2i(100, 120);
+	//glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
+	//_glutBitmapString(GLUT_BITMAP_HELVETICA_18, "text to render");
+
+	//desenha chuva
+	if (estado.chuva){
+		glPushMatrix();
+		chuva();
+		glutPostRedisplay();
+		glPopMatrix();
+	}
+
+	if (estado.eixoTranslaccao) {
+		// desenha plano de translacção
+		cout << "Translate... " << estado.eixoTranslaccao << endl;
+		desenhaPlanoDrag(estado.eixoTranslaccao);
+
+	}
+	
+	glClear(GL_DEPTH_BUFFER_BIT);
+	glScissor(0, 0, glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
+	glViewport(0, 0, glutGet(GLUT_WINDOW_WIDTH), glutGet(GLUT_WINDOW_HEIGHT));
 
 	glFlush();
 	glutSwapBuffers();
@@ -1093,7 +1162,6 @@ void myReshape(int w, int h){
 	setProjection(0, 0, GL_FALSE);
 	glMatrixMode(GL_MODELVIEW);
 }
-
 
 void motionRotate(int x, int y){
 #define DRAG_SCALE	0.01
