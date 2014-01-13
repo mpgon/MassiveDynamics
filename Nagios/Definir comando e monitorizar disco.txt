@@ -1,0 +1,18 @@
+Definir o comando check_nt2 para usar todos os parametros necessarios
+
+define command {
+        command_name    check_nt2
+        command_line    /usr/lib/nagios/plugins/check_nt -H '$HOSTADDRESS$' -p 12489 -v '$ARG1$' -l '$ARG2$' -s '$ARG3$' -w '$ARG4$' -c '$ARG5$'
+}
+
+Servicos WVM112
+
+Verifica o espaco em disco, se for inferior a 10% emite um warning e se for inferior a 5% emite um critical
+
+define service {
+        service_description Disks
+        use generic-service
+        check_command check_nt2!USEDDISKSPACE!c!Arqsi@2013!90!95
+        host_name WVM112
+        contact_groups admins
+}
