@@ -1,0 +1,17 @@
+Definir WVM112
+
+define host {
+        host_name WVM112
+        address 172.31.101.112
+        use generic-host
+        contact_groups admins
+}
+
+Definir SocialGame
+
+define host {
+        host_name SocialGame
+        address 172.31.101.112
+        use generic-host
+        contact_groups admins
+}
