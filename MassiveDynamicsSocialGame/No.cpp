@@ -18,6 +18,11 @@ void No::setY(const float& yP){
 void No::setZ(const float& zP){
 	z = zP;
 }
+
+void No::setTipo(const char t){
+	tipo = t;
+}
+
 /*
 istream& operator>>(std::istream& is, No& obj)
 {

@@ -138,9 +138,9 @@ void initEstado(){
 	estado.camera.dist = 100;
 	estado.camera.dir = 11;
 	estado.camera.vel = 1;
-	estado.camera.posx = nos[0].x * 5;
-	estado.camera.posy = nos[0].y * 5;
-	estado.camera.posz = nos[0].z * 5 + 12;
+	estado.camera.posx = nos[noInicial].x * 5;
+	estado.camera.posy = nos[noInicial].y * 5;
+	estado.camera.posz = nos[noInicial].z * 5 + 12;
 	estado.eixo[0] = 0;
 	estado.eixo[1] = 0;
 	estado.eixo[2] = 0;
@@ -1067,6 +1067,9 @@ void colisaoNos(GLfloat x, GLfloat y, GLfloat z){
 	for (int i = 0; i < numNos; i++){
 		if (pow(x - nos[i].x, 2) + pow(y - nos[i].y, 2) <= pow(1, 2)){
 			cout << "NO[" << i << "]" << endl;
+			if (nos[i].getTipo()=='F'){
+				cout << "GANHOU!" << endl;
+			}
 			estado.camera.posx = x * 5;
 			estado.camera.posy = y * 5;
 			estado.camera.posz = nos[i].z * 5 + 12;

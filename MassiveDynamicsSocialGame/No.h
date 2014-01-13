@@ -13,6 +13,7 @@ public:
 	float y; 
 	float z;
 	float largura;
+	char tipo;
 
 public:
 	No();
@@ -21,10 +22,12 @@ public:
 	float getX()const{ return x; }
 	float getY()const{ return y; }
 	float getZ()const{ return z; }
+	char getTipo()const{ return tipo; }
 	float getLargura()const{ return largura; }
 	void setX(const float& xP);
 	void setY(const float& yP);
 	void setZ(const float& zP);
+	void setTipo(const char t);
 };
 
 #endif

@@ -2,11 +2,12 @@
 #include <iostream>
 #include <fstream>
 
-#define __GRAFO__FILE__ "exemplo.grafo"
+#define __GRAFO__FILE__ "normal.grafo"
 using namespace std;
 No nos[_MAX_NOS_GRAFO];
 Arco arcos[_MAX_ARCOS_GRAFO];
 int numNos = 0, numArcos = 0;
+int noInicial;
 
 
 
@@ -94,8 +95,18 @@ void leGrafo(){
 		exit(1);
 	}
 	myfile >> numNos;
-	for (int i = 0; i<numNos; i++)
+	for (int i = 0; i < numNos; i++){
 		myfile >> nos[i].x >> nos[i].y >> nos[i].z;
+		nos[i].tipo = 'N';
+	}
+	int no_tipo;
+	myfile >> no_tipo;
+	nos[no_tipo].tipo = 'I';
+	noInicial = no_tipo;
+	myfile >> no_tipo;
+	nos[no_tipo].tipo = 'F';
+	myfile >> no_tipo;
+	nos[no_tipo].tipo = 'B';
 	myfile >> numArcos;
 	for (int i = 0; i<numArcos; i++)
 		myfile >> arcos[i].noi >> arcos[i].nof >> arcos[i].peso >> arcos[i].largura;

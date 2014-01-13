@@ -21,7 +21,7 @@
 
 extern No nos[];
 extern Arco arcos[];
-extern int numNos, numArcos;
+extern int numNos, numArcos, noInicial;
 
 void addNo(No);
 void deleteNo(int);
