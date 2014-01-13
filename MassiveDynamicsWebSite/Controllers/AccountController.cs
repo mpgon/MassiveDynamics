@@ -196,6 +196,7 @@ namespace MassiveDynamicsWebSite.Controllers
             var user = Db.Users.First(u => u.UserName == id);
             var model = new EditUserViewModel(user);
             ViewBag.MessageId = Message;
+            ViewBag.humorID = new SelectList(Db.Humor, "ID", "nome", user.humorID);
             return View(model);
         }
 
@@ -213,8 +214,8 @@ namespace MassiveDynamicsWebSite.Controllers
                 user.LastName = model.LastName;
                 user.Email = model.Email;
                 user.Date = model.Date;
-                /*user.humor = model.humor;
-                user.humorID = model.humorID;*/
+                user.humor = model.humor;
+                user.humorID = model.humorID;
                 user.perfilfacebook = model.perfilfacebook;
                 user.perfillinkedin = model.perfillinkedin;
 

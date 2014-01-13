@@ -192,6 +192,10 @@
     <Compile Include="Migrations\201401071733084_extendSemHumorMig.Designer.cs">
       <DependentUpon>201401071733084_extendSemHumorMig.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201401131231318_humor.cs" />
+    <Compile Include="Migrations\201401131231318_humor.Designer.cs">
+      <DependentUpon>201401131231318_humor.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\EstadoRelacao.cs" />
@@ -306,6 +310,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201401071733084_extendSemHumorMig.resx">
       <DependentUpon>201401071733084_extendSemHumorMig.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201401131231318_humor.resx">
+      <DependentUpon>201401131231318_humor.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

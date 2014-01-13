@@ -59,6 +59,14 @@
         </div>
     </div>
     
+    <div class="control-group">
+            @Html.LabelFor(model => model.humorID, "humorID", new { @class = "control-label" })
+            <div class="controls">
+                @Html.DropDownList("humorID", String.Empty)
+                @Html.ValidationMessageFor(model => model.humorID, null, new { @class = "help-inline" })
+            </div>
+        </div>
+    
     <div class="form-group">
         @Html.LabelFor(m => m.perfilfacebook, new { @class = "col-md-2 control-label" })
         <div class="col-md-10">
