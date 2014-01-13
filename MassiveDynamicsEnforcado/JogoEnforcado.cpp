@@ -1,11 +1,16 @@
 #include "JogoEnforcado.h"
 #include <stdio.h>
 #include <string.h>
+#include <string>
 #include <stdlib.h>
 #include <math.h>
 #include <ctime>
 #include <vector>
 #include <GL/glut.h>
+
+#include <windows.h>
+#include <SWI-cpp.h>
+#include <iostream>
 using namespace std;
 
 #ifndef M_PI
@@ -63,19 +68,85 @@ typedef struct {
 	GLfloat   baseIniY;
 	GLfloat   baseFimX;
 	GLfloat   baseFimY;
+	
 }Enforcado;
 
 Estado estado;
 Enforcado enforcado;
-char* palavras[] = { "amalia rodrigues", "castelo branco", "eca de queiros", "institucionalizacao", "rosa dos ventos" };
-//char* abc[] = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
+
 char* abc = "abcdefghijklmnopqrstuvwxyz";
-int NUMTOTALPALAVRAS; // Inicializado no main de forma a ser dinamico conforme actualizacao do array
-char* PALAVRA;
-vector<char> vecLetrasErradas;
-vector<char> vecLetrasCorrectas;
-int TENTATIVAS;
-float ang;
+int NUMTOTALPALAVRAS = 5; // Numero de palavras em cada categoria
+string PALAVRA; // palavara a adevinhar
+string CATEGORIA; // categoria da palavra
+
+vector<char> vecLetrasErradas; //contem letras erradas ja carregadas pelo user
+vector<char> vecLetrasCorrectas; //contem letras correctas ja carregadas pelo user
+
+int TENTATIVAS; // numero de tentativas do user
+float ang; // angulo de desenho do enforcado
+
+
+//-------------------------------------------------------------------------
+//  Selecionar palavra aleatorio do prolog
+//-------------------------------------------------------------------------
+void gerarPalavraProlog(){
+
+	srand(time(0)); // Garantir numero gerado é aleatorio
+
+	int numRand = (rand() % NUMTOTALPALAVRAS);
+	numRand = numRand + 1;
+	TENTATIVAS = numRand;
+	
+	char* argv[] = { "libswipl.dll", "-s", "prologEnforcado.pl", NULL };	PlEngine e(3, argv);
+	PlTermv av(3);
+
+	char buffer[100];
+	char buffer2[100];
+
+	sprintf_s(buffer, "%s", CATEGORIA.c_str());
+	sprintf_s(buffer2, "%d", numRand);
+
+	av[0] = PlCompound(buffer);
+	av[1] = PlCompound(buffer2);
+
+	PlQuery q("getPalavra", av);
+	char* paltemp;
+	while (q.next_solution())
+	{
+		paltemp = (char*)av[2];
+	}
+	PALAVRA = paltemp;
+}
+
+//-------------------------------------------------------------------------
+//  Verificar se pertence a palavra											
+//-------------------------------------------------------------------------
+int letraPertence(char letra)
+{
+	char* argv[] = { "libswipl.dll", "-s", "prologEnforcado.pl", NULL };	PlEngine e(3, argv);
+	PlTermv av(3);
+
+	char buffer[2];
+	char buffer2[200];
+
+	sprintf_s(buffer, "%c", letra);
+		
+	sprintf_s(buffer2, "%s", PALAVRA.c_str());
+
+	av[0] = PlCompound(buffer);
+	av[1] = PlCompound(buffer2);
+	
+	PlQuery q("caracterEm", av);
+
+	int resp;
+	while (q.next_solution())
+	{
+		resp = (int)av[2];
+	}
+
+	return resp;
+	
+}
 
 //-------------------------------------------------------------------------
 //  Inicialização das variaveis
@@ -84,6 +155,8 @@ void Init(void)
 {
 	TENTATIVAS = 0;
 	ang = 0;
+	CATEGORIA = "";
+	//gerarPalavra();
 
 	enforcado.baseIniX = -0.6;
 	enforcado.baseIniY = -0.7;
@@ -125,7 +198,6 @@ void Init(void)
 	enforcado.pernaIniX = 0;
 	enforcado.pernaIniY = -(enforcado.corpoComprimento + enforcado.cabecaRaio);
 
-	
 
 	glClearColor(0.0, 0.0, 0.0, 0.0);
 	glEnable(GL_POINT_SMOOTH);
@@ -170,7 +242,7 @@ void Reshape(int width, int height)
 //-------------------------------------------------------------------------
 //  Desenhar string em coordenadas especificadas
 //-------------------------------------------------------------------------
-void printWord(float x, float y, float z, char* text)
+void printWord(float x, float y, float z, string text)
 {
 	//  Difrentes fonts:
 	//  GLUT_BITMAP_8_BY_13, 
@@ -183,7 +255,8 @@ void printWord(float x, float y, float z, char* text)
 	GLvoid *font_style = GLUT_BITMAP_TIMES_ROMAN_24;
 
 	int strlength;
-	strlength = strlen(text); // Tamanho do texto
+	//strlength = strlen(text); // Tamanho do texto
+	strlength = text.size();
 
 	glRasterPos3f(x, y, z); // Posicionamento
 
@@ -196,7 +269,7 @@ void printWord(float x, float y, float z, char* text)
 //-------------------------------------------------------------------------
 //  Desenhar letra em coordenadas especificadas
 //-------------------------------------------------------------------------
-void printLetra(float x, float y, float z, char* text, int pos)
+void printLetra(float x, float y, float z, string text, int pos)
 {
 	//  Difrentes fonts:
 	//  GLUT_BITMAP_8_BY_13, 
@@ -362,11 +435,12 @@ void desenhaPernaE()
 }
 
 //-------------------------------------------------------------------------
-//  Desenhar palavra														AJUSTAR POSICAO
+//  Desenhar palavra														
 //-------------------------------------------------------------------------
 void desenharPalavra(){
 	int numChar;
-	numChar = strlen(PALAVRA); // Tamanho do texto
+	//numChar = strlen(PALAVRA); // Tamanho do texto
+	numChar = PALAVRA.size();
 	float mid = (numChar / 2);
 	printWord(-mid, -0.9, 0, PALAVRA);
 }
@@ -388,29 +462,14 @@ int vecsContem(char letra)
 }
 
 //-------------------------------------------------------------------------
-//  Verificar se pertence a palavra											SUBSTITUIR POR PROLOG
-//-------------------------------------------------------------------------
-int letraPertence(char letra)
-{
-	int strlength;
-	strlength = strlen(PALAVRA);
-
-	for (int i = 0; i < strlength; i++){
-		if (PALAVRA[i] == letra){
-			return 1;
-		}
-	}
-	return 0;
-}
-
-//-------------------------------------------------------------------------
 //  Imprime corectas selecionadas
 //-------------------------------------------------------------------------
 void printLetrasPalavra()
 {
+	//cout << ":::" << PALAVRA << ":" << endl;
 	int length;
-	length = strlen(PALAVRA);
-	
+	//length = strlen(PALAVRA);
+	length = PALAVRA.size();
 		for (int i = 0; i < length; i++){
 			if (vecsContem(PALAVRA[i]) == 1){
 				printLetra((-1 + i*0.1), -0.9, 0, PALAVRA, i);
@@ -432,7 +491,7 @@ void printLetrasUsadas()
 	int length;
 	int k = 0;
 	length = strlen(abc);
-
+	
 	printWord(-1,0.9,0,"Letras Usadas:");
 
 	for (int i = 0; i < length; i++){
@@ -491,23 +550,49 @@ void desenhaBoneco(){
 //-------------------------------------------------------------------------
 void letraCarregada(char letra)
 {
-	
-	if (vecsContem(letra) == 0){ // Se nao foi usada
-		// Verificar se letra esta contido na palavra
-		if (letraPertence(letra) == 0){ // Se nao conter letra
-			TENTATIVAS++;
-			desenhaBoneco();
-			vecLetrasErradas.push_back(letra);
-		}
-		else{
-			vecLetrasCorrectas.push_back(letra);
+	if (CATEGORIA.compare("") == 0){
+		switch (letra){
+		case 'O':
+		case 'o':
+			CATEGORIA = "objecto";
+			gerarPalavraProlog();
+			break;
+		case 'P':
+		case 'p':
+			CATEGORIA = "pessoa";
+			gerarPalavraProlog();
+				break;
+		default:
+			printWord(0, -0.5, 0, "Letras Invalida");
+			break;
 		}
 	}
 	else{
-		//REPETIDA
+		if (vecsContem(letra) == 0){ // Se nao foi usada
+			// Verificar se letra esta contido na palavra
+			if (letraPertence(letra) == 0){ // Se nao conter letra
+				TENTATIVAS++;
+				desenhaBoneco();
+				vecLetrasErradas.push_back(letra);
+			}
+			else{
+				vecLetrasCorrectas.push_back(letra);
+			}
+		}
+		else{
+			//REPETIDA
+		}
 	}
-	
 
+}
+
+//-------------------------------------------------------------------------
+//  Selecionar categoria
+//-------------------------------------------------------------------------
+void selecionarCategoria(){
+	printWord(-0.9, 0.9, 0, "Selecionar a categoria da palavra:");
+	printWord(0, 0.7, 0, "(O)bjecto");
+	printWord(0, 0.5, 0, "(P)essoa");
 }
 
 //-------------------------------------------------------------------------
@@ -515,35 +600,36 @@ void letraCarregada(char letra)
 //-------------------------------------------------------------------------
 void Draw(void)
 {
-
-	glClear(GL_COLOR_BUFFER_BIT);
-
-
-	if (TENTATIVAS < 10){
-		printLetrasPalavra();
-		desenhaBoneco();
-		printLetrasUsadas();
+	if (CATEGORIA.compare("") == 0){
+		selecionarCategoria();
 	}
 	else{
-		printLetrasUsadas();
-		printWord(-1, -0.9, 0, "PERDEU");
+		glClear(GL_COLOR_BUFFER_BIT);
 
-		//											Animacao baloucar do boneco
-		desenhaBase();
-		desenhaBarraVertical();
-		desenhaBarraHorizontal();
-		glRotated(ang,0,0,1);
-		desenhaCorda();
-		desenhaCabeca();
-		desenhaCorpo();
-		desenhaBracoE();
-		desenhaBracoD();
-		desenhaPernaE();
-		desenhaPernaD();
-		glRotated(-ang, 0, 0, 1);
-		ang++;
+
+		if (TENTATIVAS < 10){
+			printLetrasPalavra();
+			desenhaBoneco();
+			printLetrasUsadas();
+		}
+		else{
+			printLetrasUsadas();
+			printWord(-1, -0.9, 0, "PERDEU");
+
+			desenhaBase();
+			desenhaBarraVertical();
+			desenhaBarraHorizontal();
+			glRotated(ang, 0, 0, 1);
+			desenhaCorda();
+			desenhaCabeca();
+			desenhaCorpo();
+			desenhaBracoE();
+			desenhaBracoD();
+			desenhaPernaE();
+			desenhaPernaD();
+			glRotated(-ang, 0, 0, 1);
+		}
 	}
-
 	glFlush();
 	if (estado.doubleBuffer)
 		glutSwapBuffers();
@@ -679,19 +765,12 @@ void Key(unsigned char key, int x, int y)
 
 }
 
-//-------------------------------------------------------------------------
-//  Selecionar palavra aleatorio
-//-------------------------------------------------------------------------
-void gerarPalavra(){
-	srand(time(0)); // Garantir numero gerado é aleatorio
-	int numRand = (rand() % NUMTOTALPALAVRAS);
-	PALAVRA = palavras[numRand];
-}
+
 
 int main(int argc, char **argv)
 {
 	// Defenir variavel conforme numero de palavras no array
-	NUMTOTALPALAVRAS = sizeof(palavras)/sizeof(char*);
+	//NUMTOTALPALAVRAS = sizeof(palavras)/sizeof(char*);
 
 	estado.doubleBuffer = GL_TRUE;
 
@@ -705,13 +784,14 @@ int main(int argc, char **argv)
 
 
 	// Selecionar palavra
-	gerarPalavra();
-
+	//gerarPalavraProlog();
+	//cout <<"passou:"<< xpto << endl;
+	//cin.get();
 	Init();
+	//cout << PALAVRA << endl;
+	//cout << endl;
 
-
-
-
+	//cin.get();
 
 	// Registar callbacks do GLUT
 	// callbacks de janelas/desenho
