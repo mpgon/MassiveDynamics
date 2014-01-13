@@ -7,3 +7,8 @@ define service {
         host_name WVM112
         contact_groups admins
 }
+
+define command {
+        command_name    check_nt
+        command_line    /usr/lib/nagios/plugins/check_nt -H '$HOSTADDRESS$' -p 12489 -v '$ARG1$' -l '$ARG2$' -s '$ARG3$'
+}

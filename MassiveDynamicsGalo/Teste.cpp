@@ -369,7 +369,7 @@ void Draw(void)
 	if (jogo.win != 0)
 	{
 		Sleep(5000);
-		exit(1);
+		exit(jogo.win);
 	}
 }
 
