@@ -84,6 +84,7 @@ vector<char> vecLetrasCorrectas; //contem letras correctas ja carregadas pelo us
 
 int TENTATIVAS; // numero de tentativas do user
 float ang; // angulo de desenho do enforcado
+int estadoJogo; // -1 a decorrer, 0 perdeu, 1 ganhou
 
 
 //-------------------------------------------------------------------------
@@ -95,7 +96,6 @@ void gerarPalavraProlog(){
 
 	int numRand = (rand() % NUMTOTALPALAVRAS);
 	numRand = numRand + 1;
-	TENTATIVAS = numRand;
 	
 	char* argv[] = { "libswipl.dll", "-s", "prologEnforcado.pl", NULL };	PlEngine e(3, argv);
 	PlTermv av(3);
@@ -156,6 +156,7 @@ void Init(void)
 	TENTATIVAS = 0;
 	ang = 0;
 	CATEGORIA = "";
+	estadoJogo = -1;
 	//gerarPalavra();
 
 	enforcado.baseIniX = -0.6;
@@ -596,10 +597,28 @@ void selecionarCategoria(){
 }
 
 //-------------------------------------------------------------------------
+//  Testar se palavra toda já foi adevinhada
+//-------------------------------------------------------------------------
+bool adevinhouPalavraToda(){
+	int length;
+	bool flag = true;
+	length = PALAVRA.size();
+
+	for (int i = 0; i < length; i++){
+		if (vecsContem(PALAVRA[i]) == 1 || PALAVRA[i] == ' '){
+		}else{
+			return false;
+		}
+	}
+	return flag;
+}
+
+//-------------------------------------------------------------------------
 //  Callback de desenho
 //-------------------------------------------------------------------------
 void Draw(void)
 {
+
 	if (CATEGORIA.compare("") == 0){
 		selecionarCategoria();
 	}
@@ -607,32 +626,39 @@ void Draw(void)
 		glClear(GL_COLOR_BUFFER_BIT);
 
 
-		if (TENTATIVAS < 10){
-			printLetrasPalavra();
+		if (adevinhouPalavraToda()){
+			printLetrasUsadas();
+			printWord(0, -0.9, 0, "GANHOU");
 			desenhaBoneco();
-			printLetrasUsadas();
-		}
-		else{
-			printLetrasUsadas();
-			printWord(-1, -0.9, 0, "PERDEU");
+			estadoJogo = 1;
 
-			desenhaBase();
-			desenhaBarraVertical();
-			desenhaBarraHorizontal();
-			glRotated(ang, 0, 0, 1);
-			desenhaCorda();
-			desenhaCabeca();
-			desenhaCorpo();
-			desenhaBracoE();
-			desenhaBracoD();
-			desenhaPernaE();
-			desenhaPernaD();
-			glRotated(-ang, 0, 0, 1);
+		}
+		else if (TENTATIVAS < 10){
+				printLetrasPalavra();
+				desenhaBoneco();
+				printLetrasUsadas();
+			
+		}else{
+			printLetrasUsadas();
+			printWord(0, -0.9, 0, "PERDEU");
+			desenhaBoneco();
+			estadoJogo = 0;
+			
 		}
 	}
+
 	glFlush();
 	if (estado.doubleBuffer)
 		glutSwapBuffers();
+
+	if (estadoJogo == 0){
+		Sleep(3000);
+		exit(0);
+	}
+	else if (estadoJogo == 1){
+		Sleep(3000);
+		exit(1);
+	}
 
 }
 
@@ -769,9 +795,6 @@ void Key(unsigned char key, int x, int y)
 
 int main(int argc, char **argv)
 {
-	// Defenir variavel conforme numero de palavras no array
-	//NUMTOTALPALAVRAS = sizeof(palavras)/sizeof(char*);
-
 	estado.doubleBuffer = GL_TRUE;
 
 	glutInit(&argc, argv);
@@ -783,34 +806,30 @@ int main(int argc, char **argv)
 		exit(1);
 
 
-	// Selecionar palavra
-	//gerarPalavraProlog();
-	//cout <<"passou:"<< xpto << endl;
-	//cin.get();
 	Init();
-	//cout << PALAVRA << endl;
-	//cout << endl;
+	
 
-	//cin.get();
-
-	// Registar callbacks do GLUT
-	// callbacks de janelas/desenho
-	glutReshapeFunc(Reshape);
-	glutDisplayFunc(Draw);
-
-	// Callbacks de teclado
-	glutKeyboardFunc(Key);
-	//glutKeyboardUpFunc(KeyUp);
-	//glutSpecialFunc(SpecialKey);
-	//glutSpecialFunc(SpecialKeyUp);
-
-	// callbacks timer/idle
-	glutTimerFunc(estado.delay, Timer, 0);
-	//glutIdleFunc(Idle);
+		// Registar callbacks do GLUT
+		// callbacks de janelas/desenho
+		glutReshapeFunc(Reshape);
 
 
-	// COMECAR...
-	glutMainLoop();
+		glutDisplayFunc(Draw);
 
-	return 0;
+		// Callbacks de teclado
+		glutKeyboardFunc(Key);
+		//glutKeyboardUpFunc(KeyUp);
+		//glutSpecialFunc(SpecialKey);
+		//glutSpecialFunc(SpecialKeyUp);
+
+		// callbacks timer/idle
+		glutTimerFunc(estado.delay, Timer, 0);
+		//glutIdleFunc(Idle);
+
+
+		// COMECAR...
+
+		glutMainLoop();
+	
+	return -1;
 }
