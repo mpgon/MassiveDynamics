@@ -20,8 +20,8 @@ namespace MassiveDynamicsWebSite.Models
 
         [DisplayFormat(DataFormatString = "{0:dd MMM yyyy}")]
         public System.DateTime Date { get; set; }
-        /*public virtual Humor humor { get; set; }
-        public int humorID { get; set; }*/
+        public virtual Humor humor { get; set; }
+        public int humorID { get; set; }
         public string perfilfacebook { get; set; }
         public string perfillinkedin { get; set; }
     }

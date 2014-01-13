@@ -213,8 +213,8 @@ namespace MassiveDynamicsWebSite.Controllers
                 user.LastName = model.LastName;
                 user.Email = model.Email;
                 user.Date = model.Date;
-                /*user.humor = model.humor;
-                user.humorID = model.humorID;*/
+                user.humor = model.humor;
+                user.humorID = model.humorID;
                 user.perfilfacebook = model.perfilfacebook;
                 user.perfillinkedin = model.perfillinkedin;
 
