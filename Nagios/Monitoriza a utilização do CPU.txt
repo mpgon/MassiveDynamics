@@ -1,0 +1,9 @@
+Verifica a utilizacao do CPU, se for 95% emite um warning e se for 97% emite um critical
+
+define service {
+        service_description CPU
+        use generic-service
+        check_command check_nt!CPULOAD!5,95,97!Arqsi@2013
+        host_name WVM112
+        contact_groups admins
+}
