@@ -196,6 +196,7 @@ namespace MassiveDynamicsWebSite.Controllers
             var user = Db.Users.First(u => u.UserName == id);
             var model = new EditUserViewModel(user);
             ViewBag.MessageId = Message;
+            ViewBag.humorID = new SelectList(Db.Humor, "ID", "nome", user.humorID);
             return View(model);
         }
 
