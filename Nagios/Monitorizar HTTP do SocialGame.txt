@@ -1,0 +1,11 @@
+Servico SocialGame
+
+Verificar se o site esta acessivel por HTTP
+
+define service{
+        use generic-service
+        host_name SocialGame
+        service_description HTTP
+        check_command check_http
+        contact_groups admins
+}
