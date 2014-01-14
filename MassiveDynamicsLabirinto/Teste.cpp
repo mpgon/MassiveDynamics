@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include <iostream>
+#include <SWI-cpp.h>
 
 #ifdef __APPLE__
 #include <glut.h>
@@ -71,7 +73,7 @@ extern "C" int read_JPEG_file(const char *, char **, int *, int *, int *);
 #define JANELA_NAVIGATE           1
 
 typedef struct teclas_t{
-	GLboolean   up, down, left, right;
+	GLboolean   up, down, left, right,F1;
 }teclas_t;
 
 typedef struct pos_t{
@@ -120,18 +122,24 @@ ESTADO estado;
 MODELO modelo;
 
 GLuint time1 = 0;
-char * tempo = new char[1000000];
-int flagJogo = 0;
-int vidas = 5;
+char * tempo = new char[10];
+int flagJogo = 0 ; // Usado para determinar vitória ou derrota no desafio. 1 - Vitória; 2 - Derrota.
+int vidas = 5; //Número de vidas do boneco
 char * vida = new char[1];
-int flagDificuldade = 2;
-int heightTemp = 0, widthTemp = 0;
+int flagDificuldade = 1; //Usado para definir grau de dificuldade do jogo
 int chaoConst = 0;
+
+string test[] = {""};
+
+char buffer1[10];
+char buffer2[10];
+
+char* file[] = { "libswipl.dll", "-s", "labirinto20.pl", NULL };
 
 char mazedata20[HEIGHT_20][WIDTH_20] = {
 	"                    ",
 	" ****************** ",
-	" *                * ",
+	" *+               * ",
 	" *** * *** *      * ",
 	" * ** **  * *** *** ",
 	" *     *          * ",
@@ -154,7 +162,7 @@ char mazedata20[HEIGHT_20][WIDTH_20] = {
 char mazedata30[HEIGHT_30][WIDTH_30] = {
 	"                              ",
 	" **************************** ",
-	" *      ****       *      * * ",
+	" *+     ****       *      * * ",
 	" ***** ****** ****** ****** * ",
 	" ** **  * ***  **           * ",
 	" *  **    **  **   ********** ",
@@ -174,7 +182,7 @@ char mazedata30[HEIGHT_30][WIDTH_30] = {
 	" *   *    * ****   *    *   * ",
 	" ** *         * *** *** *** * ",
 	" ** * * * *****          ** * ",
-	" **  *    * **** ** ** **** * ",
+	" **  *    * **** ** *  **** * ",
 	" *  *     *  **  *  ** ***  * ",
 	" *   **      * *    *       * ",
 	" *  *     * **   * ******   * ",
@@ -187,7 +195,7 @@ char mazedata30[HEIGHT_30][WIDTH_30] = {
 char mazedata40[HEIGHT_40][WIDTH_40] = {
 	"                                        ",
 	" ************************************** ",
-	" *         *       *    * *           * ",
+	" *+        *       *    * *           * ",
 	" ***  **** *  **** **** * * ********* * ",
 	" * ** **  *  ****  ** *      ******* ** ",
 	" *  *  *        *  ** ****** **** *   * ",
@@ -212,7 +220,7 @@ char mazedata40[HEIGHT_40][WIDTH_40] = {
 	" *  ** *    *******               *** * ",
 	" *  *  *              ******  *****   * ",
 	" *     ****** **** ** * *     *       * ",
-	" *  *       *   *********  *      *** * ",
+	" *  *       *   *********   *     *** * ",
 	" *  ****    *   **      *  **  **   * * ",
 	" *   **  *  *              *  ******  * ",
 	" *  *   **       ******   *** **  * * * ",
@@ -226,6 +234,172 @@ char mazedata40[HEIGHT_40][WIDTH_40] = {
 	" ************************************** ",
 	"                                        ",
 };
+
+void insertProlog(int x1, int z1, int x2, int z2){
+
+	PlTermv av(2);
+
+	sprintf_s(buffer1, "(%d,%d)", x1,z1);
+	sprintf_s(buffer2, "(%d,%d)", x2, z2);
+
+	av[0] = PlCompound(buffer1);
+	av[1] = PlCompound(buffer2);
+
+	PlQuery q("criarBaseConhecimento", av);
+
+	  
+
+}
+
+void assertInProlog(int height, int width){
+
+	int coordzTemp = 0;
+	int coordxTemp = 0;
+	int valorKeep = 0;
+
+	int coordx1 = 0;
+	int coordz1 = 0;
+	int coordx2 = 0;
+	int coordz2 = 0;
+
+	PlEngine e(3, file);
+
+	switch (flagDificuldade){
+	case 1:
+		coordzTemp = -9;
+		valorKeep = -8;
+		break;
+	case 2:
+		coordzTemp = -14;
+		valorKeep = -14;
+		break;
+	case 3:
+		break;
+	}
+
+	for (int i = 2; i < height - 3; i++)
+	{
+		coordzTemp += 1;
+		coordxTemp = valorKeep;
+		for (int j = 2; j < width - 3; j++)
+		{
+			coordxTemp += 1;
+			if (flagDificuldade == 1){
+				if (mazedata20[i][j - 1] != '*'){
+					coordx1 = coordxTemp;
+					coordz1 = coordzTemp;
+					coordx2 = coordxTemp - 1;
+					coordz2 = coordzTemp;
+					insertProlog(coordx1, coordz1, coordx2, coordz2);
+				}
+				if (mazedata20[i][j + 1] != '*'){
+					coordx1 = coordxTemp;
+					coordz1 = coordzTemp;
+					coordx2 = coordxTemp + 1;
+					coordz2 = coordzTemp;
+					insertProlog(coordx1, coordz1, coordx2, coordz2);
+				}
+				if (mazedata20[i - 1][j] != '*'){
+					coordx1 = coordxTemp;
+					coordz1 = coordzTemp;
+					coordx2 = coordxTemp;
+					coordz2 = coordzTemp - 1;
+					insertProlog(coordx1, coordz1, coordx2, coordz2);
+				}
+				if (mazedata20[i + 1][j] != '*'){
+					coordx1 = coordxTemp;
+					coordz1 = coordzTemp;
+					coordx2 = coordxTemp;
+					coordz2 = coordzTemp + 1;
+					insertProlog(coordx1, coordz1, coordx2, coordz2);
+				}
+			}
+			else if (flagDificuldade == 2){
+				if (mazedata30[i][j - 1] != '*'){
+					coordx1 = coordxTemp;
+					coordz1 = coordzTemp;
+					coordx2 = coordxTemp - 1;
+					coordz2 = coordzTemp;
+					insertProlog(coordx1, coordz1, coordx2, coordz2);
+				}
+				if (mazedata30[i][j + 1] != '*'){
+					coordx1 = coordxTemp;
+					coordz1 = coordzTemp;
+					coordx2 = coordxTemp + 1;
+					coordz2 = coordzTemp;
+					insertProlog(coordx1, coordz1, coordx2, coordz2);
+				}
+				if (mazedata30[i - 1][j] != '*'){
+					coordx1 = coordxTemp;
+					coordz1 = coordzTemp;
+					coordx2 = coordxTemp;
+					coordz2 = coordzTemp - 1;
+					insertProlog(coordx1, coordz1, coordx2, coordz2);
+				}
+				if (mazedata30[i + 1][j] != '*'){
+					coordx1 = coordxTemp;
+					coordz1 = coordzTemp;
+					coordx2 = coordxTemp;
+					coordz2 = coordzTemp + 1;
+					insertProlog(coordx1, coordz1, coordx2, coordz2);
+				}
+			}
+			else{
+				if (mazedata40[i][j - 1] != '*'){
+					coordx1 = coordxTemp;
+					coordz1 = coordzTemp;
+					coordx2 = coordxTemp - 1;
+					coordz2 = coordzTemp;
+					insertProlog(coordx1, coordz1, coordx2, coordz2);
+				}
+				if (mazedata40[i][j + 1] != '*'){
+					coordx1 = coordxTemp;
+					coordz1 = coordzTemp;
+					coordx2 = coordxTemp + 1;
+					coordz2 = coordzTemp;
+					insertProlog(coordx1, coordz1, coordx2, coordz2);
+				}
+				if (mazedata40[i - 1][j] != '*'){
+					coordx1 = coordxTemp;
+					coordz1 = coordzTemp;
+					coordx2 = coordxTemp;
+					coordz2 = coordzTemp - 1;
+					insertProlog(coordx1, coordz1, coordx2, coordz2);
+				}
+				if (mazedata40[i + 1][j] != '*'){
+					coordx1 = coordxTemp;
+					coordz1 = coordzTemp;
+					coordx2 = coordxTemp;
+					coordz2 = coordzTemp + 1;
+					insertProlog(coordx1, coordz1, coordx2, coordz2);
+				}
+			}
+		}
+	}
+
+}
+
+int criaBaseConhecimento(){
+
+	switch (flagDificuldade){
+		case 1:
+			assertInProlog(HEIGHT_20, WIDTH_20);
+			break;
+		case 2:
+			assertInProlog(HEIGHT_30, WIDTH_30);
+			break;
+		case 3:
+			assertInProlog(HEIGHT_40, WIDTH_40);
+			break;
+	}
+
+	/*sprintf_s(buffer, "caminho(%d,%d,%d,%d)", coordx1, coordz1, coordx2, coordz2);
+	av[0] = PlCompound(buffer);
+	
+	PlQuery q("criarBaseConhecimento", av);*/
+
+	return (1);
+}
 
 ////////////////////////////////////
 /// Iluminação e materiais
@@ -576,41 +750,8 @@ void desenhaModelo()
 
 void desenhaEstrela(){
 
-	int z;
-	int x;
-
-	srand(time(NULL));
-
-	do{
-		if (flagDificuldade == 1){
-			z = rand() % (HEIGHT_20 - 2) + 1;
-			x = rand() % (WIDTH_20 - 2) + 1;
-
-			printf("z = %d, x = %d", z, x);
-			if (mazedata20[z][x] != '*'){
-				mazedata20[z][x] = '+';
-			}
-		}
-		else if (flagDificuldade == 2){
-			z = rand() % (HEIGHT_30 - 2) + 1;
-			x = rand() % (WIDTH_30 - 2) + 1;
-
-			if (mazedata30[z][x] != '*'){
-				mazedata30[z][x] = '+';
-			}
-		}
-		else{
-			z = rand() % (HEIGHT_40 - 2) + 1;
-			x = rand() % (WIDTH_40 - 2) + 1;
-
-			if (mazedata40[z][x] != '*'){
-				mazedata40[z][x] = '+';
-			}
-		}
-	} while ((mazedata20[z][x] != '+' && flagDificuldade == 1) || (mazedata30[z][x] != '+' && flagDificuldade == 2) || (mazedata40[z][x] != '+' && flagDificuldade == 3));
-	
 	glPushMatrix();
-		glTranslatef(x,.3,z);
+		glTranslatef(2,.3,2);
 		glColor3f(1,1,0);
 		glBegin(GL_LINE_LOOP);
 			glVertex3f(0.0, 0.2, 0.0);
@@ -633,6 +774,21 @@ void desenhaLabirinto(GLuint texID)
 
 	// código para desenhar o labirinto
 	glPushMatrix();
+	criaBaseConhecimento();
+
+	PlTermv av2(2);
+
+	av2[0] = PlCompound("1");
+
+	PlQuery q("listarValores", av2);
+		
+	cout << (char*)av2[1] << endl;
+
+	/*while (q.next_solution())
+	{
+		cout << (char*)av2[1] << endl;
+	}*/
+
 	if (flagDificuldade == 1){
 		glTranslatef(-WIDTH_20 / 2.0, 0, -HEIGHT_20 / 2.0);
 		desenhaEstrela();
@@ -979,13 +1135,13 @@ void Timer(int value)
 
 				if (estado.teclas.left){
 					// rodar camara e objecto
-					modelo.objecto.dir += .2;
-					estado.camera.dir_long += .2;
+					modelo.objecto.dir += .12;
+					estado.camera.dir_long += .12;
 				}
 				if (estado.teclas.right){
 					// rodar camara e objecto
-					modelo.objecto.dir -= .2;
-					estado.camera.dir_long -= .2;
+					modelo.objecto.dir -= .12;
+					estado.camera.dir_long -= .12;
 				}
 				/*/*
 				if (modelo.homer[JANELA_NAVIGATE].GetSequence() == 0){
@@ -1001,6 +1157,9 @@ void Timer(int value)
 					modelo.homer[JANELA_TOP].SetSequence(0);
 				}
 
+				if (estado.teclas.F1){
+					//chamada ao prolog da sugestão de caminho possível
+				}
 
 				// Sequencias - 0(parado) 3(andar) 20(choque)
 				//  modelo.homer[JANELA_NAVIGATE].GetSequence()  le Sequencia usada pelo homer
@@ -1025,6 +1184,7 @@ void imprime_ajuda(void)
 	printf("l,L - Alterna o calculo luz entre Z e eye (GL_LIGHT_MODEL_LOCAL_VIEWER)\n");
 	printf("w,W - Wireframe \n");
 	printf("f,F - Fill \n");
+	printf("F1 - Sugerir Caminho a seguir");
 	printf("******* Camara ******* \n");
 	printf("F2 - Alterna camara da janela da Direita \n");
 	printf("PAGE_UP, PAGE_DOWN - Altera abertura da camara \n");
@@ -1064,6 +1224,10 @@ void Key(unsigned char key, int x, int y)
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 		glDisable(GL_TEXTURE_2D);
 		break;
+	case 'a':
+	case 'A':
+
+		break;
 	}
 
 }
@@ -1078,8 +1242,8 @@ void SpecialKey(int key, int x, int y)
 		break;
 	case GLUT_KEY_RIGHT: estado.teclas.right = GL_TRUE;
 		break;
-	//case GLUT_KEY_F1: estado.vista[JANELA_TOP] = !estado.vista[JANELA_TOP];
-		//break;
+	case GLUT_KEY_F1: estado.teclas.F1 = GL_TRUE;
+		break;
 	case GLUT_KEY_F2: estado.vista[JANELA_NAVIGATE] = !estado.vista[JANELA_NAVIGATE];
 		break;
 	case GLUT_KEY_PAGE_UP:
@@ -1114,6 +1278,8 @@ void SpecialKeyUp(int key, int x, int y)
 	case GLUT_KEY_LEFT: estado.teclas.left = GL_FALSE;
 		break;
 	case GLUT_KEY_RIGHT: estado.teclas.right = GL_FALSE;
+		break;
+	case GLUT_KEY_F1: estado.teclas.F1 = GL_FALSE;
 		break;
 	}
 }
@@ -1259,7 +1425,7 @@ void init()
 
 	modelo.objecto.pos.x = 6;
 	modelo.objecto.pos.y = OBJECTO_ALTURA*.5;
-	modelo.objecto.pos.z = 6;
+	modelo.objecto.pos.z = 7;
 	modelo.objecto.dir = 0;
 	modelo.objecto.vel = OBJECTO_VELOCIDADE;
 	modelo.xMouse = modelo.yMouse = -1;
@@ -1290,6 +1456,8 @@ int main(int argc, char **argv)
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
 	if ((estado.mainWindow = glutCreateWindow("Labirinto")) == GL_FALSE)
 		exit(1);
+
+	//passar valor para flagDificuldade
 
 	imprime_ajuda();
 

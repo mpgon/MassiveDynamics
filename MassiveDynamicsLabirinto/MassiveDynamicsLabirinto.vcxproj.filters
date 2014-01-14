@@ -70,5 +70,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="homer.mdl" />
+    <None Include="labirinto20.pl">
+      <Filter>Source Files</Filter>
+    </None>
   </ItemGroup>
 </Project>
