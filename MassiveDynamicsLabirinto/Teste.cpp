@@ -774,14 +774,7 @@ void desenhaLabirinto(GLuint texID)
 
 	// código para desenhar o labirinto
 	glPushMatrix();
-	criaBaseConhecimento();
-
-	//PlTermv av2(2);
-
-	//av2[0] = PlCompound("1");
-
-	//PlQuery q("listarValores", av2);
-		
+	
 	//cout << (char*)av2[1] << endl;
 
 	/*while (q.next_solution())
@@ -1448,6 +1441,20 @@ void init()
 }
 
 /////////////////////////////////////
+
+void retornaValor(){
+
+	cout << "flag1" << endl;
+	cin.get();
+	
+	term_t av2 = PL_new_term_ref();
+	
+	//av2[0] = PlCompound("1");
+
+	//PlQuery q("listarValores", av2);
+
+}
+
 int main(int argc, char **argv)
 {
 	glutInit(&argc, argv);
@@ -1460,6 +1467,10 @@ int main(int argc, char **argv)
 	//passar valor para flagDificuldade
 
 	imprime_ajuda();
+
+	criaBaseConhecimento();
+
+	retornaValor();
 
 	// Registar callbacks do GLUT da janela principal
 	init();
