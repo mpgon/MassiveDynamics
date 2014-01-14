@@ -7,20 +7,26 @@
 #include <iostream>
 #include "grafos.h"
 #include "rain.h"
+#include "ClientWS.h"
 
 using namespace std;
 
 #define NOME_TEXTURA_SKYBOX		  "Skybox.jpg"
+#define NOME_TEXTURA_CHAO         "Chao2.jpg"
 
 #define ID_TEXTURA_SKYBOX         3
+#define ID_TEXTURA_CHAO           0
+
+#define JANELA_NAVIGATE 1
+
 #define	xMax 200.0
 #define xMin -200.0
 #define yMax 200.0
 #define yMin -200.0
 #define zMax 65.0
 #define zMin -65.0 
-
-GLuint		  textIDSkybox;
+GLuint texID[1];
+GLuint		  texIDSkybox;//GLuint        texIDChao;
 extern "C" {
 	FILE* _iob = NULL;
 }
@@ -275,6 +281,22 @@ void putLights(GLfloat* diffuse)
 	glEnable(GL_LIGHT1);
 }
 
+
+void strokeCenterString(char *str, double x, double y, double z, double s)
+{
+	int i, n;
+
+	n = strlen(str);
+	glPushMatrix();
+	glRotatef(90, 1, 0, 0);
+	glTranslated(x - glutStrokeLength(GLUT_STROKE_ROMAN, (const unsigned char*)str)*0.5*s, y - 119.05*0.5*s, z);
+	glScaled(s, s, s);
+	for (i = 0; i < n; i++)
+		glutStrokeCharacter(GLUT_STROKE_ROMAN, (int)str[i]);
+	glPopMatrix();
+
+}
+
 void desenhaSkyBox(){
 
 	
@@ -291,7 +313,7 @@ void desenhaSkyBox(){
 		glColor4f(1, 1, 1, 1);
 
 		// frente
-		glBindTexture(GL_TEXTURE_2D, textIDSkybox);
+		glBindTexture(GL_TEXTURE_2D, texIDSkybox);
 		glBegin(GL_POLYGON);
 		glTexCoord2f(0.75, 0.25); glVertex3f(xMin, zMin, yMin);
 		glTexCoord2f(0.5, 0.25); glVertex3f(xMax, zMin, yMin);
@@ -300,7 +322,7 @@ void desenhaSkyBox(){
 		glEnd();
 
 		// esquerda
-		glBindTexture(GL_TEXTURE_2D, textIDSkybox);
+		glBindTexture(GL_TEXTURE_2D, texIDSkybox);
 		glBegin(GL_POLYGON);
 		glTexCoord2f(1, 0.25); glVertex3f(xMin + 0.1, zMin, yMax);
 		glTexCoord2f(0.75, 0.25);   glVertex3f(xMin + 0.1, zMin, yMin);
@@ -355,9 +377,11 @@ void desenhaSkyBox(){
 	
 }
 
-void desenhaSolo(){
+void desenhaSolo(GLuint texID){
 #define STEP 10
-	glBegin(GL_QUADS);
+	glBindTexture(GL_TEXTURE_2D, texID);
+	//glColor3f(0.5f, 0.5f, 0.5f);
+	glBegin(GL_POLYGON);
 	glNormal3f(0, 0, 1);
 	for (int i = -300; i < 300; i += STEP)
 	for (int j = -300; j < 300; j += STEP){
@@ -367,6 +391,7 @@ void desenhaSolo(){
 		glVertex2f(i, j + STEP);
 	}
 	glEnd();
+	glBindTexture(GL_TEXTURE_2D, NULL);
 }
 
 void CrossProduct(GLdouble v1[], GLdouble v2[], GLdouble cross[])
@@ -458,6 +483,9 @@ void desenhaParede(GLfloat xi, GLfloat yi, GLfloat zi, GLfloat xf, GLfloat yf, G
 void desenhaChao(GLfloat xi, GLfloat yi, GLfloat zi, GLfloat xf, GLfloat yf, GLfloat zf, int orient){
 	GLdouble v1[3], v2[3], cross[3];
 	GLdouble length;
+	
+	
+
 	v1[0] = xf - xi;
 	v1[1] = 0;
 	v2[0] = 0;
@@ -529,6 +557,9 @@ void desenhaChao(GLfloat xi, GLfloat yi, GLfloat zi, GLfloat xf, GLfloat yf, GLf
 		}
 		break;
 	}
+
+	glBindTexture(GL_TEXTURE_2D, NULL);
+
 }
 
 void desenhaNo(int no){
@@ -869,17 +900,24 @@ void display(void)
 
 	material(slate);
 
+	//---
+	//if(gameIsOver)
+	//glColor3f(0, 1, 0);
+	//strokeCenterString("Congratulations!! You just", estado.camera.posx, estado.camera.posy+75, estado.camera.posz*5, 0.05);
+	//strokeCenterString("Congratulations!! You just", estado.camera.center[0], estado.camera.center[2], estado.camera.center[1], 0.05);
+	//strokeCenterString(" made a new friend!!", 0, 0, 0, 0.05);
+	//glColor3f(0, 0, 0);
+	//strokeCenterString("Press ESC to exit!!", 0, 0, -2, 0.051);
+	//---
+
 	desenhaSkyBox();
-	//desenhaSolo();
+	//desenhaSolo(texID[ID_TEXTURA_CHAO]);
 
 
 	desenhaEixos();
 
 	desenhaLabirinto();
 
-	//glRasterPos2i(100, 120);
-	//glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
-	//_glutBitmapString(GLUT_BITMAP_HELVETICA_18, "text to render");
 
 	//desenha chuva
 	if (estado.chuva){
@@ -896,17 +934,13 @@ void display(void)
 
 	}
 
-	//glFlush();
-	//glutSwapBuffers();
-	//-----------------------------------------------------------
+
+	//--------------DRAW MINIMAP
+
 	glClear(GL_DEPTH_BUFFER_BIT);
 	glScissor(0, 0, 100, 100);
 	glViewport(0, 0, 100, 100);
-	//glMatrixMode(GL_PROJECTION);
-	//setProjection(0, 0, GL_FALSE);
-	//glMatrixMode(GL_MODELVIEW);
 
-	//glClear(GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 	setCameraMiniMapa();
 
@@ -915,14 +949,9 @@ void display(void)
 	desenhaSkyBox();
 	//desenhaSolo();
 
-
 	desenhaEixos();
 
 	desenhaLabirinto();
-
-	//glRasterPos2i(100, 120);
-	//glColor4f(0.0f, 0.0f, 1.0f, 1.0f);
-	//_glutBitmapString(GLUT_BITMAP_HELVETICA_18, "text to render");
 
 	//desenha chuva
 	if (estado.chuva){
@@ -1069,6 +1098,11 @@ void colisaoNos(GLfloat x, GLfloat y, GLfloat z){
 			cout << "NO[" << i << "]" << endl;
 			if (nos[i].getTipo()=='F'){
 				cout << "GANHOU!" << endl;
+				glColor3f(0,1,0);
+		strokeCenterString("Congratulations!! You just", 0, 1, 0, 0.01);
+		strokeCenterString(" made a new friend!!", 0, 0, 0, 0.01);
+		glColor3f(0, 0, 0);
+		strokeCenterString("Press ESC to exit!!", 0, -2, 0, 0.01);
 			}
 			estado.camera.posx = x * 5;
 			estado.camera.posy = y * 5;
@@ -1331,14 +1365,29 @@ void createTextures(GLuint texID[])
 	int w, h, bpp;
 
 	glGenTextures(1, texID);
+	
 
 	memset(TextureImage, 0, sizeof(void *)* 1);           	// Set The Pointer To NULL
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 
 	
+	
+
+	//Para criar a textura do chao em jpeg-----------------------------------------
+	if (read_JPEG_file(NOME_TEXTURA_CHAO, &image, &w, &h, &bpp))
+	{
+		glBindTexture(GL_TEXTURE_2D, texID[ID_TEXTURA_CHAO]);
+		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+		gluBuild2DMipmaps(GL_TEXTURE_2D, 3, w, h, GL_RGB, GL_UNSIGNED_BYTE, image);
+	}
+	else{
+		printf("Textura %s not Found\n", NOME_TEXTURA_CHAO);
+		exit(0);
+	}
+
 	//Para criar a textura da skybox em jpeg-----------------------------------------
 	if (read_JPEG_file(NOME_TEXTURA_SKYBOX, &image, &w, &h, &bpp)){
-		glBindTexture(GL_TEXTURE_2D, textIDSkybox);
+		glBindTexture(GL_TEXTURE_2D, texIDSkybox);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -1351,32 +1400,37 @@ void createTextures(GLuint texID[])
 	}
 
 
-
 	glBindTexture(GL_TEXTURE_2D, NULL);
 }
 
 void main(int argc, char **argv)
 {
-	glutInit(&argc, argv);
 
-	/* need both double buffering and z buffer */
 
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
-	glutInitWindowSize(640, 480);
-	glutCreateWindow("OpenGL");
-	glutReshapeFunc(myReshape);
-	glutDisplayFunc(display);
-	glutKeyboardFunc(keyboard);
-	glutSpecialFunc(Special);
-	glutMouseFunc(mouse);
+	if (login()){
+		glutInit(&argc, argv);
+		/*need both double buffering and z buffer*/
+		glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+		glutInitWindowSize(640, 480);
+		glutCreateWindow("OpenGL");
+		glutReshapeFunc(myReshape);
+		glutDisplayFunc(display);
+		glutKeyboardFunc(keyboard);
+		glutSpecialFunc(Special);
+		glutMouseFunc(mouse);
 
-	GLuint * texID = new GLuint[1];
-	texID[0] = textIDSkybox;
-	createTextures(texID);
+		createTextures(texID);
 
-	myInit();
+		myInit();
 
-	imprime_ajuda();
+		imprime_ajuda();
 
-	glutMainLoop();
+		glutMainLoop();
+	}
+	else{
+
+	}
+
+
+
 }

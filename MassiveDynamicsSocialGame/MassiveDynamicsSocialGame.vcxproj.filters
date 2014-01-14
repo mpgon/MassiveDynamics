@@ -33,6 +33,21 @@
     <ClCompile Include="rain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="wsclient\schemas.microsoft.com.2003.10.Serialization.xsd.c">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wsclient\tempuri.org.wsdl.c">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wsclient\tempuri.org.xsd.c">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="wsclient\stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ClientWS.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="grafos.h">
@@ -45,6 +60,24 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="rain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wsclient\schemas.microsoft.com.2003.10.Serialization.xsd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wsclient\StdAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wsclient\targetver.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wsclient\tempuri.org.wsdl.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="wsclient\tempuri.org.xsd.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ClientWS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

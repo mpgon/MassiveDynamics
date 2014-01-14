@@ -22,6 +22,7 @@
     <IISExpressUseClassicPipelineMode />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <WcfConfigValidationEnabled>True</WcfConfigValidationEnabled>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -46,6 +47,8 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -172,9 +175,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="MassiveDynamicsWebService.asmx.cs">
-      <DependentUpon>MassiveDynamicsWebService.asmx</DependentUpon>
-      <SubType>Component</SubType>
+    <Compile Include="IMassiveDynamicsWService.cs" />
+    <Compile Include="MassiveDynamicsWService.svc.cs">
+      <DependentUpon>MassiveDynamicsWService.svc</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201311110510410_Init.cs" />
     <Compile Include="Migrations\201311110510410_Init.Designer.cs">
@@ -215,7 +218,7 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
-    <Content Include="MassiveDynamicsWebService.asmx" />
+    <Content Include="MassiveDynamicsWService.svc" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <None Include="Properties\PublishProfiles\Miguel.pubxml" />
