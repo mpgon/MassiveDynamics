@@ -776,13 +776,13 @@ void desenhaLabirinto(GLuint texID)
 	glPushMatrix();
 	criaBaseConhecimento();
 
-	PlTermv av2(2);
+	//PlTermv av2(2);
 
-	av2[0] = PlCompound("1");
+	//av2[0] = PlCompound("1");
 
-	PlQuery q("listarValores", av2);
+	//PlQuery q("listarValores", av2);
 		
-	cout << (char*)av2[1] << endl;
+	//cout << (char*)av2[1] << endl;
 
 	/*while (q.next_solution())
 	{
