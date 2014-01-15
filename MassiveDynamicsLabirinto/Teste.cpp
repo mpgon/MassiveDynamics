@@ -1189,11 +1189,10 @@ void Key(unsigned char key, int x, int y)
 {
 	switch (key) {
 	case 27:
-		if (flagJogo == 0){
-			flagJogo = 2;
+		if (flagJogo == 2 || flagJogo == 0){
+			flagJogo = -1;
 		}
 		exit(flagJogo);
-		
 		break;
 	case 'h':
 	case 'H':
