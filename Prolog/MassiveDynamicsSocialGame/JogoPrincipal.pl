@@ -1,3 +1,8 @@
+:-use_module(library(odbc)).
+
+:-dynamic user1/2.
+:-dynamic relacoes/3.
+
 user(joao,[lol,lal,lil],20).
 user(joel,[lel,lul],30).
 user(miguel,[ola, lel, lul],80).
@@ -19,6 +24,43 @@ amigos(cristiano,joao).
 amigos(fabio,joao).
 amigos(cristiano,miguel).
 amigos(fabio,cristiano).
+
+odbc_con:-
+	odbc_connect('ConDB', _,[ user('ARQSI042'),password('potato'),alias('ConDB'),encoding(utf8),open(once)]).
+
+getHumors(X):-
+	findall(Y,odbc_query('ConDB','select nome from Humors',row(Y)),X).
+
+getUsers(LR):-
+	odbc_con,
+	findall((Id,User),odbc_query('ConDB','select Id,UserName from AspNetUsers',
+	row(Id,User)),LR),
+	insertUser(LR),
+	odbc_disconn.
+
+insertUser([]).
+
+insertUser([H|T]):-
+	assertz(user1(H)),
+	insertUser(T).
+
+getRelations(LR):-
+	odbc_con,
+	findall((UserID1,UserID2,Peso),
+	odbc_query('ConDB','select R.user1ID, R.user2ID, R.peso from Relacaos R;',
+	    row(UserID1,UserID2,Peso)),LR),
+	insertRelations(LR),
+	odbc_disconn.
+
+insertRelations([]).
+
+insertRelations([H|T]):-
+	assertz(relacoes(H)),
+	insertRelations(T).
+
+odbc_disconn:-
+	odbc_disconnect('ConDB').
+
 
 %tamanho da rede de um utilizador
 tamanhoRedeUt(Ut,Tam):-amigosUtilizador(Ut,L),length(L,Tam).
@@ -106,4 +148,118 @@ sugestaoAmigosTag(N,LTagU,[H|T],LR,RF):-
 
 sugestaoAmigosTag(N,LTagU,[_|T],LR,RF):-
 	sugestaoAmigosTag(N,LTagU,T,LR,RF).
+
+
+
+sugestaoAmigosTag(_,_,[],RF,RF).
+
+sugestaoAmigosTag(N,LTagU,[H|T],LR,RF):-
+	user(H,LTagH),
+	inter(LTagU,LTagH,LRT),
+	length(LRT,TL),
+	TL>=N,
+        sugestaoAmigosTag(N,LTagU,T,[H|LR],RF).
+
+sugestaoAmigosTag(N,LTagU,[_|T],LR,RF):-
+	sugestaoAmigosTag(N,LTagU,T,LR,RF).
+
+%Sugestão por outros amigos
+
+%sugerir amizades para utilizador X
+sugerirAmizades(User,L):-getLigacoes1,
+                                        getTagsUtilizadores,
+                                        getIdAmigos(User,LA,User),
+                                        amigosSug(LA,LX,User),
+                                        eliminaRep(LA,LX,LX1),
+                                        conexoesPart(LA,LX1,LF),
+                                        tagsPar(LF,User,LT),
+                                        sort(LT,LTS),
+                                        reverse(LTS,LTSR),
+                                        LTSR=L,
+                                        retractall(nos(_,_)),
+                                        retractall(ligas(_,_,_,_,_)).
+
+%elimina os amigos do utilizador
+eliminaRep(_,[],[]).
+eliminaRep(LA,[H|T],[H|T1]):-not(member(H,LA)),
+                           eliminaRep(LA,T,T1).
+eliminaRep(LA,[_|T],T1):-eliminaRep(LA,T,T1).
+
+%vai buscar a rede do utilizador
+amigosSug([],[],_).
+amigosSug([H|T],L,Orig):-getIdAmigos(H,L1,Orig),
+        amigosSug(T,L2,Orig),
+        append(L1,L2,L).
+
+%calculo das ligaçoes em comum
+conexoesPart(_,[],_).
+conexoesPart(LA,[H|T],[(C,H)|LF]):-conexoesPart1(LA,H,C),
+                                                conexoesPart(LA,T,LF).
+
+conexoesPart1(LA,H,C):-getIdAmigos(H,L1,H),
+                                                contaConexoes(LA,L1,C).
+
+contaConexoes([],_,0).
+contaConexoes([H|T],L1,C):-member(H,L1),contaConexoes(T,L1,C1),C is C1+1.
+contaConexoes([_|T],L1,C):-contaConexoes(T,L1,C).
+
+%calculo das tags em comum
+tagsPar([],_,[]).
+tagsPar([(C,U1)|T],User,[(Total,U1)|LT]):-nos(U1,LU1),
+                                                        nos(User,LUP),
+                                                        contaTags(LU1,LUP,Cont),
+                                                        Total is Cont+C,
+                                                        tagsPar(T,User,LT).
+
+contaTags(_,[],0).
+contaTags(LU1,[H|T],Cont):-member(H,LU1),contaTags(LU1,T,C1),Cont is C1+1.
+contaTags(LU1,[_|T],Cont):-contaTags(LU1,T,Cont).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
