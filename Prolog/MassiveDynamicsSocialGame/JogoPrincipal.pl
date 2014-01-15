@@ -50,6 +50,7 @@ set([H|T],Out) :-
 %Procurar por tags e amigos
 %----------------------------------------------
 %
+
 inter([], _, []).
 
 inter([H1|T1], L2, [H1|Res]) :-
@@ -78,3 +79,31 @@ procuraAmigos(N,LTagU,[H|T],LR,RF):-
 
 procuraAmigos(N,LTagU,[_|T],LR,RF):-
 	procuraAmigos(N,LTagU,T,LR,RF).
+
+%Sugestão de amigos
+
+sugerirAmigosPorTag(U, LR):-
+	user(U,LTag,_),
+	length(LTag,TL),
+        TL>=3,
+	sugestaoAmigosTag(U,3,LR).
+
+sugestaoAmigosTag(U,N,LR):-
+	user(U,LTagU),
+	findall(User,(amigos(U,User)),LA),
+	findall(User,(user(User,_),User\==U,\+member(User,LA)),LU),
+	%eliminaAmigos(LA,LU,[],LRAUX),
+	sugestaoAmigosTag(N,LTagU,LU,[],LR).
+
+sugestaoAmigosTag(_,_,[],RF,RF).
+
+sugestaoAmigosTag(N,LTagU,[H|T],LR,RF):-
+	user(H,LTagH),
+	inter(LTagU,LTagH,LRT),
+	length(LRT,TL),
+	TL>=N,
+        sugestaoAmigosTag(N,LTagU,T,[H|LR],RF).
+
+sugestaoAmigosTag(N,LTagU,[_|T],LR,RF):-
+	sugestaoAmigosTag(N,LTagU,T,LR,RF).
+
