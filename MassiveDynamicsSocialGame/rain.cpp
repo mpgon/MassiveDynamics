@@ -52,14 +52,14 @@ void InicializarChuva(CHUVA &rain, int numgotas)
 	}
 }
 
-void DesenharChuva(CHUVA &rain, int numgotas)
+void DesenharChuva(CHUVA &rain, int numgotas, GLfloat x, GLfloat y, GLfloat z)
 {
 	glDisable(GL_LIGHTING);
 	glLineWidth(rain.grosor);
 	glEnable(GL_BLEND);
 	glEnable(GL_DEPTH_TEST);
 
-	glTranslatef(0,-75,0);
+	glTranslatef(x,y,z);
 	glRotatef(90,1,0,0);
 
 	for (int i = 0; i<numgotas; i++)

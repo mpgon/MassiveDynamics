@@ -18,4 +18,4 @@ typedef struct
 
 void InicializarChuva(CHUVA &rain, int numgotas);
 
-void DesenharChuva(CHUVA &rain, int numgotas);
+void DesenharChuva(CHUVA &rain, int numgotas, GLfloat x, GLfloat y, GLfloat z);

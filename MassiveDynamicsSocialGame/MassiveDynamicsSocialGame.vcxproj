@@ -81,12 +81,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Arco.cpp" />
+    <ClCompile Include="Billboard.cpp" />
     <ClCompile Include="ClientWS.cpp" />
     <ClCompile Include="grafos.cpp" />
+    <ClCompile Include="iconHumor.cpp" />
     <ClCompile Include="No.cpp" />
     <ClCompile Include="rain.cpp" />
     <ClCompile Include="readjpeg.c" />
     <ClCompile Include="SocialGame.cpp" />
+    <ClCompile Include="tga.cpp" />
     <ClCompile Include="wsclient\schemas.microsoft.com.2003.10.Serialization.xsd.c" />
     <ClCompile Include="wsclient\stdafx.cpp" />
     <ClCompile Include="wsclient\tempuri.org.wsdl.c" />
@@ -94,10 +97,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Arco.h" />
+    <ClInclude Include="Billboard.h" />
     <ClInclude Include="ClientWS.h" />
     <ClInclude Include="grafos.h" />
+    <ClInclude Include="humor.h" />
+    <ClInclude Include="maths.h" />
     <ClInclude Include="No.h" />
     <ClInclude Include="rain.h" />
+    <ClInclude Include="tga.h" />
     <ClInclude Include="wsclient\schemas.microsoft.com.2003.10.Serialization.xsd.h" />
     <ClInclude Include="wsclient\StdAfx.h" />
     <ClInclude Include="wsclient\targetver.h" />

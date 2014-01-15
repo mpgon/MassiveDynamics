@@ -33,6 +33,15 @@
     <ClCompile Include="rain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+        <ClCompile Include="iconHumor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tga.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Billboard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="wsclient\schemas.microsoft.com.2003.10.Serialization.xsd.c">
       <Filter>Header Files</Filter>
     </ClCompile>
@@ -60,6 +69,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="rain.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+        <ClInclude Include="maths.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Billboard.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="tga.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="humor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="wsclient\schemas.microsoft.com.2003.10.Serialization.xsd.h">

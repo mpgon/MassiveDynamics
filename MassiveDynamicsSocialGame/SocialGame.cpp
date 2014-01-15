@@ -9,13 +9,21 @@
 #include "rain.h"
 #include "ClientWS.h"
 
+#include "Billboard.h"
+#include "humor.h"
+
+#include "tga.h"
+
 using namespace std;
 
 #define NOME_TEXTURA_SKYBOX		  "Skybox.jpg"
 #define NOME_TEXTURA_CHAO         "Chao2.jpg"
+#define NOME_TEXTURA_SUN		  "img/sun.tga"
 
 #define ID_TEXTURA_SKYBOX         3
 #define ID_TEXTURA_CHAO           0
+
+#define NUM_TEXTURAS              2
 
 #define JANELA_NAVIGATE 1
 
@@ -26,7 +34,7 @@ using namespace std;
 #define zMax 65.0
 #define zMin -65.0 
 GLuint texID[1];
-GLuint		  texIDSkybox;//GLuint        texIDChao;
+GLuint		  textIDSkybox;GLuint		  textIDSun;
 extern "C" {
 	FILE* _iob = NULL;
 }
@@ -120,6 +128,7 @@ typedef struct Modelo {
 
 	GLfloat escala;
 	GLUquadric *quad;
+	GLuint        texID[NUM_TEXTURAS];
 }Modelo;
 
 Estado estado;
@@ -131,10 +140,20 @@ CHUVA rain;
 
 void chuva()
 {
+	
 	glPushMatrix();
-	DesenharChuva(rain, numgotas);
+	DesenharChuva(rain, numgotas, 0, -75,0);
 	glPopMatrix();
 }
+
+void humor()
+{
+	glPushMatrix();
+	desenhaImagemTga(textIDSun, 25, 50, 25);
+	desenhaImagemTga(textIDSkybox, 10, 10, 25);
+	glPopMatrix();
+}
+
 
 void initEstado(){
 	estado.camera.pessoa = 3;
@@ -281,6 +300,68 @@ void putLights(GLfloat* diffuse)
 	glEnable(GL_LIGHT1);
 }
 
+void desenhaImagemTga(GLuint textura, float x, float y, float z) {
+
+	glPushMatrix();
+
+	glPushAttrib(GL_ENABLE_BIT);
+
+	glEnable(GL_TEXTURE_2D);
+
+	glDisable(GL_LIGHTING);
+	glDisable(GL_BLEND);
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_ALPHA_TEST);
+
+	glAlphaFunc(GL_GREATER, 0);
+
+	for (int i = 0; i < 1; i++)
+	for (int j = 0; j < 1; j++) {
+		glPushMatrix();
+
+		glTranslatef(x, y, z); //posiçao da imagem 
+		BillboardCheatSphericalBegin();
+
+		glPushAttrib(GL_ENABLE_BIT);
+		glEnable(GL_TEXTURE_2D);
+		//glDisable(GL_DEPTH_TEST);
+		glDisable(GL_LIGHTING);
+		glDisable(GL_BLEND);
+
+		glBindTexture(GL_TEXTURE_2D, textura);
+		glBegin(GL_QUADS);
+		glTexCoord2f(0, 0); glVertex3f(-8.0f, 0.0f, 0.0f);  //tamanho imagem
+		glTexCoord2f(1, 0); glVertex3f(8.0f, 0.0f, 0.0f);
+		glTexCoord2f(1, 1); glVertex3f(8.0f, 16.0f, 0.0f);
+		glTexCoord2f(0, 1); glVertex3f(-8.0f, 16.0f, 0.0f);
+		glEnd();
+
+		//glBindTexture(GL_TEXTURE_2D, NULL);
+		//glEnable(GL_DEPTH_TEST);
+		glEnable(GL_LIGHTING);
+		glEnable(GL_BLEND);
+
+		glDisable(GL_TEXTURE_2D);
+
+		glPopAttrib();
+		glPopMatrix();
+		glBindTexture(GL_TEXTURE_2D, 0);
+		//glBindTexture(GL_TEXTURE_2D, NULL);
+	}
+
+	//glBindTexture(GL_TEXTURE_2D, NULL);
+
+	glEnable(GL_LIGHTING);
+	glEnable(GL_BLEND);
+
+	glDisable(GL_TEXTURE_2D);
+
+	glPopAttrib();
+	glPopMatrix();
+	glBindTexture(GL_TEXTURE_2D, NULL);
+
+}
 
 void strokeCenterString(char *str, double x, double y, double z, double s)
 {
@@ -313,7 +394,7 @@ void desenhaSkyBox(){
 		glColor4f(1, 1, 1, 1);
 
 		// frente
-		glBindTexture(GL_TEXTURE_2D, texIDSkybox);
+		glBindTexture(GL_TEXTURE_2D, textIDSkybox);
 		glBegin(GL_POLYGON);
 		glTexCoord2f(0.75, 0.25); glVertex3f(xMin, zMin, yMin);
 		glTexCoord2f(0.5, 0.25); glVertex3f(xMax, zMin, yMin);
@@ -322,7 +403,7 @@ void desenhaSkyBox(){
 		glEnd();
 
 		// esquerda
-		glBindTexture(GL_TEXTURE_2D, texIDSkybox);
+		glBindTexture(GL_TEXTURE_2D, textIDSkybox);
 		glBegin(GL_POLYGON);
 		glTexCoord2f(1, 0.25); glVertex3f(xMin + 0.1, zMin, yMax);
 		glTexCoord2f(0.75, 0.25);   glVertex3f(xMin + 0.1, zMin, yMin);
@@ -799,7 +880,7 @@ void display(void)
 	desenhaEixos();
 
 	desenhaLabirinto();
-
+	humor();
 
 	//desenha chuva
 	if (estado.chuva){
@@ -1246,7 +1327,7 @@ void createTextures(GLuint texID[])
 	char *image;
 	int w, h, bpp;
 
-	glGenTextures(1, texID);
+//	glGenTextures(1, texID);
 	
 
 	memset(TextureImage, 0, sizeof(void *)* 1);           	// Set The Pointer To NULL
@@ -1256,7 +1337,7 @@ void createTextures(GLuint texID[])
 	
 
 	//Para criar a textura do chao em jpeg-----------------------------------------
-	if (read_JPEG_file(NOME_TEXTURA_CHAO, &image, &w, &h, &bpp))
+	/*if (read_JPEG_file(NOME_TEXTURA_CHAO, &image, &w, &h, &bpp))
 	{
 		glBindTexture(GL_TEXTURE_2D, texID[ID_TEXTURA_CHAO]);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -1265,11 +1346,11 @@ void createTextures(GLuint texID[])
 	else{
 		printf("Textura %s not Found\n", NOME_TEXTURA_CHAO);
 		exit(0);
-	}
+	}*/
 
 	//Para criar a textura da skybox em jpeg-----------------------------------------
 	if (read_JPEG_file(NOME_TEXTURA_SKYBOX, &image, &w, &h, &bpp)){
-		glBindTexture(GL_TEXTURE_2D, texIDSkybox);
+		glBindTexture(GL_TEXTURE_2D, textIDSkybox);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
 		glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
@@ -1278,6 +1359,30 @@ void createTextures(GLuint texID[])
 	}
 	else{
 		printf("Textura %s not Found\n", NOME_TEXTURA_SKYBOX);
+		exit(0);
+	}
+
+	if (tgaLoad(NOME_TEXTURA_SUN))
+	{
+		tgaInfo *img;
+		glEnable(GL_DEPTH_TEST);
+
+		img = tgaLoad("img/sun.tga");
+		glGenTextures(1, &textIDSun);
+		glBindTexture(GL_TEXTURE_2D, textIDSun);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img->width, img->height,
+			0, GL_RGBA, GL_UNSIGNED_BYTE, img->imageData);
+
+		glDisable(GL_DEPTH_TEST);
+	}
+	else{
+		printf("Textura %s not Found\n", NOME_TEXTURA_SUN);
 		exit(0);
 	}
 
@@ -1300,6 +1405,9 @@ void main(int argc, char **argv)
 		glutKeyboardFunc(keyboard);
 		glutSpecialFunc(Special);
 		glutMouseFunc(mouse);
+
+		texID[0] = textIDSkybox;
+		texID[1] = textIDSun;
 
 		createTextures(texID);
 
