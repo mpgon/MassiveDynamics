@@ -15,6 +15,7 @@ public:
 	float largura;
 	char tipo;
 	string nome;
+	string humor;
 
 public:
 	No();
@@ -25,12 +26,14 @@ public:
 	float getZ()const{ return z; }
 	char getTipo()const{ return tipo; }
 	string getNome(){ return nome; }
+	string getHumor(){ return humor; }
 	float getLargura()const{ return largura; }
 	void setX(const float& xP);
 	void setY(const float& yP);
 	void setZ(const float& zP);
 	void setTipo(const char t);
 	void setNome(string n);
+	void setHumor(string h);
 };
 
 #endif

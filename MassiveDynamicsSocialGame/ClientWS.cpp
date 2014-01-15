@@ -143,6 +143,7 @@ bool login()
 		}
 		else {
 			nos[nos_qtd].setNome(r[i]);
+			nos[nos_qtd].setHumor(r[i + 1]);
 			if (nos[i-1].getNome()==nomeInicial){
 				noInicial = i - 1;
 			}
@@ -223,14 +224,15 @@ bool login()
 	numArcos = n_arco;
 
 	/*for (int i = 0; i < numNos; i++){
-		cout << "nos[" << i << "] nome = " << nos[i].getNome() << endl;
-	}
-	for (int i = 0; i < numArcos; i++){
-		cout << "arco["<<i<<"] noi = "<<arcos[i].noi << endl;
-		cout << "arco[" << i << "] nof = " << arcos[i].nof << endl;
-	}
+		cout << "nos[" << i << "] nome = " << nos[i].getHumor() << endl;
+	}*/
+	/*for (int i = 0; i < numArcos; i++){
+		//cout << "arco["<<i<<"] noi = "<<arcos[i].noi << endl;
+		//cout << "arco[" << i << "] nof = " << arcos[i].nof << endl;
+		cout << nos[arcos[i].noi].getNome() << "---" << nos[arcos[i].nof].getNome() << endl;
+	}*/
 
-	system("pause");*/
+	/*system("pause");*/
 	if (proxy)
 	{
 		WsCloseServiceProxy(proxy, NULL, NULL);

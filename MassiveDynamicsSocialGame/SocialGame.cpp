@@ -21,11 +21,13 @@ using namespace std;
 #define NOME_TEXTURA_SKYBOX		  "Skybox.jpg"
 #define NOME_TEXTURA_CHAO         "Chao2.jpg"
 #define NOME_TEXTURA_SUN		  "img/sun.tga"
+#define NOME_TEXTURA_NUVEM		  "img/cloud.tga"
+#define NOME_TEXTURA_RAIO		  "img/raio.tga"
 
 #define ID_TEXTURA_SKYBOX         3
 #define ID_TEXTURA_CHAO           0
 
-#define NUM_TEXTURAS              2
+#define NUM_TEXTURAS              4
 
 #define JANELA_NAVIGATE 1
 
@@ -35,8 +37,8 @@ using namespace std;
 #define yMin -200.0
 #define zMax 65.0
 #define zMin -65.0 
-GLuint texID[1];
-GLuint		  textIDSkybox;GLuint		  textIDSun;
+GLuint		  texID[4];
+GLuint		  textIDSkybox;GLuint		  textIDSun;GLuint		  textIDNuvem;GLuint		  textIDRaio;
 extern "C" {
 	FILE* _iob = NULL;
 }
@@ -139,24 +141,38 @@ Estado estado;
 Modelo modelo;
 
 //Chuva
-const int numgotas = 150;
+const int numgotas = 50;
 CHUVA rain;
 
-void chuva()
+void chuva(GLfloat x, GLfloat y, GLfloat z)
 {
 	
 	glPushMatrix();
-	DesenharChuva(rain, numgotas, nos[noInicial].x * 5, nos[noInicial].y * 5, nos[noInicial].z * 5);
+	DesenharChuva(rain, numgotas, 0, 0, 1);
+	glutPostRedisplay();
 	glPopMatrix();
 }
 
-void humor()
+void humorFeliz(GLfloat x, GLfloat y, GLfloat z)
 {
 	glPushMatrix();
-	desenhaImagemTga(textIDSun, nos[6].x * 5, nos[6].y * 5, nos[6].z * 5 + 15);
-	//desenhaImagemTga(textIDSun, 10, 10, 25);
+	desenhaImagemTga(textIDSun, x, y, z+1);
 	glPopMatrix();
 }
+
+void humorCansado(GLfloat x, GLfloat y, GLfloat z)
+{
+	glPushMatrix();
+	desenhaImagemTga(textIDNuvem, x, y, z+1);
+	glPopMatrix();
+}
+void humorTriste(GLfloat x, GLfloat y, GLfloat z)
+{
+	glPushMatrix();
+	desenhaImagemTga(textIDRaio, x, y, z+1);
+	glPopMatrix();
+}
+
 
 
 void initEstado(){
@@ -243,6 +259,10 @@ void imprime_ajuda(void)
 	printf("\n\nDesenho de um labirinto a partir de um grafo\n");
 	printf("h,H - Ajuda \n");
 	printf("i,I - Reset dos Valores \n");
+	printf("******* MiniJogos ******* \n");
+	printf("u,U - Labirinto \n");
+	printf("j,J - Jogo do Galo \n");
+	printf("m,M - Enforcado \n");
 	printf("******* Diversos ******* \n");
 	printf("l,L - Alterna o calculo luz entre Z e eye (GL_LIGHT_MODEL_LOCAL_VIEWER)\n");
 	printf("k,K - Alerna luz de camera com luz global \n");
@@ -252,6 +272,8 @@ void imprime_ajuda(void)
 	printf("c,C - Liga/Desliga Cull Face \n");
 	printf("n,N - Liga/Desliga apresentação das normais \n");
 	printf("v,V - Camara: Alernar entre 1a e 3a pessoa \n");
+	printf("q, Q - Activar musica ambiente \n");
+	printf("a, A - Desativar musica ambiente \n");
 	printf("******* grafos ******* \n");
 	printf("F1  - Grava grafo do ficheiro \n");
 	printf("F2  - Lê grafo para ficheiro \n");
@@ -261,8 +283,6 @@ void imprime_ajuda(void)
 	printf("Botão direito  - Rodar camera\n");
 	printf("Botão direito com CTRL - Zoom-in/out\n");
 	printf("PAGE_UP, PAGE_DOWN - Altera distância da camara \n");
-	printf("q, Q - Activar musica ambiente \n");
-	printf("a, A - Desativar musica ambiente \n");
 	printf("ESC - Sair\n");
 }
 
@@ -665,6 +685,24 @@ void desenhaNo(int no){
 	Arco arco = arcos[0];
 	No *noi = &nos[no];// *nof;
 
+//cout <<"|"<< nos[no].getHumor() <<"|"<< endl;
+	//system("pause");
+
+	
+		if (nos[no].getHumor().compare("feliz")){
+			humorFeliz( nos[no].x, nos[no].y, nos[no].z);
+		}
+		else if (nos[no].getHumor().compare("cansado")){
+			humorCansado(nos[no].x, nos[no].y, nos[no].z);
+			chuva(nos[no].x, nos[no].y, nos[no].z);
+		}
+		else if (nos[no].getHumor().compare("triste")){
+			
+			humorTriste(nos[no].x, nos[no].y, nos[no].z);
+			chuva(nos[no].x, nos[no].y, nos[no].z);
+		}
+	
+	
 	glPushMatrix();
 
 	//mudar a cor da esfera
@@ -897,15 +935,16 @@ void display(void)
 	desenhaEixos();
 
 	desenhaLabirinto();
-	humor();
-
+	//humor();
+	//humor(textIDSun, 0, -75, 0);
+	
 	//desenha chuva
-	if (estado.chuva){
+	/*if (estado.chuva){
 		glPushMatrix();
-		chuva();
+		//chuva();
 		glutPostRedisplay();
 		glPopMatrix();
-	}
+	}*/
 
 	if (estado.eixoTranslaccao) {
 		// desenha plano de translacção
@@ -934,12 +973,12 @@ void display(void)
 	desenhaLabirinto();
 
 	//desenha chuva
-	if (estado.chuva){
+	/*if (estado.chuva){
 		glPushMatrix();
 		chuva();
 		glutPostRedisplay();
 		glPopMatrix();
-	}
+	}*/
 
 	if (estado.eixoTranslaccao) {
 		// desenha plano de translacção
@@ -1039,14 +1078,23 @@ void keyboard(unsigned char key, int x, int y)
 		glutPostRedisplay();
 		break;
 	case 'j':
-	case 'J':
-		//int i = system("MassiveDynamicsGalo.exe");
-		//int i = system("MassiveDynamicsEnforcado.exe");
-		int i = system("MassiveDynamicsLabirinto.exe");
-		//system("pause");
+	case 'J':{
+				 int i = system("MassiveDynamicsGalo.exe");
+				 printf("%d\n", i);
+				 glutPostRedisplay();
+				 break;
+	}case 'm':
+	case 'M':{
+		int i = system("MassiveDynamicsEnforcado.exe");
 		printf("%d\n", i);
 		glutPostRedisplay();
 		break;
+	}case 'u':
+	case 'U':{
+				 int i = system("MassiveDynamicsLabirinto.exe");
+				 printf("%d\n", i);
+				 glutPostRedisplay();
+				 break; }
 	}
 }
 
@@ -1419,6 +1467,52 @@ void createTextures(GLuint texID[])
 		printf("Textura %s not Found\n", NOME_TEXTURA_SUN);
 		exit(0);
 	}
+	if (tgaLoad(NOME_TEXTURA_NUVEM))
+	{
+		tgaInfo *img;
+		glEnable(GL_DEPTH_TEST);
+
+		img = tgaLoad(NOME_TEXTURA_NUVEM);
+		glGenTextures(2, &textIDNuvem);
+		glBindTexture(GL_TEXTURE_2D, textIDNuvem);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img->width, img->height,
+			0, GL_RGBA, GL_UNSIGNED_BYTE, img->imageData);
+
+		glDisable(GL_DEPTH_TEST);
+	}
+	else{
+		printf("Textura %s not Found\n", NOME_TEXTURA_NUVEM);
+		exit(0);
+	}
+	if (tgaLoad(NOME_TEXTURA_RAIO))
+	{
+		tgaInfo *img;
+		glEnable(GL_DEPTH_TEST);
+
+		img = tgaLoad(NOME_TEXTURA_RAIO);
+		glGenTextures(3, &textIDRaio);
+		glBindTexture(GL_TEXTURE_2D, textIDRaio);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, img->width, img->height,
+			0, GL_RGBA, GL_UNSIGNED_BYTE, img->imageData);
+
+		glDisable(GL_DEPTH_TEST);
+	}
+	else{
+		printf("Textura %s not Found\n", NOME_TEXTURA_RAIO);
+		exit(0);
+	}
 
 
 	glBindTexture(GL_TEXTURE_2D, NULL);
@@ -1458,6 +1552,8 @@ void main(int argc, char **argv)
 
 		texID[0] = textIDSkybox;
 		texID[1] = textIDSun;
+		texID[2] = textIDNuvem;
+		texID[3] = textIDRaio;
 
 		createTextures(texID);
 

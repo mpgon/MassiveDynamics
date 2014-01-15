@@ -25,6 +25,15 @@ amigos(fabio,joao).
 amigos(cristiano,miguel).
 amigos(fabio,cristiano).
 
+arco('Marco', joana, 10).
+arco('Marco', jatten, 2).
+arco(jatten, 'Fabio', 6).
+arco('Fabio','Cristiano', 3).
+arco(joel, joao, 2).
+arco(joao, miguel, 3).
+arco(joao, 'Marco', 2).
+arco(joao, miguel, 4).
+
 odbc_con:-
 	odbc_connect('ConDB', _,[ user('ARQSI042'),password('potato'),alias('ConDB'),encoding(utf8),open(once)]).
 

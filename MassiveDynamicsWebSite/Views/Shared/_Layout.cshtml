@@ -23,14 +23,20 @@
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
                     <li>@Html.ActionLink("About", "About", "Home")</li>
-                    <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
                     <li>@Html.ActionLink("Admin", "Index", "Account")</li>
-                    <li>@Html.ActionLink("Jogo", "Index", "Jogo")</li>
-                    <li>@Html.ActionLink("EstadoRelacao", "Index", "EstadoRelacao")</li>
-                    <li>@Html.ActionLink("Relacao", "Index", "Relacao")</li>
-                    <li>@Html.ActionLink("Introducao", "Index", "Introducao")</li>
-                    <li>@Html.ActionLink("Humor", "Index", "Humor")</li>
-                    <li>@Html.ActionLink("Tag", "Index", "Tag")</li>
+
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">BD <b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li>@Html.ActionLink("Jogo", "Index", "Jogo")</li>
+                            <li>@Html.ActionLink("EstadoRelacao", "Index", "EstadoRelacao")</li>
+                            <li>@Html.ActionLink("Relacao", "Index", "Relacao")</li>
+                            <li>@Html.ActionLink("Introducao", "Index", "Introducao")</li>
+                            <li>@Html.ActionLink("Humor", "Index", "Humor")</li>
+                            <li>@Html.ActionLink("Tag", "Index", "Tag")</li>
+                        </ul>
+                    </li>
+                
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">Serviços <b class="caret"></b></a>
                         <ul class="dropdown-menu">

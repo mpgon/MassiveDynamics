@@ -22,9 +22,9 @@ void InicializarChuva(CHUVA &rain, int numgotas)
 	//	xg, yg, zg;    gravidade em cada eixo
 		
 	rain.grosor = 0.4f;
-	rain.x = 7;
-	rain.y = 12;
-	rain.z = 7;
+	rain.x = 2;
+	rain.y = 4;
+	rain.z = 2;
 	rain.xg = 0.0f;
 	rain.yg = -0.002f;
 	rain.zg = 0.0f;

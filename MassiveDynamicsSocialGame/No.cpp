@@ -27,6 +27,10 @@ void No::setNome(string n){
 	nome = n;
 }
 
+void No::setHumor(string h){
+	humor = h;
+}
+
 /*
 istream& operator>>(std::istream& is, No& obj)
 {
