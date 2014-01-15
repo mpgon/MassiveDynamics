@@ -215,6 +215,25 @@ contaTags(_,[],0).
 contaTags(LU1,[H|T],Cont):-member(H,LU1),contaTags(LU1,T,C1),Cont is C1+1.
 contaTags(LU1,[_|T],Cont):-contaTags(LU1,T,Cont).
 
+%Caminho Mais Forte
+%%	--------------------------------------------
+
+caminhoMaisForte(Orig, Dest, Cam, Custo):-
+    caminhoMaisForte2(Dest,[(0,[Orig])],Cam, Custo).
+
+caminhoMaisForte2(Dest,[(Custo,[Dest|T])|_],Cam,Custo):-
+    !,reverse([Dest|T],Cam).
+
+caminhoMaisForte2(Dest,[(Ca,[H|T])|Outros], Cam, Custo):-
+    findall((Cax,[X,H|T]),(Dest\==H,arco(H,X,Cx),\+member(X,[H|T]),
+                   Cax is Cx+Ca),Novos),
+    append(Novos,Outros,Todos),
+    sort(Todos,TodosOrd),
+    reverse(TodosOrd,To),
+    caminhoMaisForte2(Dest,To,Cam,Custo).
+
+
+
 
 
 
