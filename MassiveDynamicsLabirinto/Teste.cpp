@@ -235,7 +235,7 @@ char mazedata40[HEIGHT_40][WIDTH_40] = {
 	"                                        ",
 };
 
-void insertProlog(int x1, int z1, int x2, int z2){
+int insertProlog(int x1, int z1, int x2, int z2){
 
 	PlTermv av(2);
 
@@ -245,9 +245,9 @@ void insertProlog(int x1, int z1, int x2, int z2){
 	av[0] = PlCompound(buffer1);
 	av[1] = PlCompound(buffer2);
 
-	PlQuery q("criarBaseConhecimento", av);
+	PlCall("criarBaseConhecimento", av);
 
-	  
+	return (1);
 
 }
 
@@ -1442,17 +1442,31 @@ void init()
 
 /////////////////////////////////////
 
-void retornaValor(){
+int retornaValor(){
 
 	cout << "flag1" << endl;
 	cin.get();
-	
-	term_t av2 = PL_new_term_ref();
+
+	cout << "flag2" << endl;
+	cin.get();
+
+	/*lQuery q("listarValores", av);
+
+	while (q.next_solution()){
+
+		PlTail tail(av[0]);
+		while (tail.next(t)){
+			cout << (char*)t << endl;
+		}
+	}
+	*/
+	//term_t av2 = PL_new_term_ref();
 	
 	//av2[0] = PlCompound("1");
 
 	//PlQuery q("listarValores", av2);
-
+	
+	return (1);
 }
 
 int main(int argc, char **argv)
@@ -1470,7 +1484,7 @@ int main(int argc, char **argv)
 
 	criaBaseConhecimento();
 
-	retornaValor();
+	//retornaValor();
 
 	// Registar callbacks do GLUT da janela principal
 	init();
