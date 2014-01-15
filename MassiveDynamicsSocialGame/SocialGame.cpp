@@ -14,6 +14,8 @@
 
 #include "tga.h"
 
+#include "Mp3.h"
+
 using namespace std;
 
 #define NOME_TEXTURA_SKYBOX		  "Skybox.jpg"
@@ -225,6 +227,8 @@ void myInit()
 
 	initModelo();
 	initEstado();
+	Mp3Init();
+	Mp3Load("musica/som.mp3");
 	modelo.quad = gluNewQuadric();
 	gluQuadricDrawStyle(modelo.quad, GLU_FILL);
 	gluQuadricNormals(modelo.quad, GLU_OUTSIDE);
@@ -257,6 +261,8 @@ void imprime_ajuda(void)
 	printf("Botão direito  - Rodar camera\n");
 	printf("Botão direito com CTRL - Zoom-in/out\n");
 	printf("PAGE_UP, PAGE_DOWN - Altera distância da camara \n");
+	printf("q, Q - Activar musica ambiente \n");
+	printf("a, A - Desativar musica ambiente \n");
 	printf("ESC - Sair\n");
 }
 
@@ -964,6 +970,14 @@ void keyboard(unsigned char key, int x, int y)
 	case 'h':
 	case 'H':
 		imprime_ajuda();
+		break;
+	case 'q':
+	case 'Q':
+		Mp3Play();
+		break;
+	case 'a':
+	case 'A':
+		Mp3Stop();
 		break;
 	case 'l':
 	case 'L':

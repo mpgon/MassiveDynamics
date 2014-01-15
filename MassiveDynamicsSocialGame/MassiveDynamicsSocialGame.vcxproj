@@ -89,6 +89,7 @@
     <ClCompile Include="rain.cpp" />
     <ClCompile Include="readjpeg.c" />
     <ClCompile Include="SocialGame.cpp" />
+    <ClCompile Include="Mp3.cpp" />
     <ClCompile Include="tga.cpp" />
     <ClCompile Include="wsclient\schemas.microsoft.com.2003.10.Serialization.xsd.c" />
     <ClCompile Include="wsclient\stdafx.cpp" />
@@ -100,6 +101,7 @@
     <ClInclude Include="Billboard.h" />
     <ClInclude Include="ClientWS.h" />
     <ClInclude Include="grafos.h" />
+    <ClInclude Include="Mp3.h" />
     <ClInclude Include="humor.h" />
     <ClInclude Include="maths.h" />
     <ClInclude Include="No.h" />
