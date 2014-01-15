@@ -23,6 +23,10 @@ void No::setTipo(const char t){
 	tipo = t;
 }
 
+void No::setNome(string n){
+	nome = n;
+}
+
 /*
 istream& operator>>(std::istream& is, No& obj)
 {

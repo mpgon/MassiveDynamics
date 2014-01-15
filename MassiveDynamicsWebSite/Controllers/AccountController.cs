@@ -214,6 +214,7 @@ namespace MassiveDynamicsWebSite.Controllers
                 user.LastName = model.LastName;
                 user.Email = model.Email;
                 user.Date = model.Date;
+                user.tags = model.tags;
                 user.humor = model.humor;
                 user.humorID = model.humorID;
                 user.perfilfacebook = model.perfilfacebook;

@@ -43,6 +43,10 @@ extern "C" {
 
 //     struct _authenticate;
 //     struct _authenticateResponse;
+//     struct _getUsers;
+//     struct _getUsersResponse;
+//     struct _getRelacoes;
+//     struct _getRelacoesResponse;
 
 // The following header files must be included in this order before this one
 
@@ -65,6 +69,22 @@ typedef struct _authenticateResponse
     BOOL authenticateResult;
 } _authenticateResponse;
 
+typedef struct _getUsers _getUsers;
+
+// typeDescription: n/a
+typedef struct _getUsersResponse 
+{
+    WCHAR* getUsersResult; // optional
+} _getUsersResponse;
+
+typedef struct _getRelacoes _getRelacoes;
+
+// typeDescription: n/a
+typedef struct _getRelacoesResponse 
+{
+    WCHAR* getRelacoesResult; // optional
+} _getRelacoesResponse;
+
 ////////////////////////////////////////////////
 // Global web service descriptions.
 ////////////////////////////////////////////////
@@ -83,11 +103,35 @@ typedef struct _tempuri_org_xsd
         // elementDescription: tempuri_org_xsd.globalElements.authenticateResponse
         WS_ELEMENT_DESCRIPTION authenticateResponse;
         
+        // xml element: getUsers ("http://tempuri.org/")
+        // c type: _getUsers
+        // elementDescription: tempuri_org_xsd.globalElements.getUsers
+        WS_ELEMENT_DESCRIPTION getUsers;
+        
+        // xml element: getUsersResponse ("http://tempuri.org/")
+        // c type: _getUsersResponse
+        // elementDescription: tempuri_org_xsd.globalElements.getUsersResponse
+        WS_ELEMENT_DESCRIPTION getUsersResponse;
+        
+        // xml element: getRelacoes ("http://tempuri.org/")
+        // c type: _getRelacoes
+        // elementDescription: tempuri_org_xsd.globalElements.getRelacoes
+        WS_ELEMENT_DESCRIPTION getRelacoes;
+        
+        // xml element: getRelacoesResponse ("http://tempuri.org/")
+        // c type: _getRelacoesResponse
+        // elementDescription: tempuri_org_xsd.globalElements.getRelacoesResponse
+        WS_ELEMENT_DESCRIPTION getRelacoesResponse;
+        
     } globalElements;
     struct // externallyReferencedTypes
     {
         WS_STRUCT_DESCRIPTION authenticate;
         WS_STRUCT_DESCRIPTION authenticateResponse;
+        WS_STRUCT_DESCRIPTION getUsers;
+        WS_STRUCT_DESCRIPTION getUsersResponse;
+        WS_STRUCT_DESCRIPTION getRelacoes;
+        WS_STRUCT_DESCRIPTION getRelacoesResponse;
     } externallyReferencedTypes;
 } _tempuri_org_xsd;
 

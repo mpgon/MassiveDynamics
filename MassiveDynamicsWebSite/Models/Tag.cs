@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using Microsoft.AspNet.Identity;
+using MassiveDynamicsWebSite.Models;
 
 namespace SocialGameWebSite.Models
 {
@@ -12,5 +14,6 @@ namespace SocialGameWebSite.Models
         public string tipo { get; set; }
         public ICollection<Relacao> relacoes { get; set; }
         public ICollection<string> users { get; set; }
+        public ICollection<ApplicationUser> utilizadores{ get; set; }
     }
 }

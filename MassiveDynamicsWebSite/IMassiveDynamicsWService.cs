@@ -16,5 +16,10 @@ namespace SocialGameWebSite
         bool authenticate(string user, string pass);
 
         void loginInDb(string user, string pass);
+
+        [OperationContract]
+        string getUsers();
+        [OperationContract]
+        string getRelacoes();
     }
 }

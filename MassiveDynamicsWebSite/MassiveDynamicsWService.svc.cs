@@ -31,5 +31,34 @@ namespace SocialGameWebSite
                 loginRes = true;
             }
         }
+
+        public string getUsers()
+        {
+            string res = "";
+
+            ApplicationDbContext db = new ApplicationDbContext();
+            var users = db.Users.ToList();
+            res+=users.Count()+";";
+            foreach(ApplicationUser user in users){
+                res += user.UserName + ";" + user.humor.nome + ";";
+                /*int numTags = 2; //user.tags.Count();
+                res += numTags+";";*/
+            }
+
+            return res;
+        }
+
+        public string getRelacoes()
+        {
+            ApplicationDbContext db = new ApplicationDbContext();
+            int i = 0;
+            string res= "";
+            foreach(Models.Relacao rel in db.Relacao.ToList()){
+                string username1 = db.Database.SqlQuery<string>("SELECT [UserName] from [ARQSI042].[dbo].[AspNetUsers] WHERE [Id] = '" + rel.user1ID + "'").FirstOrDefault<string>(); ;
+                string username2 = db.Database.SqlQuery<string>("SELECT [UserName] from [ARQSI042].[dbo].[AspNetUsers] WHERE [Id] = '" + rel.user2ID + "'").FirstOrDefault<string>(); ;
+                res += username1 + ";" + username2 + ";";
+            }
+            return res;
+        }
     }
 }

@@ -39,6 +39,8 @@ extern "C" {
 	FILE* _iob = NULL;
 }
 
+char MODO;
+
 #define graus(X) (double)((X)*180/M_PI)
 #define rad(X)   (double)((X)*M_PI/180)
 
@@ -196,7 +198,15 @@ void initModelo(){
 void myInit()
 {
 
-	leGrafo();
+	if (MODO == 'N'){
+		leGrafo();
+	}
+	else {
+		criaNos();
+		setNosCoord();
+		criaArcos();
+	}
+	
 
 	GLfloat LuzAmbiente[] = { 0.5, 0.5, 0.5, 0.0 };
 
@@ -714,8 +724,9 @@ void desenhaLabirinto(){
 		desenhaNo(i);
 	}
 	material(emerald);
-	for (int i = 0; i < numArcos; i++)
+	for (int i = 0; i < numArcos; i++){
 		desenhaArco(arcos[i]);
+	}
 	glPopMatrix();
 }
 
@@ -1403,7 +1414,23 @@ void main(int argc, char **argv)
 {
 
 
-	if (/*login()*/true){
+	if (login()){
+
+		cout << "Modo Normal - 1" << endl;
+		cout << "Modo Avancado - 2" << endl;
+		cout << "Exit - any" << endl;
+		int menu;
+		cin >> menu;
+		if (menu == 1){
+			MODO = 'N';
+		}
+		else if(menu == 2){
+			MODO = 'A';
+		}
+		else {
+			exit(0);
+		}
+
 		glutInit(&argc, argv);
 		/*need both double buffering and z buffer*/
 		glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -1429,7 +1456,5 @@ void main(int argc, char **argv)
 	else{
 
 	}
-
-
 
 }

@@ -1,6 +1,7 @@
 #include "grafos.h"
 #include <iostream>
 #include <fstream>
+#include <math.h>
 
 #define __GRAFO__FILE__ "normal.grafo"
 using namespace std;
@@ -8,6 +9,7 @@ No nos[_MAX_NOS_GRAFO];
 Arco arcos[_MAX_ARCOS_GRAFO];
 int numNos = 0, numArcos = 0;
 int noInicial;
+string nomeInicial;
 
 
 
@@ -118,4 +120,31 @@ void leGrafo(){
 		if ((arcos[j].getNOI() == i || arcos[j].getNOF() == i) && nos[i].getLargura() < arcos[j].getLargura())
 			nos[i].largura = arcos[j].getLargura();
 	}
+}
+
+void setNosCoord(){
+	
+	float k = 10;
+	float ang = 0;
+	//int flag = 0;
+
+	nos[noInicial].x = 0;
+	nos[noInicial].y = 0;
+
+	for (int i = noInicial+1; i < numNos; i++){
+		nos[i].x = k * cos(ang);
+		nos[i].y = k * sin(ang);
+		ang+=40;
+	}
+	for (int i = 0; i < noInicial; i++){
+		nos[i].x = k * cos(ang);
+		nos[i].y = k * sin(ang);
+		ang += 40;
+	}
+
+	for (int i = 0; i < numNos; i++){
+		cout << "x->" << nos[i].x << "y-->" << nos[i].y << endl;
+		
+	}
+
 }

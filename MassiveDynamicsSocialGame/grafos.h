@@ -22,6 +22,7 @@
 extern No nos[];
 extern Arco arcos[];
 extern int numNos, numArcos, noInicial;
+extern string nomeInicial;
 
 void addNo(No);
 void deleteNo(int);
@@ -37,5 +38,6 @@ void listArcos();
 
 void gravaGrafo();
 void leGrafo();
+void setNosCoord();
 
 #endif

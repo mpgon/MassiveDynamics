@@ -125,6 +125,8 @@ extern "C" {
 // The following client functions were generated:
 
 //     BasicHttpBinding_IMassiveDynamicsWService_authenticate
+//     BasicHttpBinding_IMassiveDynamicsWService_getUsers
+//     BasicHttpBinding_IMassiveDynamicsWService_getRelacoes
 
 // The following server function tables were generated:
 
@@ -184,6 +186,26 @@ HRESULT WINAPI BasicHttpBinding_IMassiveDynamicsWService_authenticate(
     _In_opt_ const WS_ASYNC_CONTEXT* _asyncContext,
     _In_opt_ WS_ERROR* _error);
 
+// operation: BasicHttpBinding_IMassiveDynamicsWService_getUsers
+HRESULT WINAPI BasicHttpBinding_IMassiveDynamicsWService_getUsers(
+    _In_ WS_SERVICE_PROXY* _serviceProxy,
+    _Outptr_opt_result_z_ WCHAR** getUsersResult, 
+    _In_ WS_HEAP* _heap,
+    _In_reads_opt_(_callPropertyCount) const WS_CALL_PROPERTY* _callProperties,
+    _In_ const ULONG _callPropertyCount,
+    _In_opt_ const WS_ASYNC_CONTEXT* _asyncContext,
+    _In_opt_ WS_ERROR* _error);
+
+// operation: BasicHttpBinding_IMassiveDynamicsWService_getRelacoes
+HRESULT WINAPI BasicHttpBinding_IMassiveDynamicsWService_getRelacoes(
+    _In_ WS_SERVICE_PROXY* _serviceProxy,
+    _Outptr_opt_result_z_ WCHAR** getRelacoesResult, 
+    _In_ WS_HEAP* _heap,
+    _In_reads_opt_(_callPropertyCount) const WS_CALL_PROPERTY* _callProperties,
+    _In_ const ULONG _callPropertyCount,
+    _In_opt_ const WS_ASYNC_CONTEXT* _asyncContext,
+    _In_opt_ WS_ERROR* _error);
+
 ////////////////////////////////////////////////
 // Service functions definitions
 ////////////////////////////////////////////////
@@ -196,10 +218,24 @@ typedef HRESULT (CALLBACK* BasicHttpBinding_IMassiveDynamicsWService_authenticat
     _In_ const WS_ASYNC_CONTEXT* _asyncContext,
     _In_ WS_ERROR* _error);
 
+typedef HRESULT (CALLBACK* BasicHttpBinding_IMassiveDynamicsWService_getUsersCallback) (
+    _In_ const WS_OPERATION_CONTEXT* _context,
+    _Outptr_opt_result_z_ WCHAR** getUsersResult, 
+    _In_ const WS_ASYNC_CONTEXT* _asyncContext,
+    _In_ WS_ERROR* _error);
+
+typedef HRESULT (CALLBACK* BasicHttpBinding_IMassiveDynamicsWService_getRelacoesCallback) (
+    _In_ const WS_OPERATION_CONTEXT* _context,
+    _Outptr_opt_result_z_ WCHAR** getRelacoesResult, 
+    _In_ const WS_ASYNC_CONTEXT* _asyncContext,
+    _In_ WS_ERROR* _error);
+
 // binding: BasicHttpBinding_IMassiveDynamicsWService
 typedef struct BasicHttpBinding_IMassiveDynamicsWServiceFunctionTable 
 {
     BasicHttpBinding_IMassiveDynamicsWService_authenticateCallback BasicHttpBinding_IMassiveDynamicsWService_authenticate;
+    BasicHttpBinding_IMassiveDynamicsWService_getUsersCallback BasicHttpBinding_IMassiveDynamicsWService_getUsers;
+    BasicHttpBinding_IMassiveDynamicsWService_getRelacoesCallback BasicHttpBinding_IMassiveDynamicsWService_getRelacoes;
 } BasicHttpBinding_IMassiveDynamicsWServiceFunctionTable;
 
 ////////////////////////////////////////////////
@@ -222,6 +258,30 @@ typedef struct _tempuri_org_wsdl
         // messageDescription: tempuri_org_wsdl.messages.IMassiveDynamicsWService_authenticate_OutputMessage
         WS_MESSAGE_DESCRIPTION IMassiveDynamicsWService_authenticate_OutputMessage;
         
+        // message: IMassiveDynamicsWService_getUsers_InputMessage
+        // c type: _getUsers
+        // action: "http://tempuri.org/IMassiveDynamicsWService/getUsers"
+        // messageDescription: tempuri_org_wsdl.messages.IMassiveDynamicsWService_getUsers_InputMessage
+        WS_MESSAGE_DESCRIPTION IMassiveDynamicsWService_getUsers_InputMessage;
+        
+        // message: IMassiveDynamicsWService_getUsers_OutputMessage
+        // c type: _getUsersResponse
+        // action: "http://tempuri.org/IMassiveDynamicsWService/getUsersResponse"
+        // messageDescription: tempuri_org_wsdl.messages.IMassiveDynamicsWService_getUsers_OutputMessage
+        WS_MESSAGE_DESCRIPTION IMassiveDynamicsWService_getUsers_OutputMessage;
+        
+        // message: IMassiveDynamicsWService_getRelacoes_InputMessage
+        // c type: _getRelacoes
+        // action: "http://tempuri.org/IMassiveDynamicsWService/getRelacoes"
+        // messageDescription: tempuri_org_wsdl.messages.IMassiveDynamicsWService_getRelacoes_InputMessage
+        WS_MESSAGE_DESCRIPTION IMassiveDynamicsWService_getRelacoes_InputMessage;
+        
+        // message: IMassiveDynamicsWService_getRelacoes_OutputMessage
+        // c type: _getRelacoesResponse
+        // action: "http://tempuri.org/IMassiveDynamicsWService/getRelacoesResponse"
+        // messageDescription: tempuri_org_wsdl.messages.IMassiveDynamicsWService_getRelacoes_OutputMessage
+        WS_MESSAGE_DESCRIPTION IMassiveDynamicsWService_getRelacoes_OutputMessage;
+        
     } messages;
     struct // contracts
     {
@@ -230,6 +290,12 @@ typedef struct _tempuri_org_wsdl
         // operation: BasicHttpBinding_IMassiveDynamicsWService_authenticate
         //     input message: IMassiveDynamicsWService_authenticate_InputMessage
         //     output message: IMassiveDynamicsWService_authenticate_OutputMessage
+        // operation: BasicHttpBinding_IMassiveDynamicsWService_getUsers
+        //     input message: IMassiveDynamicsWService_getUsers_InputMessage
+        //     output message: IMassiveDynamicsWService_getUsers_OutputMessage
+        // operation: BasicHttpBinding_IMassiveDynamicsWService_getRelacoes
+        //     input message: IMassiveDynamicsWService_getRelacoes_InputMessage
+        //     output message: IMassiveDynamicsWService_getRelacoes_OutputMessage
         // contractDescription: tempuri_org_wsdl.contracts.BasicHttpBinding_IMassiveDynamicsWService
         WS_CONTRACT_DESCRIPTION BasicHttpBinding_IMassiveDynamicsWService;
         

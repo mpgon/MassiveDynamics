@@ -5,3 +5,4 @@
 #include "wsclient\tempuri.org.wsdl.h" 
 
 bool login();
+void criaNos();void criaArcos();

@@ -10,6 +10,10 @@ typedef struct _tempuri_org_wsdlLocalDefinitions
     {
         WS_MESSAGE_DESCRIPTION IMassiveDynamicsWService_authenticate_InputMessage;
         WS_MESSAGE_DESCRIPTION IMassiveDynamicsWService_authenticate_OutputMessage;
+        WS_MESSAGE_DESCRIPTION IMassiveDynamicsWService_getUsers_InputMessage;
+        WS_MESSAGE_DESCRIPTION IMassiveDynamicsWService_getUsers_OutputMessage;
+        WS_MESSAGE_DESCRIPTION IMassiveDynamicsWService_getRelacoes_InputMessage;
+        WS_MESSAGE_DESCRIPTION IMassiveDynamicsWService_getRelacoes_OutputMessage;
     } messages;  // end of messages
     struct  // contracts
     {
@@ -20,7 +24,17 @@ typedef struct _tempuri_org_wsdlLocalDefinitions
                 WS_PARAMETER_DESCRIPTION params[3];
                 WS_OPERATION_DESCRIPTION BasicHttpBinding_IMassiveDynamicsWService_authenticate;
             } BasicHttpBinding_IMassiveDynamicsWService_authenticate;
-            WS_OPERATION_DESCRIPTION* operations[1];
+            struct  // BasicHttpBinding_IMassiveDynamicsWService_getUsers
+            {
+                WS_PARAMETER_DESCRIPTION params[1];
+                WS_OPERATION_DESCRIPTION BasicHttpBinding_IMassiveDynamicsWService_getUsers;
+            } BasicHttpBinding_IMassiveDynamicsWService_getUsers;
+            struct  // BasicHttpBinding_IMassiveDynamicsWService_getRelacoes
+            {
+                WS_PARAMETER_DESCRIPTION params[1];
+                WS_OPERATION_DESCRIPTION BasicHttpBinding_IMassiveDynamicsWService_getRelacoes;
+            } BasicHttpBinding_IMassiveDynamicsWService_getRelacoes;
+            WS_OPERATION_DESCRIPTION* operations[3];
             WS_CONTRACT_DESCRIPTION contractDesc;
         } BasicHttpBinding_IMassiveDynamicsWService;
     } contracts;  // endof contracts 
@@ -40,6 +54,10 @@ typedef struct _tempuri_org_wsdlLocalDefinitions
         {
             WS_XML_STRING IMassiveDynamicsWService_authenticate_InputMessageactionName;  // http://tempuri.org/IMassiveDynamicsWService/authenticate
             WS_XML_STRING IMassiveDynamicsWService_authenticate_OutputMessageactionName;  // http://tempuri.org/IMassiveDynamicsWService/authenticateResponse
+            WS_XML_STRING IMassiveDynamicsWService_getUsers_InputMessageactionName;  // http://tempuri.org/IMassiveDynamicsWService/getUsers
+            WS_XML_STRING IMassiveDynamicsWService_getUsers_OutputMessageactionName;  // http://tempuri.org/IMassiveDynamicsWService/getUsersResponse
+            WS_XML_STRING IMassiveDynamicsWService_getRelacoes_InputMessageactionName;  // http://tempuri.org/IMassiveDynamicsWService/getRelacoes
+            WS_XML_STRING IMassiveDynamicsWService_getRelacoes_OutputMessageactionName;  // http://tempuri.org/IMassiveDynamicsWService/getRelacoesResponse
         } xmlStrings;  // end of XML string list
         WS_XML_DICTIONARY dict;
     } dictionary;  // end of XML dictionary
@@ -78,6 +96,64 @@ HRESULT CALLBACK BasicHttpBinding_IMassiveDynamicsWService_authenticateOperation
 #if (_MSC_VER >=1400) 
 #pragma warning(pop)
 #endif
+
+typedef struct BasicHttpBinding_IMassiveDynamicsWService_getUsersParamStruct 
+{
+    WCHAR** getUsersResult;
+} BasicHttpBinding_IMassiveDynamicsWService_getUsersParamStruct;
+
+#if (_MSC_VER >=1400) 
+#pragma warning(push)
+#endif
+#pragma warning(disable: 4055) // conversion from data pointer to function pointer
+HRESULT CALLBACK BasicHttpBinding_IMassiveDynamicsWService_getUsersOperationStub(
+    _In_ const WS_OPERATION_CONTEXT* _context,
+    _In_ void* _stackStruct,
+    _In_ const void* _callback,
+    _In_ const WS_ASYNC_CONTEXT* _asyncContext,
+    _In_ WS_ERROR* _error)
+{
+    BasicHttpBinding_IMassiveDynamicsWService_getUsersCallback _operation = (BasicHttpBinding_IMassiveDynamicsWService_getUsersCallback)_callback;
+    BasicHttpBinding_IMassiveDynamicsWService_getUsersParamStruct *_stack =(BasicHttpBinding_IMassiveDynamicsWService_getUsersParamStruct*)_stackStruct;
+    return _operation( 
+        _context,
+        (_stack->getUsersResult),
+        (WS_ASYNC_CONTEXT*)_asyncContext,
+        _error);
+}
+#pragma warning(default: 4055)  // conversion from data pointer to function pointer
+#if (_MSC_VER >=1400) 
+#pragma warning(pop)
+#endif
+
+typedef struct BasicHttpBinding_IMassiveDynamicsWService_getRelacoesParamStruct 
+{
+    WCHAR** getRelacoesResult;
+} BasicHttpBinding_IMassiveDynamicsWService_getRelacoesParamStruct;
+
+#if (_MSC_VER >=1400) 
+#pragma warning(push)
+#endif
+#pragma warning(disable: 4055) // conversion from data pointer to function pointer
+HRESULT CALLBACK BasicHttpBinding_IMassiveDynamicsWService_getRelacoesOperationStub(
+    _In_ const WS_OPERATION_CONTEXT* _context,
+    _In_ void* _stackStruct,
+    _In_ const void* _callback,
+    _In_ const WS_ASYNC_CONTEXT* _asyncContext,
+    _In_ WS_ERROR* _error)
+{
+    BasicHttpBinding_IMassiveDynamicsWService_getRelacoesCallback _operation = (BasicHttpBinding_IMassiveDynamicsWService_getRelacoesCallback)_callback;
+    BasicHttpBinding_IMassiveDynamicsWService_getRelacoesParamStruct *_stack =(BasicHttpBinding_IMassiveDynamicsWService_getRelacoesParamStruct*)_stackStruct;
+    return _operation( 
+        _context,
+        (_stack->getRelacoesResult),
+        (WS_ASYNC_CONTEXT*)_asyncContext,
+        _error);
+}
+#pragma warning(default: 4055)  // conversion from data pointer to function pointer
+#if (_MSC_VER >=1400) 
+#pragma warning(pop)
+#endif
 const static _tempuri_org_wsdlLocalDefinitions tempuri_org_wsdlLocalDefinitions =
 {
     {  // messages
@@ -89,6 +165,22 @@ const static _tempuri_org_wsdlLocalDefinitions tempuri_org_wsdlLocalDefinitions 
             (WS_XML_STRING*)&tempuri_org_wsdlLocalDefinitions.dictionary.xmlStrings.IMassiveDynamicsWService_authenticate_OutputMessageactionName, // http://tempuri.org/IMassiveDynamicsWService/authenticateResponse
             (WS_ELEMENT_DESCRIPTION*)&tempuri_org_xsd.globalElements.authenticateResponse, 
         },    // message description for IMassiveDynamicsWService_authenticate_OutputMessage
+        {  // message description for IMassiveDynamicsWService_getUsers_InputMessage
+            (WS_XML_STRING*)&tempuri_org_wsdlLocalDefinitions.dictionary.xmlStrings.IMassiveDynamicsWService_getUsers_InputMessageactionName, // http://tempuri.org/IMassiveDynamicsWService/getUsers
+            (WS_ELEMENT_DESCRIPTION*)&tempuri_org_xsd.globalElements.getUsers, 
+        },    // message description for IMassiveDynamicsWService_getUsers_InputMessage
+        {  // message description for IMassiveDynamicsWService_getUsers_OutputMessage
+            (WS_XML_STRING*)&tempuri_org_wsdlLocalDefinitions.dictionary.xmlStrings.IMassiveDynamicsWService_getUsers_OutputMessageactionName, // http://tempuri.org/IMassiveDynamicsWService/getUsersResponse
+            (WS_ELEMENT_DESCRIPTION*)&tempuri_org_xsd.globalElements.getUsersResponse, 
+        },    // message description for IMassiveDynamicsWService_getUsers_OutputMessage
+        {  // message description for IMassiveDynamicsWService_getRelacoes_InputMessage
+            (WS_XML_STRING*)&tempuri_org_wsdlLocalDefinitions.dictionary.xmlStrings.IMassiveDynamicsWService_getRelacoes_InputMessageactionName, // http://tempuri.org/IMassiveDynamicsWService/getRelacoes
+            (WS_ELEMENT_DESCRIPTION*)&tempuri_org_xsd.globalElements.getRelacoes, 
+        },    // message description for IMassiveDynamicsWService_getRelacoes_InputMessage
+        {  // message description for IMassiveDynamicsWService_getRelacoes_OutputMessage
+            (WS_XML_STRING*)&tempuri_org_wsdlLocalDefinitions.dictionary.xmlStrings.IMassiveDynamicsWService_getRelacoes_OutputMessageactionName, // http://tempuri.org/IMassiveDynamicsWService/getRelacoesResponse
+            (WS_ELEMENT_DESCRIPTION*)&tempuri_org_xsd.globalElements.getRelacoesResponse, 
+        },    // message description for IMassiveDynamicsWService_getRelacoes_OutputMessage
     },  // end of messages 
     {  // contracts
         {  // BasicHttpBinding_IMassiveDynamicsWService,
@@ -110,11 +202,45 @@ const static _tempuri_org_wsdlLocalDefinitions tempuri_org_wsdlLocalDefinitions 
                     WS_NON_RPC_LITERAL_OPERATION
                 }, //operation description for BasicHttpBinding_IMassiveDynamicsWService_authenticate
             },  // BasicHttpBinding_IMassiveDynamicsWService_authenticate
+            {  // BasicHttpBinding_IMassiveDynamicsWService_getUsers
+                {  // parameter descriptions for BasicHttpBinding_IMassiveDynamicsWService_getUsers
+                    {WS_PARAMETER_TYPE_NORMAL, (USHORT)-1, (USHORT)0},
+                },  // parameter descriptions for BasicHttpBinding_IMassiveDynamicsWService_getUsers
+                {  // operation description for BasicHttpBinding_IMassiveDynamicsWService_getUsers
+                    1,
+                    (WS_MESSAGE_DESCRIPTION*)&tempuri_org_wsdl.messages.IMassiveDynamicsWService_getUsers_InputMessage, 
+                    (WS_MESSAGE_DESCRIPTION*)&tempuri_org_wsdl.messages.IMassiveDynamicsWService_getUsers_OutputMessage, 
+                    0,
+                    0,
+                    1,
+                    (WS_PARAMETER_DESCRIPTION*)tempuri_org_wsdlLocalDefinitions.contracts.BasicHttpBinding_IMassiveDynamicsWService.BasicHttpBinding_IMassiveDynamicsWService_getUsers.params,
+                    BasicHttpBinding_IMassiveDynamicsWService_getUsersOperationStub,
+                    WS_NON_RPC_LITERAL_OPERATION
+                }, //operation description for BasicHttpBinding_IMassiveDynamicsWService_getUsers
+            },  // BasicHttpBinding_IMassiveDynamicsWService_getUsers
+            {  // BasicHttpBinding_IMassiveDynamicsWService_getRelacoes
+                {  // parameter descriptions for BasicHttpBinding_IMassiveDynamicsWService_getRelacoes
+                    {WS_PARAMETER_TYPE_NORMAL, (USHORT)-1, (USHORT)0},
+                },  // parameter descriptions for BasicHttpBinding_IMassiveDynamicsWService_getRelacoes
+                {  // operation description for BasicHttpBinding_IMassiveDynamicsWService_getRelacoes
+                    1,
+                    (WS_MESSAGE_DESCRIPTION*)&tempuri_org_wsdl.messages.IMassiveDynamicsWService_getRelacoes_InputMessage, 
+                    (WS_MESSAGE_DESCRIPTION*)&tempuri_org_wsdl.messages.IMassiveDynamicsWService_getRelacoes_OutputMessage, 
+                    0,
+                    0,
+                    1,
+                    (WS_PARAMETER_DESCRIPTION*)tempuri_org_wsdlLocalDefinitions.contracts.BasicHttpBinding_IMassiveDynamicsWService.BasicHttpBinding_IMassiveDynamicsWService_getRelacoes.params,
+                    BasicHttpBinding_IMassiveDynamicsWService_getRelacoesOperationStub,
+                    WS_NON_RPC_LITERAL_OPERATION
+                }, //operation description for BasicHttpBinding_IMassiveDynamicsWService_getRelacoes
+            },  // BasicHttpBinding_IMassiveDynamicsWService_getRelacoes
             {  // array of operations for BasicHttpBinding_IMassiveDynamicsWService
                 (WS_OPERATION_DESCRIPTION*)&tempuri_org_wsdlLocalDefinitions.contracts.BasicHttpBinding_IMassiveDynamicsWService.BasicHttpBinding_IMassiveDynamicsWService_authenticate.BasicHttpBinding_IMassiveDynamicsWService_authenticate,
+                (WS_OPERATION_DESCRIPTION*)&tempuri_org_wsdlLocalDefinitions.contracts.BasicHttpBinding_IMassiveDynamicsWService.BasicHttpBinding_IMassiveDynamicsWService_getUsers.BasicHttpBinding_IMassiveDynamicsWService_getUsers,
+                (WS_OPERATION_DESCRIPTION*)&tempuri_org_wsdlLocalDefinitions.contracts.BasicHttpBinding_IMassiveDynamicsWService.BasicHttpBinding_IMassiveDynamicsWService_getRelacoes.BasicHttpBinding_IMassiveDynamicsWService_getRelacoes,
             },  // array of operations for BasicHttpBinding_IMassiveDynamicsWService
             {  // contract description for BasicHttpBinding_IMassiveDynamicsWService
-            1,
+            3,
             (WS_OPERATION_DESCRIPTION**)tempuri_org_wsdlLocalDefinitions.contracts.BasicHttpBinding_IMassiveDynamicsWService.operations,
             },  // end of contract description for BasicHttpBinding_IMassiveDynamicsWService
         },  // BasicHttpBinding_IMassiveDynamicsWService
@@ -147,13 +273,17 @@ const static _tempuri_org_wsdlLocalDefinitions tempuri_org_wsdlLocalDefinitions 
         {  // xmlStrings
             WS_XML_STRING_DICTIONARY_VALUE("http://tempuri.org/IMassiveDynamicsWService/authenticate",&tempuri_org_wsdlLocalDefinitions.dictionary.dict, 0),
             WS_XML_STRING_DICTIONARY_VALUE("http://tempuri.org/IMassiveDynamicsWService/authenticateResponse",&tempuri_org_wsdlLocalDefinitions.dictionary.dict, 1),
+            WS_XML_STRING_DICTIONARY_VALUE("http://tempuri.org/IMassiveDynamicsWService/getUsers",&tempuri_org_wsdlLocalDefinitions.dictionary.dict, 2),
+            WS_XML_STRING_DICTIONARY_VALUE("http://tempuri.org/IMassiveDynamicsWService/getUsersResponse",&tempuri_org_wsdlLocalDefinitions.dictionary.dict, 3),
+            WS_XML_STRING_DICTIONARY_VALUE("http://tempuri.org/IMassiveDynamicsWService/getRelacoes",&tempuri_org_wsdlLocalDefinitions.dictionary.dict, 4),
+            WS_XML_STRING_DICTIONARY_VALUE("http://tempuri.org/IMassiveDynamicsWService/getRelacoesResponse",&tempuri_org_wsdlLocalDefinitions.dictionary.dict, 5),
         },  // end of xmlStrings
         
         {  // tempuri_org_wsdldictionary
-          // fd71f607-3ec3-41aa-841d-849f1c87923c 
-        { 0xfd71f607, 0x3ec3, 0x41aa, { 0x84, 0x1d, 0x84,0x9f, 0x1c, 0x87, 0x92, 0x3c } },
+          // 32ffb060-a8f9-4d77-bfce-184d5f140f6a 
+        { 0x32ffb060, 0xa8f9, 0x4d77, { 0xbf, 0xce, 0x18,0x4d, 0x5f, 0x14, 0x0f, 0x6a } },
         (WS_XML_STRING*)&tempuri_org_wsdlLocalDefinitions.dictionary.xmlStrings,
-        2,
+        6,
         TRUE,
         },
     },  //  end of dictionary
@@ -190,6 +320,50 @@ HRESULT WINAPI BasicHttpBinding_IMassiveDynamicsWService_authenticate(
         _asyncContext,
         _error);
 }
+
+// operation: BasicHttpBinding_IMassiveDynamicsWService_getUsers
+HRESULT WINAPI BasicHttpBinding_IMassiveDynamicsWService_getUsers(
+    _In_ WS_SERVICE_PROXY* _serviceProxy,
+    _Outptr_opt_result_z_ WCHAR** getUsersResult, 
+    _In_ WS_HEAP* _heap,
+    _In_reads_opt_(_callPropertyCount) const WS_CALL_PROPERTY* _callProperties,
+    _In_ const ULONG _callPropertyCount,
+    _In_opt_ const WS_ASYNC_CONTEXT* _asyncContext,
+    _In_opt_ WS_ERROR* _error)
+{
+    void* _argList[1]; 
+    _argList[0] = &getUsersResult;
+    return WsCall(_serviceProxy,
+        (WS_OPERATION_DESCRIPTION*)&tempuri_org_wsdlLocalDefinitions.contracts.BasicHttpBinding_IMassiveDynamicsWService.BasicHttpBinding_IMassiveDynamicsWService_getUsers.BasicHttpBinding_IMassiveDynamicsWService_getUsers,
+        (const void **)&_argList,
+        _heap,
+        _callProperties,
+        _callPropertyCount,
+        _asyncContext,
+        _error);
+}
+
+// operation: BasicHttpBinding_IMassiveDynamicsWService_getRelacoes
+HRESULT WINAPI BasicHttpBinding_IMassiveDynamicsWService_getRelacoes(
+    _In_ WS_SERVICE_PROXY* _serviceProxy,
+    _Outptr_opt_result_z_ WCHAR** getRelacoesResult, 
+    _In_ WS_HEAP* _heap,
+    _In_reads_opt_(_callPropertyCount) const WS_CALL_PROPERTY* _callProperties,
+    _In_ const ULONG _callPropertyCount,
+    _In_opt_ const WS_ASYNC_CONTEXT* _asyncContext,
+    _In_opt_ WS_ERROR* _error)
+{
+    void* _argList[1]; 
+    _argList[0] = &getRelacoesResult;
+    return WsCall(_serviceProxy,
+        (WS_OPERATION_DESCRIPTION*)&tempuri_org_wsdlLocalDefinitions.contracts.BasicHttpBinding_IMassiveDynamicsWService.BasicHttpBinding_IMassiveDynamicsWService_getRelacoes.BasicHttpBinding_IMassiveDynamicsWService_getRelacoes,
+        (const void **)&_argList,
+        _heap,
+        _callProperties,
+        _callPropertyCount,
+        _asyncContext,
+        _error);
+}
 #if (_MSC_VER >= 1400)
 #pragma warning(pop)
 #endif
@@ -205,10 +379,26 @@ const _tempuri_org_wsdl tempuri_org_wsdl =
             (WS_XML_STRING*)&tempuri_org_wsdlLocalDefinitions.dictionary.xmlStrings.IMassiveDynamicsWService_authenticate_OutputMessageactionName, // http://tempuri.org/IMassiveDynamicsWService/authenticateResponse
             (WS_ELEMENT_DESCRIPTION*)&tempuri_org_xsd.globalElements.authenticateResponse, 
         },    // message description for IMassiveDynamicsWService_authenticate_OutputMessage
+        {  // message description for IMassiveDynamicsWService_getUsers_InputMessage
+            (WS_XML_STRING*)&tempuri_org_wsdlLocalDefinitions.dictionary.xmlStrings.IMassiveDynamicsWService_getUsers_InputMessageactionName, // http://tempuri.org/IMassiveDynamicsWService/getUsers
+            (WS_ELEMENT_DESCRIPTION*)&tempuri_org_xsd.globalElements.getUsers, 
+        },    // message description for IMassiveDynamicsWService_getUsers_InputMessage
+        {  // message description for IMassiveDynamicsWService_getUsers_OutputMessage
+            (WS_XML_STRING*)&tempuri_org_wsdlLocalDefinitions.dictionary.xmlStrings.IMassiveDynamicsWService_getUsers_OutputMessageactionName, // http://tempuri.org/IMassiveDynamicsWService/getUsersResponse
+            (WS_ELEMENT_DESCRIPTION*)&tempuri_org_xsd.globalElements.getUsersResponse, 
+        },    // message description for IMassiveDynamicsWService_getUsers_OutputMessage
+        {  // message description for IMassiveDynamicsWService_getRelacoes_InputMessage
+            (WS_XML_STRING*)&tempuri_org_wsdlLocalDefinitions.dictionary.xmlStrings.IMassiveDynamicsWService_getRelacoes_InputMessageactionName, // http://tempuri.org/IMassiveDynamicsWService/getRelacoes
+            (WS_ELEMENT_DESCRIPTION*)&tempuri_org_xsd.globalElements.getRelacoes, 
+        },    // message description for IMassiveDynamicsWService_getRelacoes_InputMessage
+        {  // message description for IMassiveDynamicsWService_getRelacoes_OutputMessage
+            (WS_XML_STRING*)&tempuri_org_wsdlLocalDefinitions.dictionary.xmlStrings.IMassiveDynamicsWService_getRelacoes_OutputMessageactionName, // http://tempuri.org/IMassiveDynamicsWService/getRelacoesResponse
+            (WS_ELEMENT_DESCRIPTION*)&tempuri_org_xsd.globalElements.getRelacoesResponse, 
+        },    // message description for IMassiveDynamicsWService_getRelacoes_OutputMessage
     },  // messages
     {  // contracts
         {  // BasicHttpBinding_IMassiveDynamicsWService
-            1,
+            3,
             (WS_OPERATION_DESCRIPTION**)tempuri_org_wsdlLocalDefinitions.contracts.BasicHttpBinding_IMassiveDynamicsWService.operations,
         },  // end of BasicHttpBinding_IMassiveDynamicsWService
     },  // contracts

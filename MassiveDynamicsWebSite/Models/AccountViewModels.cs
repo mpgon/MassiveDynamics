@@ -79,6 +79,7 @@ namespace MassiveDynamicsWebSite.Models
 
         [DisplayFormat(DataFormatString = "{0:dd MMM yyyy}")]
         public System.DateTime Date { get; set; }
+        public ICollection<Tag> tags { get; set; }
         public virtual Humor humor { get; set; }
         public int humorID { get; set; }
         public string perfilfacebook { get; set; }
@@ -95,6 +96,7 @@ namespace MassiveDynamicsWebSite.Models
                 LastName = this.LastName,
                 Email = this.Email,
                 Date = this.Date,
+                tags = this.tags,
                 humor = this.humor,
                 humorID = this.humorID,
                 perfilfacebook = this.perfilfacebook,
@@ -117,6 +119,7 @@ namespace MassiveDynamicsWebSite.Models
             this.LastName = user.LastName;
             this.Email = user.Email;
             this.Date = user.Date;
+            this.tags = user.tags;
             this.humor = user.humor;
             this.humorID = user.humorID;
             this.perfilfacebook = user.perfilfacebook;
@@ -140,6 +143,7 @@ namespace MassiveDynamicsWebSite.Models
 
         [DisplayFormat(DataFormatString = "{0:dd MMM yyyy}")]
         public System.DateTime Date { get; set; }
+        public ICollection<Tag> tags { get; set; }
         public virtual Humor humor { get; set; }
         public int humorID { get; set; }
         public string perfilfacebook { get; set; }

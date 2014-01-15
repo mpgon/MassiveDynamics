@@ -71,8 +71,8 @@ const static _schemas_microsoft_com_2003_10_Serialization_xsdLocalDefinitions sc
         },  // end of xmlStrings
         
         {  // schemas_microsoft_com_2003_10_Serialization_xsddictionary
-          // 05e509d3-e3fd-432d-9716-bd6b194d7e50 
-        { 0x05e509d3, 0xe3fd, 0x432d, { 0x97, 0x16, 0xbd,0x6b, 0x19, 0x4d, 0x7e, 0x50 } },
+          // e4120171-a10e-4594-a56d-df96f936931e 
+        { 0xe4120171, 0xa10e, 0x4594, { 0xa5, 0x6d, 0xdf,0x96, 0xf9, 0x36, 0x93, 0x1e } },
         (WS_XML_STRING*)&schemas_microsoft_com_2003_10_Serialization_xsdLocalDefinitions.dictionary.xmlStrings,
         25,
         TRUE,

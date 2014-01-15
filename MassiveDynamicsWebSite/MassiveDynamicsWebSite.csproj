@@ -199,6 +199,10 @@
     <Compile Include="Migrations\201401131231318_humor.Designer.cs">
       <DependentUpon>201401131231318_humor.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201401150715209_usertag.cs" />
+    <Compile Include="Migrations\201401150715209_usertag.Designer.cs">
+      <DependentUpon>201401150715209_usertag.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\EstadoRelacao.cs" />
@@ -316,6 +320,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201401131231318_humor.resx">
       <DependentUpon>201401131231318_humor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201401150715209_usertag.resx">
+      <DependentUpon>201401150715209_usertag.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

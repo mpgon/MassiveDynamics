@@ -14,6 +14,7 @@ public:
 	float z;
 	float largura;
 	char tipo;
+	string nome;
 
 public:
 	No();
@@ -23,11 +24,13 @@ public:
 	float getY()const{ return y; }
 	float getZ()const{ return z; }
 	char getTipo()const{ return tipo; }
+	string getNome(){ return nome; }
 	float getLargura()const{ return largura; }
 	void setX(const float& xP);
 	void setY(const float& yP);
 	void setZ(const float& zP);
 	void setTipo(const char t);
+	void setNome(string n);
 };
 
 #endif
