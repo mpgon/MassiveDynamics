@@ -232,7 +232,21 @@ caminhoMaisForte2(Dest,[(Ca,[H|T])|Outros], Cam, Custo):-
     reverse(TodosOrd,To),
     caminhoMaisForte2(Dest,To,Cam,Custo).
 
+%Caminho Mais Curto
+%%	--------------------------------------------------------
 
+caminhoMaisCurto(Orig, Dest, Cam, Custo):-
+    caminhoMaisCurto2(Dest,[(0,[Orig])],Cam, Custo).
+
+caminhoMaisCurto2(Dest,[(Custo,[Dest|T])|_],Cam,Custo):-
+    !, reverse([Dest|T],Cam).
+
+caminhoMaisCurto2(Dest,[(Ca,[H|T])|Outros], Cam, Custo):-
+    findall((Cax,[X,H|T]),(Dest\==H,arco(H,X,Cx),\+member(X,[H|T]),
+                   Cax is Cx+Ca),Novos),
+    append(Novos,Outros,Todos),
+    sort(Todos,TodosOrd),
+    caminhoMaisCurto2(Dest,TodosOrd,Cam,Custo).
 
 
 
