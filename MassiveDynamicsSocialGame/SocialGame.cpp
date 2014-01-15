@@ -3,18 +3,15 @@
 #include <stdlib.h>     
 #include <GL\glut.h>
 #include <GL\glaux.h>
-
 #include <iostream>
 #include "grafos.h"
 #include "rain.h"
 #include "ClientWS.h"
-
 #include "Billboard.h"
 #include "humor.h"
-
 #include "tga.h"
-
 #include "Mp3.h"
+#include "SWI-cpp.h"
 
 using namespace std;
 
@@ -143,6 +140,9 @@ Modelo modelo;
 //Chuva
 const int numgotas = 50;
 CHUVA rain;
+
+int * caminhos= new int[10];
+int caminho = 0;
 
 void chuva(GLfloat x, GLfloat y, GLfloat z)
 {
@@ -728,6 +728,8 @@ void desenhaNo(int no){
 
 
 void desenhaArco(Arco arco){
+
+
 	No *noi, *nof;
 	noi = &nos[arco.noi];
 	nof = &nos[arco.nof];
@@ -767,8 +769,23 @@ void desenhaLabirinto(){
 		glPopMatrix();
 		desenhaNo(i);
 	}
-	material(emerald);
+	
 	for (int i = 0; i < numArcos; i++){
+		if (caminho!=0){
+			int t = 0;
+			for (int j = 0; j < caminho;j++){
+				if (caminhos[j] == i){
+					t = 1;
+				}
+			}
+			if (t==0)
+				material(emerald);
+			else
+				material(red_plastic);
+		}
+		else {
+			material(emerald);
+		}
 		desenhaArco(arcos[i]);
 	}
 	glPopMatrix();
@@ -932,7 +949,7 @@ void display(void)
 	//desenhaSolo(texID[ID_TEXTURA_CHAO]);
 
 
-	desenhaEixos();
+	//desenhaEixos();
 
 	desenhaLabirinto();
 	//humor();
@@ -968,7 +985,7 @@ void display(void)
 	desenhaSkyBox();
 	//desenhaSolo();
 
-	desenhaEixos();
+	//desenhaEixos();
 
 	desenhaLabirinto();
 
@@ -1093,6 +1110,54 @@ void keyboard(unsigned char key, int x, int y)
 	case 'U':{
 				 int i = system("MassiveDynamicsLabirinto.exe");
 				 printf("%d\n", i);
+				 glutPostRedisplay();
+				 break; }
+	case 'o':
+	case 'O':{
+				 
+				 cout << "Para quem deseja ir?" << endl;
+				 string dest;
+				 cin >> dest;
+					
+				 PlTermv av(4);
+
+				 av[0] = nomeInicial.c_str();
+				 av[1] = dest.c_str();
+
+				 PlTerm t;
+
+				 PlQuery q("caminhoMaisCurto", av);
+
+				 while (q.next_solution()){
+					 
+					 char * lista[10];
+
+					 PlTail tail(av[2]);
+
+					 int pos = 0;
+					 while (tail.next(t)){
+						 lista[pos] = (char *)t;
+						 pos++;
+						 cout << (char *)t << endl;
+					 }
+						 
+					 
+					 for (int i = 0; i < pos-1; i++){
+						 for (int j = 0; j < numArcos; j++){
+							 if (nos[arcos[j].noi].getNome() == lista[i] && nos[arcos[j].nof].getNome() == lista[i + 1]){
+								 caminhos[caminho] = j;
+								 caminho++;
+							 }
+								 
+						 }
+					 }
+					 
+					 
+
+				 }
+
+				 cout << (char*)av[3] << endl;
+
 				 glutPostRedisplay();
 				 break; }
 	}
@@ -1538,6 +1603,10 @@ void main(int argc, char **argv)
 		else {
 			exit(0);
 		}
+
+		char* file[] = { "libswipl.dll", "-s", "JogoPrincipal.pl", NULL };
+
+		PlEngine e(3, file);
 
 		glutInit(&argc, argv);
 		/*need both double buffering and z buffer*/
