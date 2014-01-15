@@ -142,15 +142,15 @@ void chuva()
 {
 	
 	glPushMatrix();
-	DesenharChuva(rain, numgotas, 0, -75,0);
+	DesenharChuva(rain, numgotas, nos[noInicial].x * 5, nos[noInicial].y * 5, nos[noInicial].z * 5);
 	glPopMatrix();
 }
 
 void humor()
 {
 	glPushMatrix();
-	desenhaImagemTga(textIDSun, 25, 50, 25);
-	desenhaImagemTga(textIDSkybox, 10, 10, 25);
+	desenhaImagemTga(textIDSun, nos[6].x * 5, nos[6].y * 5, nos[6].z * 5 + 15);
+	//desenhaImagemTga(textIDSun, 10, 10, 25);
 	glPopMatrix();
 }
 
@@ -1013,6 +1013,15 @@ void keyboard(unsigned char key, int x, int y)
 			estado.camera.pessoa = 3;
 		glutPostRedisplay();
 		break;
+	case 'j':
+	case 'J':
+		//int i = system("MassiveDynamicsGalo.exe");
+		//int i = system("MassiveDynamicsEnforcado.exe");
+		int i = system("MassiveDynamicsLabirinto.exe");
+		//system("pause");
+		printf("%d\n", i);
+		glutPostRedisplay();
+		break;
 	}
 }
 
@@ -1367,7 +1376,7 @@ void createTextures(GLuint texID[])
 		tgaInfo *img;
 		glEnable(GL_DEPTH_TEST);
 
-		img = tgaLoad("img/sun.tga");
+		img = tgaLoad(NOME_TEXTURA_SUN);
 		glGenTextures(1, &textIDSun);
 		glBindTexture(GL_TEXTURE_2D, textIDSun);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);

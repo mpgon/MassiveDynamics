@@ -752,6 +752,7 @@ void desenhaEstrela(){
 
 	glPushMatrix();
 		glTranslatef(2,.3,2);
+		glRotatef(90,0,1,0);
 		glColor3f(1,1,0);
 		glBegin(GL_LINE_LOOP);
 			glVertex3f(0.0, 0.2, 0.0);
