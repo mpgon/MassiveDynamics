@@ -578,7 +578,10 @@ void desenhaNo(int no){
 	GLUquadricObj *quadric;
 	quadric = gluNewQuadric();
 
-	int radius = 1;//tem que ser variavel...
+	int radius = nos[no].getLargura()*.2;//tem que ser variavel...
+	if (radius == 0)
+		radius = 1;
+
 
 	gluQuadricDrawStyle(quadric, GLU_FILL);
 	gluSphere(quadric, radius, 36, 18);
@@ -586,155 +589,34 @@ void desenhaNo(int no){
 	
 
 	glPopMatrix();
-	/*
-	norte=sul=este=oeste=GL_TRUE;
-	desenhaChao(nos[no].x-0.5*noi->largura,nos[no].y-0.5*noi->largura,nos[no].z,nos[no].x+0.5*noi->largura,nos[no].y+0.5*noi->largura,nos[no].z,PLANO);
-	for(int i=0;i<numArcos; arco=arcos[++i]){
-	if(arco.noi==no)
-	nof=&nos[arco.nof];
-	else
-	if(arco.nof==no)
-	nof=&nos[arco.noi];
-	else
-	continue;
-	if(noi->x==nof->x)
-	if(noi->y<nof->y){
-	norte=GL_FALSE;
-	larguraNorte=arco.largura;
-	}
-	else{
-	sul=GL_FALSE;
-	larguraSul=arco.largura;
-	}
-	else
-	if(noi->y==nof->y)
-	if(noi->x<nof->x){
-	oeste=GL_FALSE;
-	larguraOeste=arco.largura;
-	}
-	else{
-	este=GL_FALSE;
-	larguraEste=arco.largura;
-	}
-	else
-	cout << "Arco dioagonal: " << arco.noi << " " << arco.nof << endl;
-	if (norte && sul && este && oeste)
-	return;
-	}
-	if(norte)
-	desenhaParede(nos[no].x-0.5*noi->largura,nos[no].y+0.5*noi->largura,nos[no].z,nos[no].x+0.5*noi->largura,nos[no].y+0.5*noi->largura,nos[no].z);
-	else
-	if (larguraNorte < noi->largura){
-	desenhaParede(nos[no].x-0.5*noi->largura,nos[no].y+0.5*noi->largura,nos[no].z,nos[no].x-0.5*larguraNorte,nos[no].y+0.5*noi->largura,nos[no].z);
-	desenhaParede(nos[no].x+0.5*larguraNorte,nos[no].y+0.5*noi->largura,nos[no].z,nos[no].x+0.5*noi->largura,nos[no].y+0.5*noi->largura,nos[no].z);
-	}
-	if(sul)
-	desenhaParede(nos[no].x+0.5*noi->largura,nos[no].y-0.5*noi->largura,nos[no].z,nos[no].x-0.5*noi->largura,nos[no].y-0.5*noi->largura,nos[no].z);
-	else
-	if (larguraSul < noi->largura){
-	desenhaParede(nos[no].x+0.5*noi->largura,nos[no].y-0.5*noi->largura,nos[no].z,nos[no].x+0.5*larguraSul,nos[no].y-0.5*noi->largura,nos[no].z);
-	desenhaParede(nos[no].x-0.5*larguraSul,nos[no].y-0.5*noi->largura,nos[no].z,nos[no].x-0.5*noi->largura,nos[no].y-0.5*noi->largura,nos[no].z);
-	}
-	if(este)
-	desenhaParede(nos[no].x-0.5*noi->largura,nos[no].y-0.5*noi->largura,nos[no].z,nos[no].x-0.5*noi->largura,nos[no].y+0.5*noi->largura,nos[no].z);
-	else
-	if (larguraEste < noi->largura){
-	desenhaParede(nos[no].x-0.5*noi->largura,nos[no].y-0.5*noi->largura,nos[no].z,nos[no].x-0.5*noi->largura,nos[no].y-0.5*larguraEste,nos[no].z);
-	desenhaParede(nos[no].x-0.5*noi->largura,nos[no].y+0.5*larguraEste,nos[no].z,nos[no].x-0.5*noi->largura,nos[no].y+0.5*noi->largura,nos[no].z);
-	}
-	if(oeste)
-	desenhaParede(nos[no].x+0.5*noi->largura,nos[no].y+0.5*noi->largura,nos[no].z,nos[no].x+0.5*noi->largura,nos[no].y-0.5*noi->largura,nos[no].z);
-	else
-	if (larguraOeste < noi->largura){
-	desenhaParede(nos[no].x+0.5*noi->largura,nos[no].y+0.5*noi->largura,nos[no].z,nos[no].x+0.5*noi->largura,nos[no].y+0.5*larguraOeste,nos[no].z);
-	desenhaParede(nos[no].x+0.5*noi->largura,nos[no].y-0.5*larguraOeste,nos[no].z,nos[no].x+0.5*noi->largura,nos[no].y-0.5*noi->largura,nos[no].z);
-	}
-	*/
 }
 
 
 void desenhaArco(Arco arco){
 	No *noi, *nof;
+	noi = &nos[arco.noi];
+	nof = &nos[arco.nof];
+	glPushMatrix();
+	glTranslatef(noi->x, noi->y, noi->z + 1);
+	double ang = atan2(nof->y - noi->y, nof->x - noi->x);
+	glRotatef(graus(ang), 0, 0, 1);
+	double p = sqrt(0 + pow(nof->x - noi->x, 2) + pow(nof->y - noi->y, 2));
+	double desnivel = nof->z - noi->z;
+	double beta = atan(desnivel/ p);
+	double ang2 = M_PI * .5 - beta;
+	glRotatef(graus(ang2), 0, 1, 0);
 
-	if (nos[arco.noi].x == nos[arco.nof].x){
-		// arco vertical
-		if (nos[arco.noi].y < nos[arco.nof].y){
-			noi = &nos[arco.noi];
-			nof = &nos[arco.nof];
-		}
-		else{
-			nof = &nos[arco.noi];
-			noi = &nos[arco.nof];
-		}
+	double comprimento = sqrt(pow(p, 2) + pow(desnivel, 2));
 
-		//desenhaChao(noi->x-0.5*arco.largura,noi->y+0.5*noi->largura,noi->z,nof->x+0.5*arco.largura,nof->y-0.5*nof->largura,nof->z, NORTE_SUL);
-		//desenhaParede(noi->x-0.5*arco.largura,noi->y+0.5*noi->largura,noi->z,nof->x-0.5*arco.largura,nof->y-0.5*nof->largura,nof->z);
-		//desenhaParede(nof->x+0.5*arco.largura,nof->y-0.5*nof->largura,nof->z,noi->x+0.5*arco.largura,noi->y+0.5*noi->largura,noi->z);
+	GLfloat radius = arco.getLargura()*.5;
+	GLUquadricObj *quadric;
+	quadric = gluNewQuadric();
+	gluQuadricDrawStyle(quadric, GLU_FILL);
+	gluCylinder(quadric, radius, radius, comprimento, 30, 3);
+	gluDeleteQuadric(quadric);
 
-
-		glPushMatrix();
-
-		//mudar a cor do cilindro
-
-
-		glTranslatef(noi->x, noi->y, noi->z + 1);
-		double ang = 90 + atan2(nof->z - noi->z, nof->y - noi->y) * 180 / M_PI + 180;
-		glRotatef(ang, 1, 0, 0);
-
-
-		GLUquadricObj *quadric;
-		quadric = gluNewQuadric();
+	glPopMatrix();
 	
-		double dist = sqrt(0 + pow(nof->y - noi->y, 2) + pow(nof->z - noi->z, 2));
-
-		gluQuadricDrawStyle(quadric, GLU_FILL);
-		gluCylinder(quadric, .5, .5, dist, 30, 3);
-		gluDeleteQuadric(quadric);
-
-		glPopMatrix();
-
-	}
-	else{
-		if (nos[arco.noi].y == nos[arco.nof].y){
-			//arco horizontal
-			if (nos[arco.noi].x < nos[arco.nof].x){
-				noi = &nos[arco.noi];
-				nof = &nos[arco.nof];
-			}
-			else{
-				nof = &nos[arco.noi];
-				noi = &nos[arco.nof];
-			}
-			//desenhaChao(noi->x+0.5*noi->largura,noi->y-0.5*arco.largura,noi->z,nof->x-0.5*nof->largura,nof->y+0.5*arco.largura,nof->z, ESTE_OESTE);
-			//desenhaParede(noi->x+0.5*noi->largura,noi->y+0.5*arco.largura,noi->z,nof->x-0.5*nof->largura,nof->y+0.5*arco.largura,nof->z);
-			//desenhaParede(nof->x-0.5*nof->largura,nof->y-0.5*arco.largura,nof->z,noi->x+0.5*noi->largura,noi->y-0.5*arco.largura,noi->z);
-
-			glPushMatrix();
-
-			//mudar a cor do cilindro
-
-
-			glTranslatef(noi->x, noi->y, noi->z + 1);
-			double ang = 90 + atan2(nof->z - noi->z, nof->x - noi->x) * 180 / M_PI + 180;
-			glRotatef(-ang, 0, 1, 0);
-
-
-			GLUquadricObj *quadric;
-			quadric = gluNewQuadric();
-
-			double dist = sqrt(pow(nof->x - noi->x, 2) + 0 + pow(nof->z - noi->z, 2));
-
-			gluQuadricDrawStyle(quadric, GLU_FILL);
-			gluCylinder(quadric, .5, .5, dist, 30, 3);
-			gluDeleteQuadric(quadric);
-
-			glPopMatrix();
-
-		}
-		else{
-			cout << "arco diagonal... não será desenhado";
-		}
-	}
 }
 
 void desenhaLabirinto(){
@@ -1407,7 +1289,7 @@ void main(int argc, char **argv)
 {
 
 
-	if (login()){
+	if (/*login()*/true){
 		glutInit(&argc, argv);
 		/*need both double buffering and z buffer*/
 		glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
